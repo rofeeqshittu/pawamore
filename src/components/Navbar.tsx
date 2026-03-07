@@ -24,19 +24,17 @@ const Navbar = () => {
       <div className="kente-strip" />
       <div className="container flex items-center justify-between h-16 md:h-20">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Zap className="w-6 h-6 text-foreground" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-display font-extrabold text-lg text-primary-foreground tracking-tight leading-none">
-              PawaMore
-            </span>
-            <span className="font-display text-[10px] text-primary-foreground/60 uppercase tracking-[0.2em]">
-              Systems Ltd  
-            </span>
-          </div>
-        </Link>
+         <Link to="/" className="flex items-center gap-3 group">
+           <img src={logo} alt="PawaMore Systems" className="h-10 w-auto group-hover:scale-110 transition-transform" />
+           <div className="flex flex-col hidden sm:block">
+             <span className="font-display font-extrabold text-lg text-primary-foreground tracking-tight leading-none">
+               PawaMore
+             </span>
+             <span className="font-display text-[10px] text-primary-foreground/60 uppercase tracking-[0.2em]">
+               Systems Ltd  
+             </span>
+           </div>
+         </Link>
 
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-1">
