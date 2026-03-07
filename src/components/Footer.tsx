@@ -28,16 +28,16 @@ const Footer = () => {
             <h4 className="font-display font-bold text-accent mb-4 uppercase text-sm tracking-wider">Quick Links</h4>
             <div className="flex flex-col gap-2">
               {[
-                { to: "/services", label: "Services" },
-                { to: "/products", label: "Products" },
-                { to: "/why-pawamore", label: "Why PawaMore" },
-                { to: "/about", label: "About Us" },
-                { to: "/faqs", label: "FAQs" },
-              ].map((l) => (
-                <Link key={l.to} to={l.to} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">
+              { to: "/services", label: "Services" },
+              { to: "/products", label: "Products" },
+              { to: "/why-pawamore", label: "Why PawaMore" },
+              { to: "/about", label: "About Us" },
+              { to: "/faqs", label: "FAQs" }].
+              map((l) =>
+              <Link key={l.to} to={l.to} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">
                   {l.label}
                 </Link>
-              ))}
+              )}
             </div>
           </div>
 
@@ -45,7 +45,7 @@ const Footer = () => {
           <div>
             <h4 className="font-display font-bold text-accent mb-4 uppercase text-sm tracking-wider">Contact</h4>
             <div className="flex flex-col gap-3 text-sm text-primary-foreground/70">
-              <a href="tel:+2340000000000" className="flex items-center gap-2 hover:text-accent transition-colors">
+              <a className="flex items-center gap-2 hover:text-accent transition-colors" href="tel:+2347062716154">
                 <Phone className="w-4 h-4" /> +234 000 0000 000
               </a>
               <a href="mailto:hello@pawamore.com.ng" className="flex items-center gap-2 hover:text-accent transition-colors">
@@ -58,11 +58,11 @@ const Footer = () => {
           <div>
             <h4 className="font-display font-bold text-accent mb-4 uppercase text-sm tracking-wider">Locations</h4>
             <div className="flex flex-col gap-3 text-sm text-primary-foreground/70">
-              {["Lagos", "Ibadan, Oyo State", "Abuja, FCT"].map((city) => (
-                <div key={city} className="flex items-center gap-2">
+              {["Lagos", "Ibadan, Oyo State", "Abuja, FCT"].map((city) =>
+              <div key={city} className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-accent/70" /> {city}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -73,8 +73,8 @@ const Footer = () => {
           <span>Powering Nigeria. Powering More.</span>
         </div>
       </div>
-    </footer>
-  );
+    </footer>);
+
 };
 
 export default Footer;
