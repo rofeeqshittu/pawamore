@@ -58,10 +58,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
     setIsAdmin(false);
-  };
+    window.location.href = "/";
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, session, isAdmin, loading, signOut }}>
