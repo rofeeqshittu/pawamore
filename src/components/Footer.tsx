@@ -9,10 +9,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-                <Zap className="w-6 h-6 text-foreground" />
-              </div>
+            <Link to="/" className="flex items-center gap-2 mb-3 sm:mb-4">
+              <img src={logo} alt="PawaMore Systems" className="h-8 sm:h-10 w-auto rounded-lg" />
               <div>
                 <div className="font-display font-extrabold text-lg leading-none">PawaMore</div>
                 <div className="font-display text-[10px] uppercase tracking-[0.2em] text-primary-foreground/60">Systems</div>
