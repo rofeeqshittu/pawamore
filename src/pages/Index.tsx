@@ -5,6 +5,7 @@ import Layout from "@/components/Layout";
 import { Fuel, Volume2, Clock, ClipboardCheck, Settings, Wrench, HeartHandshake, Shield, CheckCircle, Star, ChevronRight, Zap, Battery, Sun } from "lucide-react";
 import heroImg from "@/assets/hero-install.jpg";
 import familyImg from "@/assets/family-power.jpg";
+import useSEO from "@/hooks/useSEO";
 import batteryImg from "@/assets/battery-system.jpg";
 
 const painPoints = [
