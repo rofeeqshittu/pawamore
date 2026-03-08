@@ -86,6 +86,11 @@ const stats = [
 ];
 
 const Index = () => {
+  useSEO({
+    title: "PawaMore Systems — Solar & Battery Installation Nigeria",
+    description: "PawaMore Systems installs world-class solar panels and battery storage for Nigerian homes and businesses. Free power audit. 90-day guarantee. Lagos, Abuja, Ibadan.",
+  });
+
   return (
     <Layout>
       {/* Hero Section */}
