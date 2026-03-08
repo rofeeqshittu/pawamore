@@ -21,6 +21,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { user, isAdmin, signOut } = useAuth();
+  const { itemCount } = useCart();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-forest/95 backdrop-blur-md">
