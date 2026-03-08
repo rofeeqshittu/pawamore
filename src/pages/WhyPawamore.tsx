@@ -99,6 +99,7 @@ const WhyPawamore = () => {
       </div>
     </section>
   </Layout>
-);
+  );
+};
 
 export default WhyPawamore;

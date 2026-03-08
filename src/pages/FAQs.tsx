@@ -63,6 +63,7 @@ const FAQs = () => {
       </div>
     </section>
   </Layout>
-);
+  );
+};
 
 export default FAQs;
