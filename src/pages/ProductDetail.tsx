@@ -4,7 +4,8 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/contexts/CartContext";
-import { ShoppingCart, Share2, Copy, CheckCircle, ChevronLeft, Image as ImageIcon } from "lucide-react";
+import { ShoppingCart, Share2, Copy, CheckCircle, ChevronLeft, Image as ImageIcon, Zap } from "lucide-react";
+import QuickBuyButton from "@/components/QuickBuyButton";
 import { toast } from "@/hooks/use-toast";
 import useSEO from "@/hooks/useSEO";
 
@@ -129,6 +130,7 @@ const ProductDetail = () => {
               <Button variant="amber" size="lg" className="flex-1" onClick={() => addToCart(product.id)} disabled={product.stock_quantity <= 0}>
                 <ShoppingCart className="w-5 h-5 mr-2" /> Add to Cart
               </Button>
+              <QuickBuyButton product={product} size="lg" className="flex-1" />
               <Button variant="outline" size="lg" onClick={handleShare}>
                 <Share2 className="w-4 h-4 mr-2" /> Share
               </Button>

@@ -99,6 +99,9 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          payment_method: string | null
+          payment_reference: string | null
+          payment_status: string | null
           shipping_address: string
           shipping_city: string
           shipping_name: string
@@ -113,6 +116,9 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
           shipping_address: string
           shipping_city: string
           shipping_name: string
@@ -127,6 +133,9 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
           shipping_address?: string
           shipping_city?: string
           shipping_name?: string

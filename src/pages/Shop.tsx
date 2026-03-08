@@ -4,6 +4,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Image as ImageIcon, ShoppingCart, Search } from "lucide-react";
+import QuickBuyButton from "@/components/QuickBuyButton";
 import { supabase } from "@/integrations/supabase/client";
 import useSEO from "@/hooks/useSEO";
 import { useCart } from "@/contexts/CartContext";
@@ -167,6 +168,7 @@ const Shop = () => {
                         <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2.5">
                           <ShoppingCart className="w-3.5 h-3.5" />
                         </Button>
+                        <QuickBuyButton product={product} size="sm" className="px-2.5" />
                       </div>
                     </div>
                   </div>
