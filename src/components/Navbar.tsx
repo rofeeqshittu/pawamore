@@ -25,7 +25,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between h-16 md:h-20">
         {/* Logo */}
          <Link to="/" className="flex items-center gap-3 group">
-           <img src={logo} alt="PawaMore Systems" className="h-10 w-auto group-hover:scale-110 transition-transform" />
+           <img src={logo} alt="PawaMore Systems" className="h-10 w-auto rounded-lg group-hover:scale-110 transition-transform" />
            <div className="flex flex-col hidden sm:block">
              <span className="font-display font-extrabold text-lg text-primary-foreground tracking-tight leading-none">
                PawaMore
