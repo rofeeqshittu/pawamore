@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import useSEO from "@/hooks/useSEO";
 import { useCart } from "@/contexts/CartContext";
 import batteryImg from "@/assets/battery-system.jpg";
-import heroImg from "@/assets/hero-install.jpg";
 
 interface Product {
   id: string;
@@ -31,9 +30,24 @@ interface Product {
 }
 
 const staticProducts = [
-  { icon: Battery, tag: "Entry Level", title: "Starter Battery System", desc: "Power your essentials — fridge, fans, TV, lights — all night. No solar needed. Plug and play.", price: "From ₦380,000", ideal: "Perfect for renters & apartments" },
-  { icon: Sun, tag: "Most Popular", title: "Standard Solar + Battery", desc: "Full day power from solar + battery backup for evening and night.", price: "From ₦780,000", ideal: "Best for 2–3 bedroom homes" },
-  { icon: Zap, tag: "Premium", title: "Premium Hybrid System", desc: "Total energy independence. Powers AC, washing machine, full home load.", price: "From ₦2,200,000", ideal: "Best for large homes & SMEs" },
+  {
+    icon: Battery, tag: "Entry Level", title: "Starter Battery System",
+    desc: "Power your essentials — fridge, fans, TV, lights — all night. No solar needed. Plug and play.",
+    features: ["Powers fridge, fans, TV & lights", "No solar panels required", "Plug-and-play — no installation", "Silent, zero-fume operation"],
+    price: "From ₦380,000", ideal: "Perfect for renters & apartments",
+  },
+  {
+    icon: Sun, tag: "Most Popular", title: "Standard Solar + Battery",
+    desc: "Full day power from solar + battery backup for evening and night use.",
+    features: ["Solar panels + battery storage", "Day & night coverage", "Professional rooftop installation", "Drastically cuts electricity bills"],
+    price: "From ₦780,000", ideal: "Best for 2–3 bedroom homes",
+  },
+  {
+    icon: Zap, tag: "Premium", title: "Premium Hybrid System",
+    desc: "Total energy independence. Powers AC, washing machine, full home load.",
+    features: ["Powers AC, washing machine & more", "Grid + solar + battery hybrid", "Scales for large loads", "Smart monitoring included"],
+    price: "From ₦2,200,000", ideal: "Best for large homes & SMEs",
+  },
 ];
 
 const brands = ["EcoFlow", "Itel Energy", "Felicity Solar", "Luminous", "Bluetti"];
@@ -82,7 +96,7 @@ const Products = () => {
         </div>
       </section>
 
-      {/* Category 1: Battery Systems */}
+      {/* Category 1: Power Tanks, Batteries & Inverters */}
       <section className="py-10 sm:py-16 md:py-20">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
@@ -90,16 +104,16 @@ const Products = () => {
               <div>
                 <div className="inline-flex items-center gap-2 bg-secondary rounded-full px-4 py-1.5 mb-4">
                   <Battery className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-display font-semibold text-primary uppercase tracking-wider">Category 1</span>
+                  <span className="text-xs font-display font-semibold text-primary uppercase tracking-wider">Power Solutions</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4">
-                  Home Battery <span className="text-accent">Setup</span>
+                  Power Tanks, Batteries <span className="text-accent">& Inverters</span>
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  Our home battery systems store energy from the grid or solar panels, giving you reliable backup power when NEPA fails. No fuel, no noise, no fumes — just clean, instant power for your essentials.
+                  From portable power stations to whole-home inverter setups — we carry a full range of power tanks, lithium batteries, and hybrid inverters from trusted brands. Whether you need a compact backup unit or a heavy-duty system, we've got you covered.
                 </p>
                 <ul className="space-y-3 mb-6">
-                  {["Powers fridge, fans, TV, lights & phone charging", "Silent operation — no generator noise", "Plug-and-play setup — no major installation needed", "Ideal for apartments, renters & small homes"].map((item, i) => (
+                  {["Portable power tanks — charge from wall or solar, use anywhere", "Lithium battery banks — longer life, faster charging, zero maintenance", "Hybrid inverters — seamlessly switch between grid, solar & battery", "Scalable setups — start small, expand as your needs grow"].map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm">
                       <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
                       <span className="text-muted-foreground">{item}</span>
@@ -107,86 +121,66 @@ const Products = () => {
                   ))}
                 </ul>
                 <Link to="/contact">
-                  <Button variant="amber">Get a Battery System Quote →</Button>
+                  <Button variant="amber">Get a Quote →</Button>
                 </Link>
               </div>
             </ScrollReveal>
             <ScrollReveal delay={200}>
               <div className="rounded-2xl overflow-hidden shadow-[var(--shadow-elevated)]">
-                <img src={batteryImg} alt="Home battery system setup by PawaMore" className="w-full h-full object-cover aspect-[4/3]" />
+                <img src={batteryImg} alt="Power tanks, batteries and inverters by PawaMore" className="w-full h-full object-cover aspect-[4/3]" />
               </div>
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Category 2: Solar + Battery Systems */}
+      {/* Category 2: Solar + Battery Systems with Tiers */}
       <section className="py-10 sm:py-16 md:py-20 bg-secondary">
         <div className="container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-            <ScrollReveal delay={200} className="order-2 lg:order-1">
-              <div className="rounded-2xl overflow-hidden shadow-[var(--shadow-elevated)]">
-                <img src={heroImg} alt="Solar panel installation by PawaMore" className="w-full h-full object-cover aspect-[4/3]" />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal className="order-1 lg:order-2">
-              <div>
-                <div className="inline-flex items-center gap-2 bg-background rounded-full px-4 py-1.5 mb-4">
-                  <Sun className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-display font-semibold text-primary uppercase tracking-wider">Category 2</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4">
-                  Solar + Battery <span className="text-accent">Setup</span>
-                </h2>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  Combine solar panels with battery storage for true energy independence. Generate your own electricity during the day and store it for evening and night use — drastically reducing or eliminating your electricity bills.
-                </p>
-                <ul className="space-y-3 mb-6">
-                  {["Solar panels generate free electricity from sunlight", "Battery stores excess energy for nighttime use", "Professional rooftop or ground-mount installation", "Best for 2–5 bedroom homes, offices & SMEs"].map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                      <span className="text-muted-foreground">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/contact">
-                  <Button variant="amber">Get a Solar System Quote →</Button>
-                </Link>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Static Product Tiers */}
-      <section className="py-10 sm:py-16 md:py-20">
-        <div className="container">
           <ScrollReveal>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center mb-4">
-              Our Most Popular <span className="text-accent">Systems</span>
-            </h2>
-            <p className="text-muted-foreground text-center max-w-xl mx-auto mb-10">Choose a system that fits your power needs and budget</p>
+            <div className="text-center mb-10 sm:mb-14">
+              <div className="inline-flex items-center gap-2 bg-background rounded-full px-4 py-1.5 mb-4">
+                <Sun className="w-4 h-4 text-primary" />
+                <span className="text-xs font-display font-semibold text-primary uppercase tracking-wider">Solar + Battery Systems</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4">
+                Complete Solar <span className="text-accent">Energy Systems</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Combine solar panels with battery storage for true energy independence. Generate your own electricity during the day and store it for evening and night use. Choose the tier that fits your power needs and budget.
+              </p>
+            </div>
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {staticProducts.map((product, i) => (
               <ScrollReveal key={i} delay={i * 150}>
-                <div className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:shadow-[var(--shadow-elevated)] ${i === 1 ? "border-accent bg-card scale-[1.02]" : "border-border bg-card"}`}>
+                <div className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:shadow-[var(--shadow-elevated)] h-full flex flex-col ${i === 1 ? "border-accent bg-card scale-[1.02]" : "border-border bg-card"}`}>
                   {i === 1 && (
                     <div className="bg-accent text-foreground text-center py-1.5 font-display font-bold text-xs uppercase tracking-wider">⭐ Most Popular</div>
                   )}
-                  <div className="p-6 sm:p-8">
-                    <div className="inline-flex items-center gap-2 bg-secondary rounded-full px-3 py-1 mb-4">
+                  <div className="p-6 sm:p-8 flex flex-col flex-1">
+                    <div className="inline-flex items-center gap-2 bg-secondary rounded-full px-3 py-1 mb-4 w-fit">
                       <product.icon className="w-4 h-4 text-primary" />
                       <span className="text-xs font-display font-semibold text-primary">{product.tag}</span>
                     </div>
                     <h3 className="font-display font-bold text-xl mb-3">{product.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-6">{product.desc}</p>
-                    <div className="font-display font-extrabold text-2xl text-primary mb-1">{product.price}</div>
-                    <div className="text-sm text-muted-foreground mb-6">{product.ideal}</div>
-                    <Link to="/contact">
-                      <Button variant={i === 1 ? "amber" : "outline"} className="w-full">Get a Quote →</Button>
-                    </Link>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4">{product.desc}</p>
+                    <ul className="space-y-2 mb-6">
+                      {product.features.map((feat, fi) => (
+                        <li key={fi} className="flex items-start gap-2 text-xs text-muted-foreground">
+                          <CheckCircle className="w-3.5 h-3.5 text-accent mt-0.5 shrink-0" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-auto">
+                      <div className="font-display font-extrabold text-2xl text-primary mb-1">{product.price}</div>
+                      <div className="text-sm text-muted-foreground mb-6">{product.ideal}</div>
+                      <Link to="/contact">
+                        <Button variant={i === 1 ? "amber" : "outline"} className="w-full">Get a Quote →</Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </ScrollReveal>
