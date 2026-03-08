@@ -81,6 +81,82 @@ const Products = () => {
         </div>
       </section>
 
+      {/* Category 1: Battery Systems */}
+      <section className="py-10 sm:py-16 md:py-20">
+        <div className="container">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+            <ScrollReveal>
+              <div>
+                <div className="inline-flex items-center gap-2 bg-secondary rounded-full px-4 py-1.5 mb-4">
+                  <Battery className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-display font-semibold text-primary uppercase tracking-wider">Category 1</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4">
+                  Home Battery <span className="text-accent">Setup</span>
+                </h2>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  Our home battery systems store energy from the grid or solar panels, giving you reliable backup power when NEPA fails. No fuel, no noise, no fumes — just clean, instant power for your essentials.
+                </p>
+                <ul className="space-y-3 mb-6">
+                  {["Powers fridge, fans, TV, lights & phone charging", "Silent operation — no generator noise", "Plug-and-play setup — no major installation needed", "Ideal for apartments, renters & small homes"].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                      <span className="text-muted-foreground">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/contact">
+                  <Button variant="amber">Get a Battery System Quote →</Button>
+                </Link>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <div className="rounded-2xl overflow-hidden shadow-[var(--shadow-elevated)]">
+                <img src={batteryImg} alt="Home battery system setup by PawaMore" className="w-full h-full object-cover aspect-[4/3]" />
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Category 2: Solar + Battery Systems */}
+      <section className="py-10 sm:py-16 md:py-20 bg-secondary">
+        <div className="container">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+            <ScrollReveal delay={200} className="order-2 lg:order-1">
+              <div className="rounded-2xl overflow-hidden shadow-[var(--shadow-elevated)]">
+                <img src={heroImg} alt="Solar panel installation by PawaMore" className="w-full h-full object-cover aspect-[4/3]" />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal className="order-1 lg:order-2">
+              <div>
+                <div className="inline-flex items-center gap-2 bg-background rounded-full px-4 py-1.5 mb-4">
+                  <Sun className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-display font-semibold text-primary uppercase tracking-wider">Category 2</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4">
+                  Solar + Battery <span className="text-accent">Setup</span>
+                </h2>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  Combine solar panels with battery storage for true energy independence. Generate your own electricity during the day and store it for evening and night use — drastically reducing or eliminating your electricity bills.
+                </p>
+                <ul className="space-y-3 mb-6">
+                  {["Solar panels generate free electricity from sunlight", "Battery stores excess energy for nighttime use", "Professional rooftop or ground-mount installation", "Best for 2–5 bedroom homes, offices & SMEs"].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                      <span className="text-muted-foreground">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/contact">
+                  <Button variant="amber">Get a Solar System Quote →</Button>
+                </Link>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
       {/* Static Product Tiers */}
       <section className="py-10 sm:py-16 md:py-20">
         <div className="container">
