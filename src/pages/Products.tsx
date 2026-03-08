@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Battery, Sun, Zap, CheckCircle, Star, Image as ImageIcon, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import useSEO from "@/hooks/useSEO";
 import { useCart } from "@/contexts/CartContext";
 import batteryImg from "@/assets/battery-system.jpg";
 
