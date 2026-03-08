@@ -168,6 +168,7 @@ const Shop = () => {
                         <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2.5">
                           <ShoppingCart className="w-3.5 h-3.5" />
                         </Button>
+                        <QuickBuyButton product={product} size="sm" className="px-2.5" />
                       </div>
                     </div>
                   </div>

@@ -279,6 +279,7 @@ const Products = () => {
                           <Button variant="outline" size="default" onClick={() => addToCart(product.id)} className="px-3">
                             <ShoppingCart className="w-4 h-4" />
                           </Button>
+                          <QuickBuyButton product={product} size="default" className="px-3" />
                         </div>
                       </div>
                     </div>
