@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,16 +10,27 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { ShoppingCart, CreditCard, Truck } from "lucide-react";
+import { ShoppingCart, CreditCard, Truck, AlertTriangle } from "lucide-react";
 
 const Checkout = () => {
   const { items, total, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [flwLoading, setFlwLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"pay_on_delivery" | "flutterwave">("pay_on_delivery");
   const [flwPublicKey, setFlwPublicKey] = useState("");
-  const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", city: "", state: "", notes: "" });
+  const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState({ 
+    name: "", 
+    phone: "", 
+    email: "", 
+    address: "", 
+    city: "", 
+    state: "", 
+    notes: "" 
+  });
 
   // Pre-fill form from user profile
   useEffect(() => {
