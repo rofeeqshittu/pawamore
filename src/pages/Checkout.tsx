@@ -149,67 +149,71 @@ const Checkout = () => {
 
   return (
     <Layout>
-      <div className="container py-8 sm:py-12 max-w-3xl">
-        <h1 className="text-2xl sm:text-3xl font-extrabold mb-6">Checkout</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-card border border-border rounded-xl p-6">
-            <h2 className="font-display font-bold text-lg mb-4">Delivery Details</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><label className="text-sm font-medium mb-1 block">Full Name *</label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required /></div>
-              <div><label className="text-sm font-medium mb-1 block">Phone Number *</label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required /></div>
-              <div><label className="text-sm font-medium mb-1 block">Email {paymentMethod === "flutterwave" ? "*" : ""}</label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required={paymentMethod === "flutterwave"} /></div>
-              <div className="sm:col-span-2"><label className="text-sm font-medium mb-1 block">Delivery Address *</label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} required /></div>
-              <div><label className="text-sm font-medium mb-1 block">City *</label><Input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required /></div>
-              <div><label className="text-sm font-medium mb-1 block">State</label><Input value={form.state} onChange={e => setForm({ ...form, state: e.target.value })} /></div>
-              <div className="sm:col-span-2"><label className="text-sm font-medium mb-1 block">Notes (optional)</label><Textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={3} /></div>
+      <div className="container py-6 sm:py-8 lg:py-12 max-w-3xl px-4 sm:px-6">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold mb-4 sm:mb-6 text-center">Checkout</h1>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+            <h2 className="font-display font-bold text-base sm:text-lg lg:text-xl mb-3 sm:mb-4">Delivery Details</h2>
+            <div className="grid grid-cols-1 gap-4">
+              <div><label className="text-sm font-medium mb-1 block">Full Name *</label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" /></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label className="text-sm font-medium mb-1 block">Phone Number *</label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" /></div>
+                <div><label className="text-sm font-medium mb-1 block">City *</label><Input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" /></div>
+              </div>
+              <div><label className="text-sm font-medium mb-1 block">Email {paymentMethod === "flutterwave" ? "*" : ""}</label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required={paymentMethod === "flutterwave"} className="min-h-[44px] text-sm sm:text-base" /></div>
+              <div><label className="text-sm font-medium mb-1 block">Delivery Address *</label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" /></div>
+              <div><label className="text-sm font-medium mb-1 block">State</label><Input value={form.state} onChange={e => setForm({ ...form, state: e.target.value })} className="min-h-[44px] text-sm sm:text-base" /></div>
+              <div><label className="text-sm font-medium mb-1 block">Notes (optional)</label><Textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={3} className="min-h-[88px] text-sm sm:text-base resize-y" /></div>
             </div>
           </div>
 
           {/* Payment Method */}
-          <div className="bg-card border border-border rounded-xl p-6">
-            <h2 className="font-display font-bold text-lg mb-4">Payment Method</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+            <h2 className="font-display font-bold text-base sm:text-lg lg:text-xl mb-3 sm:mb-4">Payment Method</h2>
+            <div className="grid grid-cols-1 gap-3">
               <button type="button" onClick={() => setPaymentMethod("pay_on_delivery")}
-                className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left ${paymentMethod === "pay_on_delivery" ? "border-accent bg-accent/5" : "border-border hover:border-muted-foreground/30"}`}>
-                <Truck className={`w-6 h-6 ${paymentMethod === "pay_on_delivery" ? "text-accent" : "text-muted-foreground"}`} />
+                className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl border-2 transition-all text-left min-h-[60px] ${paymentMethod === "pay_on_delivery" ? "border-accent bg-accent/5" : "border-border hover:border-muted-foreground/30"}`}>
+                <Truck className={`w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0 ${paymentMethod === "pay_on_delivery" ? "text-accent" : "text-muted-foreground"}`} />
                 <div>
-                  <p className="font-display font-bold text-sm">Pay on Delivery</p>
-                  <p className="text-xs text-muted-foreground">Cash or bank transfer</p>
+                  <p className="font-display font-bold text-sm sm:text-base">Pay on Delivery</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Cash or bank transfer</p>
                 </div>
               </button>
               <button type="button" onClick={() => setPaymentMethod("flutterwave")} disabled={!flwPublicKey}
-                className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left ${paymentMethod === "flutterwave" ? "border-accent bg-accent/5" : "border-border hover:border-muted-foreground/30"} ${!flwPublicKey ? "opacity-50 cursor-not-allowed" : ""}`}>
-                <CreditCard className={`w-6 h-6 ${paymentMethod === "flutterwave" ? "text-accent" : "text-muted-foreground"}`} />
+                className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl border-2 transition-all text-left min-h-[60px] ${paymentMethod === "flutterwave" ? "border-accent bg-accent/5" : "border-border hover:border-muted-foreground/30"} ${!flwPublicKey ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <CreditCard className={`w-5 sm:w-6 h-5 sm:h-6 flex-shrink-0 ${paymentMethod === "flutterwave" ? "text-accent" : "text-muted-foreground"}`} />
                 <div>
-                  <p className="font-display font-bold text-sm">Pay Online</p>
-                  <p className="text-xs text-muted-foreground">Card, bank transfer, USSD</p>
+                  <p className="font-display font-bold text-sm sm:text-base">Pay Online</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Card, bank transfer, USSD</p>
                 </div>
               </button>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-6">
-            <h2 className="font-display font-bold text-lg mb-4">Order Summary</h2>
-            {items.map(item => {
-              const p = (item as any).products;
-              const unitPrice = p?.discount_price || p?.price || 0;
-              return (
-                <div key={item.id} className="flex justify-between py-2 border-b border-border last:border-0">
-                  <span className="text-sm">{p?.name} × {item.quantity}</span>
-                  <span className="text-sm font-semibold">₦{(Number(unitPrice) * item.quantity).toLocaleString()}</span>
-                </div>
-              );
-            })}
-            <div className="flex justify-between pt-3 mt-2">
-              <span className="font-display font-bold">Total</span>
-              <span className="font-display font-extrabold text-primary text-lg">₦{total.toLocaleString()}</span>
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+            <h2 className="font-display font-bold text-base sm:text-lg lg:text-xl mb-3 sm:mb-4">Order Summary</h2>
+            <div className="space-y-3 sm:space-y-4">
+              {items.map(item => {
+                const p = (item as any).products;
+                const unitPrice = p?.discount_price || p?.price || 0;
+                return (
+                  <div key={item.id} className="flex justify-between py-2 border-b border-border last:border-0 min-h-[44px] items-center">
+                    <span className="text-xs sm:text-sm pr-2 flex-1 min-w-0 truncate">{p?.name} × {item.quantity}</span>
+                    <span className="text-xs sm:text-sm font-semibold flex-shrink-0">₦{(Number(unitPrice) * item.quantity).toLocaleString()}</span>
+                  </div>
+                );
+              })}
+              <div className="flex justify-between pt-3 mt-2 border-t min-h-[48px] items-center">
+                <span className="font-display font-bold text-sm sm:text-base">Total</span>
+                <span className="font-display font-extrabold text-primary text-base sm:text-lg">₦{total.toLocaleString()}</span>
+              </div>
             </div>
           </div>
 
-          <Button variant="amber" size="lg" className="w-full" type="submit" disabled={submitting}>
+          <Button variant="amber" size="lg" className="w-full min-h-[48px] sm:min-h-[56px] text-sm sm:text-base" type="submit" disabled={submitting}>
             {submitting ? "Processing..." : paymentMethod === "flutterwave" ? "Pay Now →" : "Place Order →"}
           </Button>
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs sm:text-sm text-muted-foreground text-center px-4">
             {paymentMethod === "flutterwave" 
               ? "You'll be redirected to a secure payment page powered by Flutterwave."
               : "You'll receive a confirmation call/WhatsApp. Payment on delivery or via bank transfer."}

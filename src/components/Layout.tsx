@@ -10,7 +10,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-1 pt-[calc(6px+4rem)] md:pt-[calc(6px+5rem)]">
+      <main className="flex-1 pt-[calc(6px+3.5rem)] xs:pt-[calc(6px+4rem)] md:pt-[calc(6px+5rem)]">
         {children}
       </main>
       <Footer />

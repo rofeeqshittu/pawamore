@@ -75,42 +75,42 @@ const Shop = () => {
   return (
     <Layout>
       {/* Header */}
-      <section className="relative py-10 sm:py-14" style={{ background: "var(--gradient-hero)" }}>
+      <section className="relative py-6 sm:py-10 lg:py-14" style={{ background: "var(--gradient-hero)" }}>
         <div className="absolute inset-0 kente-pattern opacity-20" />
-        <div className="container relative z-10 text-center">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary-foreground mb-3">
+        <div className="container relative z-10 text-center px-4 sm:px-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-primary-foreground mb-2 sm:mb-3">
             Shop All <span className="text-accent">Products</span>
           </h1>
-          <p className="text-sm sm:text-base text-primary-foreground/80 max-w-lg mx-auto">
+          <p className="text-sm sm:text-base text-primary-foreground/80 max-w-lg mx-auto px-2">
             Browse our complete catalog of solar systems, batteries, and accessories
           </p>
         </div>
       </section>
 
       {/* Search + Filter */}
-      <section className="py-4 sm:py-6 border-b border-border sticky top-16 md:top-20 z-40 bg-background/95 backdrop-blur-sm">
-        <div className="container">
-          <div className="flex flex-col sm:flex-row gap-3 items-center">
+      <section className="py-3 sm:py-4 lg:py-6 border-b border-border sticky top-14 xs:top-16 md:top-20 z-40 bg-background/95 backdrop-blur-sm">
+        <div className="container px-4 sm:px-6">
+          <div className="flex flex-col gap-3 items-stretch">
             {/* Search */}
-            <div className="relative w-full sm:w-72">
+            <div className="relative w-full max-w-md mx-auto sm:mx-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-full border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full pl-9 pr-4 py-3 rounded-lg border border-input bg-background text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-ring min-h-[44px]"
               />
             </div>
             {/* Categories */}
-            <div className="flex flex-wrap gap-2 flex-1 justify-center sm:justify-start">
+            <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
               <button onClick={() => setActiveCategory("all")}
-                className={`px-3 py-1.5 rounded-full text-xs font-display font-semibold transition-colors ${activeCategory === "all" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-primary/10"}`}>
+                className={`px-3 py-2 rounded-full text-xs sm:text-sm font-display font-semibold transition-colors min-h-[36px] ${activeCategory === "all" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-primary/10"}`}>
                 All
               </button>
               {categories.map((cat) => (
                 <button key={cat.id} onClick={() => setActiveCategory(cat.slug)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-display font-semibold transition-colors ${activeCategory === cat.slug ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-primary/10"}`}>
+                  className={`px-3 py-2 rounded-full text-xs sm:text-sm font-display font-semibold transition-colors min-h-[36px] ${activeCategory === cat.slug ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-primary/10"}`}>
                   {cat.name}
                 </button>
               ))}
@@ -120,15 +120,15 @@ const Shop = () => {
       </section>
 
       {/* Products Grid */}
-      <section className="py-8 sm:py-12">
-        <div className="container">
-          <p className="text-sm text-muted-foreground mb-6">{filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""} found</p>
+      <section className="py-6 sm:py-8 lg:py-12">
+        <div className="container px-4 sm:px-6">
+          <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">{filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""} found</p>
 
           {loading ? (
-            <div className="text-center py-20 text-muted-foreground">Loading products...</div>
+            <div className="text-center py-12 sm:py-20 text-muted-foreground text-sm sm:text-base">Loading products...</div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4">No products found. Try a different search or category.</p>
+            <div className="text-center py-12 sm:py-20">
+              <p className="text-muted-foreground mb-4 text-sm sm:text-base px-4">No products found. Try a different search or category.</p>
               <Button variant="outline" onClick={() => { setSearchQuery(""); setActiveCategory("all"); }}>Clear Filters</Button>
             </div>
           ) : (
@@ -148,36 +148,36 @@ const Shop = () => {
                         <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-8 h-8 text-muted-foreground/20" /></div>
                       )}
                     </div>
-                    <div className="p-4">
+                    <div className="p-3 sm:p-4">
                       {(product.product_categories as any) && (
-                        <span className="text-[10px] font-display font-semibold text-primary uppercase tracking-wider">
+                        <span className="text-[9px] sm:text-[10px] font-display font-semibold text-primary uppercase tracking-wider">
                           {(product.product_categories as any).name}
                         </span>
                       )}
-                      <h3 className="font-display font-bold text-sm mt-1 mb-1 truncate">{product.name}</h3>
-                      <p className="text-muted-foreground text-xs leading-relaxed mb-3 line-clamp-2">
+                      <h3 className="font-display font-bold text-sm sm:text-base mt-1 mb-1 truncate">{product.name}</h3>
+                      <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-3 line-clamp-2">
                         {product.short_description || ""}
                       </p>
                       <div className="flex items-end justify-between mb-3">
                         <div>
                           {product.discount_price ? (
                             <div>
-                              <span className="font-display font-extrabold text-base text-primary">₦{Number(product.discount_price).toLocaleString()}</span>
-                              <span className="text-muted-foreground text-[10px] line-through ml-1">₦{Number(product.price).toLocaleString()}</span>
+                              <span className="font-display font-extrabold text-sm sm:text-base text-primary">₦{Number(product.discount_price).toLocaleString()}</span>
+                              <span className="text-muted-foreground text-[9px] sm:text-[10px] line-through ml-1">₦{Number(product.price).toLocaleString()}</span>
                             </div>
                           ) : (
-                            <span className="font-display font-extrabold text-base text-primary">₦{Number(product.price).toLocaleString()}</span>
+                            <span className="font-display font-extrabold text-sm sm:text-base text-primary">₦{Number(product.price).toLocaleString()}</span>
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-1.5 sm:gap-2">
                         <Link to={`/products/${product.slug}`} className="flex-1">
-                          <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-xs" size="sm">View Details</Button>
+                          <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-xs min-h-[36px]" size="sm">View Details</Button>
                         </Link>
-                        <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2.5">
-                          <ShoppingCart className="w-3.5 h-3.5" />
+                        <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px] flex items-center justify-center">
+                          <ShoppingCart className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                         </Button>
-                        <QuickBuyButton product={product} size="sm" className="px-2.5" />
+                        <QuickBuyButton product={product} size="sm" className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px]" />
                       </div>
                     </div>
                   </div>
@@ -189,13 +189,13 @@ const Shop = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-10 sm:py-14 bg-forest">
-        <div className="container text-center">
-          <h2 className="text-xl sm:text-2xl font-extrabold text-primary-foreground mb-4">Need Help Choosing?</h2>
+      <section className="py-8 sm:py-10 lg:py-14 bg-forest">
+        <div className="container text-center px-4 sm:px-6">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-extrabold text-primary-foreground mb-3 sm:mb-4">Need Help Choosing?</h2>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/contact"><Button variant="amber" size="lg">Book a Free Power Audit →</Button></Link>
+            <Link to="/contact"><Button variant="amber" size="lg" className="min-h-[44px] sm:min-h-[48px]">Book a Free Power Audit →</Button></Link>
             <a href="https://wa.me/2347062716154" target="_blank" rel="noopener noreferrer">
-              <Button variant="hero-outline" size="lg">WhatsApp Us →</Button>
+              <Button variant="hero-outline" size="lg" className="min-h-[44px] sm:min-h-[48px]">WhatsApp Us →</Button>
             </a>
           </div>
         </div>
