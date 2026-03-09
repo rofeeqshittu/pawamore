@@ -143,21 +143,36 @@ const AdminProductForm = () => {
 
     if (isEditing) {
       await supabase.from("products").update(productData).eq("id", id!);
-      // Delete old images and re-insert
+      // Delete old images and videos, then re-insert
       await supabase.from("product_images").delete().eq("product_id", id!);
+      await supabase.from("product_videos").delete().eq("product_id", id!);
     } else {
       const { data } = await supabase.from("products").insert(productData).select("id").single();
       productId = data?.id;
     }
 
-    if (productId && images.length > 0) {
-      const imageRows = images.map((img, i) => ({
-        product_id: productId!,
-        image_url: img.url,
-        is_primary: img.is_primary,
-        sort_order: i,
-      }));
-      await supabase.from("product_images").insert(imageRows);
+    if (productId) {
+      // Insert images
+      if (images.length > 0) {
+        const imageRows = images.map((img, i) => ({
+          product_id: productId!,
+          image_url: img.url,
+          is_primary: img.is_primary,
+          sort_order: i,
+        }));
+        await supabase.from("product_images").insert(imageRows);
+      }
+
+      // Insert videos
+      if (videos.length > 0) {
+        const videoRows = videos.map((vid, i) => ({
+          product_id: productId!,
+          video_url: vid.video_url,
+          thumbnail_url: vid.thumbnail_url || null,
+          sort_order: i,
+        }));
+        await supabase.from("product_videos").insert(videoRows);
+      }
     }
 
     setSaving(false);
