@@ -8,7 +8,6 @@ interface MobileScrollSectionProps {
   showArrows?: boolean;
   showDots?: boolean;
   showSwipeHint?: boolean;
-  /** Style of progress indicator: 'dots' (default), 'bar', or 'counter' */
   indicatorStyle?: "dots" | "bar" | "counter";
 }
 
@@ -26,50 +25,51 @@ const MobileScrollSection = ({
   const isMobile = useIsMobile();
   const totalItems = children.length;
 
-  const getChildPositions = useCallback(() => {
+  // Use direct child element measurement for accurate tracking
+  const getActiveFromScroll = useCallback(() => {
     const el = scrollRef.current;
-    if (!el) return [];
-    const children = Array.from(el.children) as HTMLElement[];
-    return children.map((child) => ({
-      left: child.offsetLeft,
-      width: child.offsetWidth,
-      center: child.offsetLeft + child.offsetWidth / 2,
-    }));
-  }, []);
+    if (!el || !el.children.length) return 0;
 
-  const updateActiveIndex = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const scrollCenter = el.scrollLeft + el.clientWidth / 2;
-    const positions = getChildPositions();
-    let closest = 0;
-    let minDist = Infinity;
-    positions.forEach((pos, i) => {
-      const dist = Math.abs(pos.center - scrollCenter);
-      if (dist < minDist) {
-        minDist = dist;
-        closest = i;
+    const containerRect = el.getBoundingClientRect();
+    const containerCenter = containerRect.left + containerRect.width / 2;
+
+    let closestIndex = 0;
+    let closestDist = Infinity;
+
+    Array.from(el.children).forEach((child, i) => {
+      const rect = child.getBoundingClientRect();
+      const childCenter = rect.left + rect.width / 2;
+      const dist = Math.abs(childCenter - containerCenter);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIndex = i;
       }
     });
-    setActiveIndex(closest);
-    if (el.scrollLeft > 10) setHasScrolled(true);
-  }, [getChildPositions]);
+
+    return closestIndex;
+  }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    el.addEventListener("scroll", updateActiveIndex, { passive: true });
-    return () => el.removeEventListener("scroll", updateActiveIndex);
-  }, [updateActiveIndex]);
+
+    const onScroll = () => {
+      const idx = getActiveFromScroll();
+      setActiveIndex(idx);
+      if (el.scrollLeft > 10) setHasScrolled(true);
+    };
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [getActiveFromScroll]);
 
   const scrollToIndex = useCallback((index: number) => {
     const el = scrollRef.current;
-    if (!el) return;
-    const positions = getChildPositions();
-    if (!positions[index]) return;
-    const targetScroll = positions[index].left - (el.clientWidth - positions[index].width) / 2;
-    el.scrollTo({ left: targetScroll, behavior: "smooth" });
-  }, [getChildPositions]);
+    if (!el || !el.children[index]) return;
+    const child = el.children[index] as HTMLElement;
+    const targetScroll = child.offsetLeft - (el.clientWidth - child.offsetWidth) / 2;
+    el.scrollTo({ left: Math.max(0, targetScroll), behavior: "smooth" });
+  }, []);
 
   const scrollTo = (direction: "left" | "right") => {
     const newIndex = direction === "left"
@@ -84,7 +84,6 @@ const MobileScrollSection = ({
 
   return (
     <div className={`relative ${className}`}>
-      {/* Scroll container */}
       <div
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-6 px-6"
@@ -96,7 +95,7 @@ const MobileScrollSection = ({
         ))}
       </div>
 
-      {/* Navigation arrows — positioned inside container edges */}
+      {/* Arrows */}
       {showArrows && totalItems > 1 && (
         <>
           {activeIndex > 0 && (
@@ -157,7 +156,6 @@ const MobileScrollSection = ({
         </div>
       )}
 
-      {/* Swipe hint — only shows once */}
       {showSwipeHint && !hasScrolled && (
         <div className="flex items-center justify-center gap-1.5 mt-3 animate-pulse">
           <ChevronLeft className="w-3 h-3 text-muted-foreground/50" />
