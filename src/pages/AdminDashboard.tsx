@@ -10,8 +10,11 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   Plus, Edit, Trash2, Image as ImageIcon, Package, LogOut, Eye,
   ShoppingBag, Users, DollarSign, ChevronDown, ChevronUp, Bell,
-  Mail, Star, TrendingUp, AlertTriangle, CheckCircle, Clock, XCircle
+  Mail, Star, TrendingUp, AlertTriangle, CheckCircle, Clock, XCircle,
+  Ticket, HelpCircle
 } from "lucide-react";
+import SupportTicketManagement from "@/components/admin/SupportTicketManagement";
+import FAQManagement from "@/components/admin/FAQManagement";
 import logo from "@/assets/logo.png";
 
 interface Product {
