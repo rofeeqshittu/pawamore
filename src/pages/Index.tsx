@@ -11,6 +11,9 @@ import batteryImg from "@/assets/battery-system.jpg";
 import avatarEmeka from "@/assets/avatar-emeka.jpg";
 import avatarFunke from "@/assets/avatar-funke.jpg";
 import avatarChidi from "@/assets/avatar-chidi.jpg";
+import avatarTunde from "@/assets/avatar-tunde.jpg";
+import avatarAlhaji from "@/assets/avatar-alhaji.jpg";
+import avatarNgozi from "@/assets/avatar-ngozi.jpg";
 
 const painPoints = [
   {
