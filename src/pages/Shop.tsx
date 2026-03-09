@@ -213,6 +213,7 @@ const Shop = () => {
         </div>
       </section>
     </Layout>
+    </ErrorBoundary>
   );
 };
 
