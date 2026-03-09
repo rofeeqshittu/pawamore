@@ -227,8 +227,6 @@ const Index = () => {
 
       {/* How It Works — horizontal scroll on mobile */}
       <section className="py-12 sm:py-20 md:py-28 bg-secondary diagonal-top -mt-6 sm:-mt-8 pt-20 sm:pt-28 relative overflow-hidden">
-        {/* Floating mascot — sun buddy */}
-        <img src={mascotSun} alt="" aria-hidden="true" className="absolute -left-4 bottom-8 sm:left-4 sm:bottom-12 w-16 sm:w-24 md:w-32 opacity-[0.15] sm:opacity-20 animate-float pointer-events-none select-none" style={{ animationDelay: '1s' }} />
         <div className="container relative z-10">
           <ScrollReveal>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-3 sm:mb-4">
