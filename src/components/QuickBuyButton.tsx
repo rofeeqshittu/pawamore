@@ -113,8 +113,13 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
               body: { transaction_id: response.transaction_id, order_id: order.id },
             });
             if (data?.success) {
-              toast({ title: "Payment successful! 🎉" });
-              navigate("/orders");
+              toast({ title: "Payment successful! 🎉", description: user ? "Check your orders page for details." : "Check your email for order confirmation." });
+              if (user) {
+                navigate("/orders");
+              } else {
+                // For guests, show order confirmation or redirect to order lookup
+                navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${order.id}`);
+              }
             } else {
               toast({ title: "Verification failed", variant: "destructive" });
             }
