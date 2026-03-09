@@ -28,6 +28,7 @@ import Wishlist from "./pages/Wishlist";
 import Orders from "./pages/Orders";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProductForm from "./pages/AdminProductForm";
+import Profile from "./pages/Profile";
 import HelpCenter from "./pages/HelpCenter";
 import NotFound from "./pages/NotFound";
 
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/order-lookup" element={<OrderLookup />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/products/new" element={<AdminProductForm />} />
               <Route path="/admin/products/:id" element={<AdminProductForm />} />
