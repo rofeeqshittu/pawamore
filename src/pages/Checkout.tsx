@@ -152,16 +152,18 @@ const Checkout = () => {
       <div className="container py-6 sm:py-8 lg:py-12 max-w-3xl px-4 sm:px-6">
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold mb-4 sm:mb-6 text-center">Checkout</h1>
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-          <div className="bg-card border border-border rounded-xl p-6">
-            <h2 className="font-display font-bold text-lg mb-4">Delivery Details</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><label className="text-sm font-medium mb-1 block">Full Name *</label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required /></div>
-              <div><label className="text-sm font-medium mb-1 block">Phone Number *</label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required /></div>
-              <div><label className="text-sm font-medium mb-1 block">Email {paymentMethod === "flutterwave" ? "*" : ""}</label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required={paymentMethod === "flutterwave"} /></div>
-              <div className="sm:col-span-2"><label className="text-sm font-medium mb-1 block">Delivery Address *</label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} required /></div>
-              <div><label className="text-sm font-medium mb-1 block">City *</label><Input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required /></div>
-              <div><label className="text-sm font-medium mb-1 block">State</label><Input value={form.state} onChange={e => setForm({ ...form, state: e.target.value })} /></div>
-              <div className="sm:col-span-2"><label className="text-sm font-medium mb-1 block">Notes (optional)</label><Textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={3} /></div>
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+            <h2 className="font-display font-bold text-base sm:text-lg lg:text-xl mb-3 sm:mb-4">Delivery Details</h2>
+            <div className="grid grid-cols-1 gap-4">
+              <div><label className="text-sm font-medium mb-1 block">Full Name *</label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" /></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label className="text-sm font-medium mb-1 block">Phone Number *</label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" /></div>
+                <div><label className="text-sm font-medium mb-1 block">City *</label><Input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" /></div>
+              </div>
+              <div><label className="text-sm font-medium mb-1 block">Email {paymentMethod === "flutterwave" ? "*" : ""}</label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required={paymentMethod === "flutterwave"} className="min-h-[44px] text-sm sm:text-base" /></div>
+              <div><label className="text-sm font-medium mb-1 block">Delivery Address *</label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" /></div>
+              <div><label className="text-sm font-medium mb-1 block">State</label><Input value={form.state} onChange={e => setForm({ ...form, state: e.target.value })} className="min-h-[44px] text-sm sm:text-base" /></div>
+              <div><label className="text-sm font-medium mb-1 block">Notes (optional)</label><Textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={3} className="min-h-[88px] text-sm sm:text-base resize-y" /></div>
             </div>
           </div>
 
