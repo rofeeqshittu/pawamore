@@ -97,6 +97,7 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          guest_email: string | null
           id: string
           notes: string | null
           payment_method: string | null
@@ -110,10 +111,11 @@ export type Database = {
           status: Database["public"]["Enums"]["order_status"]
           total_amount: number
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
+          guest_email?: string | null
           id?: string
           notes?: string | null
           payment_method?: string | null
@@ -127,10 +129,11 @@ export type Database = {
           status?: Database["public"]["Enums"]["order_status"]
           total_amount?: number
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
+          guest_email?: string | null
           id?: string
           notes?: string | null
           payment_method?: string | null
@@ -144,7 +147,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["order_status"]
           total_amount?: number
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -428,6 +431,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_guest_order: {
+        Args: { p_guest_email: string; p_order_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          payment_method: string
+          payment_status: string
+          shipping_address: string
+          shipping_city: string
+          shipping_name: string
+          shipping_phone: string
+          status: string
+          total_amount: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

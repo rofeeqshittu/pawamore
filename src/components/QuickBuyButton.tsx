@@ -166,7 +166,10 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
           <DialogHeader className="pb-2 sm:pb-4">
             <DialogTitle className="font-display text-lg sm:text-xl">Quick Buy — {product.name}</DialogTitle>
           </DialogHeader>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">₦{Number(unitPrice).toLocaleString()} — Pay instantly with card or bank transfer</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            ₦{Number(unitPrice).toLocaleString()} — Pay instantly with card or bank transfer
+            {!user && <span className="block mt-1 text-amber-600">✨ No account needed - checkout as guest!</span>}
+          </p>
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <Input placeholder="Full Name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
             <Input placeholder="Phone *" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
