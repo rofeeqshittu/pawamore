@@ -70,8 +70,8 @@ interface NewsletterSub {
 const statusColors: Record<string, string> = {
   pending: "bg-accent/20 text-accent",
   confirmed: "bg-primary/20 text-primary",
-  processing: "bg-blue-100 text-blue-700",
-  shipped: "bg-purple-100 text-purple-700",
+  processing: "bg-primary/15 text-primary",
+  shipped: "bg-primary/25 text-primary",
   delivered: "bg-primary/30 text-primary",
   cancelled: "bg-destructive/20 text-destructive",
 };
