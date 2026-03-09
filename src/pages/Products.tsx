@@ -341,9 +341,9 @@ const Products = () => {
                         </div>
                         <div className="flex gap-2">
                           <Link to={`/products/${product.slug}`} className="flex-1">
-                            <Button variant={product.is_popular ? "amber" : "outline"} className="w-full" size="default">View Details →</Button>
+                            <Button variant={product.is_popular ? "amber" : "outline"} className="w-full min-h-[44px]" size="default">View Details →</Button>
                           </Link>
-                          <Button variant="outline" size="default" onClick={() => addToCart(product.id)} className="px-3">
+                          <Button variant="outline" size="default" onClick={() => addToCart(product.id)} className="px-3 min-h-[44px] min-w-[44px]" aria-label="Add to cart">
                             <ShoppingCart className="w-4 h-4" />
                           </Button>
                           <WishlistButton 
@@ -351,9 +351,9 @@ const Products = () => {
                             productName={product.name}
                             size="default" 
                             variant="outline"
-                            className="px-3" 
+                            className="px-3 min-h-[44px] min-w-[44px]" 
                           />
-                          <QuickBuyButton product={product} size="default" className="px-3" />
+                          <QuickBuyButton product={product} size="default" className="px-3 min-h-[44px] min-w-[44px]" />
                         </div>
                       </div>
                     </div>
