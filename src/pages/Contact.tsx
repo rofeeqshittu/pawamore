@@ -1,21 +1,30 @@
 import Layout from "@/components/Layout";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { z } from "zod";
 import useSEO from "@/hooks/useSEO";
+
+const contactSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+  phone: z.string().trim().min(1, "Phone number is required").max(20, "Phone number must be less than 20 characters"),
+  email: z.string().trim().email("Please enter a valid email address").max(255, "Email must be less than 255 characters"),
+  city: z.string().trim().max(100, "City must be less than 100 characters").optional(),
+  interest: z.string().trim().max(100, "Interest must be less than 100 characters").optional(),
+  message: z.string().trim().max(1000, "Message must be less than 1000 characters").optional()
+});
 
 const Contact = () => {
   useSEO({ title: "Contact PawaMore Systems — Solar Installation Enquiries", description: "Reach PawaMore Systems via WhatsApp, phone, or email. Offices in Lagos, Ibadan, and Abuja. Book your free power audit today." });
   const [formData, setFormData] = useState({
     name: "", phone: "", email: "", city: "", interest: "", message: "",
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const whatsappMsg = `Hi PawaMore! I'm ${formData.name} from ${formData.city}. I'm interested in: ${formData.interest}. ${formData.message}`;
-    window.open(`https://wa.me/2340000000000?text=${encodeURIComponent(whatsappMsg)}`, "_blank");
-  };
+  const [submitting, setSubmitting] = useState(false);
 
   return (
     <Layout>
