@@ -190,28 +190,30 @@ const Checkout = () => {
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-6">
-            <h2 className="font-display font-bold text-lg mb-4">Order Summary</h2>
-            {items.map(item => {
-              const p = (item as any).products;
-              const unitPrice = p?.discount_price || p?.price || 0;
-              return (
-                <div key={item.id} className="flex justify-between py-2 border-b border-border last:border-0">
-                  <span className="text-sm">{p?.name} × {item.quantity}</span>
-                  <span className="text-sm font-semibold">₦{(Number(unitPrice) * item.quantity).toLocaleString()}</span>
-                </div>
-              );
-            })}
-            <div className="flex justify-between pt-3 mt-2">
-              <span className="font-display font-bold">Total</span>
-              <span className="font-display font-extrabold text-primary text-lg">₦{total.toLocaleString()}</span>
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+            <h2 className="font-display font-bold text-base sm:text-lg lg:text-xl mb-3 sm:mb-4">Order Summary</h2>
+            <div className="space-y-3 sm:space-y-4">
+              {items.map(item => {
+                const p = (item as any).products;
+                const unitPrice = p?.discount_price || p?.price || 0;
+                return (
+                  <div key={item.id} className="flex justify-between py-2 border-b border-border last:border-0 min-h-[44px] items-center">
+                    <span className="text-xs sm:text-sm pr-2 flex-1 min-w-0 truncate">{p?.name} × {item.quantity}</span>
+                    <span className="text-xs sm:text-sm font-semibold flex-shrink-0">₦{(Number(unitPrice) * item.quantity).toLocaleString()}</span>
+                  </div>
+                );
+              })}
+              <div className="flex justify-between pt-3 mt-2 border-t min-h-[48px] items-center">
+                <span className="font-display font-bold text-sm sm:text-base">Total</span>
+                <span className="font-display font-extrabold text-primary text-base sm:text-lg">₦{total.toLocaleString()}</span>
+              </div>
             </div>
           </div>
 
-          <Button variant="amber" size="lg" className="w-full" type="submit" disabled={submitting}>
+          <Button variant="amber" size="lg" className="w-full min-h-[48px] sm:min-h-[56px] text-sm sm:text-base" type="submit" disabled={submitting}>
             {submitting ? "Processing..." : paymentMethod === "flutterwave" ? "Pay Now →" : "Place Order →"}
           </Button>
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs sm:text-sm text-muted-foreground text-center px-4">
             {paymentMethod === "flutterwave" 
               ? "You'll be redirected to a secure payment page powered by Flutterwave."
               : "You'll receive a confirmation call/WhatsApp. Payment on delivery or via bank transfer."}

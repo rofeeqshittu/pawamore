@@ -159,18 +159,18 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-display">Quick Buy — {product.name}</DialogTitle>
+        <DialogContent className="sm:max-w-md max-w-[calc(100vw-32px)] mx-4 max-h-[85vh] overflow-y-auto">
+          <DialogHeader className="pb-2 sm:pb-4">
+            <DialogTitle className="font-display text-lg sm:text-xl">Quick Buy — {product.name}</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground mb-2">₦{Number(unitPrice).toLocaleString()} — Pay instantly with card or bank transfer</p>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <Input placeholder="Full Name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
-            <Input placeholder="Phone *" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required />
-            <Input type="email" placeholder="Email *" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
-            <Input placeholder="Delivery Address *" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} required />
-            <Input placeholder="City *" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required />
-            <Button variant="amber" className="w-full" type="submit" disabled={submitting || !flwPublicKey}>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">₦{Number(unitPrice).toLocaleString()} — Pay instantly with card or bank transfer</p>
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+            <Input placeholder="Full Name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
+            <Input placeholder="Phone *" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
+            <Input type="email" placeholder="Email *" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
+            <Input placeholder="Delivery Address *" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
+            <Input placeholder="City *" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
+            <Button variant="amber" className="w-full min-h-[44px] sm:min-h-[48px] text-sm sm:text-base" type="submit" disabled={submitting || !flwPublicKey}>
               {submitting ? "Processing..." : !flwPublicKey ? "Loading payment..." : `Pay ₦${Number(unitPrice).toLocaleString()} →`}
             </Button>
           </form>

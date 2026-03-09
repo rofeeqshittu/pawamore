@@ -189,13 +189,13 @@ const Shop = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-10 sm:py-14 bg-forest">
-        <div className="container text-center">
-          <h2 className="text-xl sm:text-2xl font-extrabold text-primary-foreground mb-4">Need Help Choosing?</h2>
+      <section className="py-8 sm:py-10 lg:py-14 bg-forest">
+        <div className="container text-center px-4 sm:px-6">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-extrabold text-primary-foreground mb-3 sm:mb-4">Need Help Choosing?</h2>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/contact"><Button variant="amber" size="lg">Book a Free Power Audit →</Button></Link>
+            <Link to="/contact"><Button variant="amber" size="lg" className="min-h-[44px] sm:min-h-[48px]">Book a Free Power Audit →</Button></Link>
             <a href="https://wa.me/2347062716154" target="_blank" rel="noopener noreferrer">
-              <Button variant="hero-outline" size="lg">WhatsApp Us →</Button>
+              <Button variant="hero-outline" size="lg" className="min-h-[44px] sm:min-h-[48px]">WhatsApp Us →</Button>
             </a>
           </div>
         </div>
