@@ -202,10 +202,10 @@ const ProductDetail = () => {
             {product.specs && Object.keys(product.specs).length > 0 && (
               <div className="border-t border-border pt-6 mt-6">
                 <h3 className="font-display font-bold text-lg mb-3">Specifications</h3>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3">
                   {Object.entries(product.specs).map(([key, value]) => (
-                    <div key={key} className="bg-secondary rounded-lg p-2">
-                      <span className="text-xs text-muted-foreground capitalize">{key.replace(/_/g, " ")}</span>
+                    <div key={key} className="bg-secondary rounded-lg p-3">
+                      <span className="text-xs text-muted-foreground capitalize block mb-1">{key.replace(/_/g, " ")}</span>
                       <p className="text-sm font-semibold">{String(value)}</p>
                     </div>
                   ))}
