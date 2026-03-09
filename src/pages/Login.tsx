@@ -12,15 +12,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Store the intended path when component mounts
-  useEffect(() => {
-    const currentPath = window.location.pathname + window.location.search;
-    if (currentPath !== "/login") {
-      sessionStorage.setItem("intendedPath", currentPath);
-    }
-  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,10 +22,10 @@ const Login = () => {
     if (error) {
       setError(error.message);
     } else {
-      // Redirect to intended path or fallback to home
+      // Redirect to intended path saved before redirect to login, or fall back to home
       const intendedPath = sessionStorage.getItem("intendedPath") || "/";
       sessionStorage.removeItem("intendedPath");
-      navigate(intendedPath);
+      navigate(intendedPath, { replace: true });
     }
     setLoading(false);
   };
