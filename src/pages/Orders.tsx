@@ -4,7 +4,8 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, ChevronDown, ChevronUp, Printer, CreditCard, Truck } from "lucide-react";
+import { Package, ChevronDown, ChevronUp, Printer, CreditCard, Truck, XCircle } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const statusColors: Record<string, string> = {
   pending: "bg-accent/20 text-accent",
@@ -35,6 +36,19 @@ const Orders = () => {
     };
     fetchOrders();
   }, [user]);
+
+  const cancelOrder = async (orderId: string) => {
+    const { error } = await supabase
+      .from("orders")
+      .update({ status: "cancelled" as any })
+      .eq("id", orderId);
+    if (!error) {
+      setOrders(orders.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
+      toast({ title: "Order cancelled", description: "Your order has been cancelled." });
+    } else {
+      toast({ title: "Failed to cancel", description: error.message, variant: "destructive" });
+    }
+  };
 
   const handlePrint = (order: any) => {
     const printWindow = window.open("", "_blank");
@@ -147,10 +161,17 @@ const Orders = () => {
                         <span className="font-semibold">₦{(Number(item.unit_price) * item.quantity).toLocaleString()}</span>
                       </div>
                     ))}
-                    <div className="mt-3 pt-3 border-t border-border flex justify-end">
-                      <Button variant="outline" size="sm" onClick={() => handlePrint(order)} className="gap-2">
-                        <Printer className="w-3.5 h-3.5" /> Print Receipt
-                      </Button>
+                    <div className="mt-3 pt-3 border-t border-border flex justify-between items-center">
+                      {(order.status === "pending" || order.status === "confirmed") && (
+                        <Button variant="destructive" size="sm" onClick={() => cancelOrder(order.id)} className="gap-1.5">
+                          <XCircle className="w-3.5 h-3.5" /> Cancel Order
+                        </Button>
+                      )}
+                      <div className="ml-auto">
+                        <Button variant="outline" size="sm" onClick={() => handlePrint(order)} className="gap-2">
+                          <Printer className="w-3.5 h-3.5" /> Print Receipt
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )}

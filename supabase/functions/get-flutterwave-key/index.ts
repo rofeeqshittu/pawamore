@@ -1,6 +1,6 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
@@ -9,8 +9,15 @@ Deno.serve(async (req) => {
   }
 
   const publicKey = Deno.env.get("FLUTTERWAVE_PUBLIC_KEY");
-  
-  return new Response(JSON.stringify({ publicKey: publicKey || "" }), {
+
+  if (!publicKey) {
+    return new Response(JSON.stringify({ error: "Flutterwave not configured", publicKey: "" }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  return new Response(JSON.stringify({ publicKey }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
