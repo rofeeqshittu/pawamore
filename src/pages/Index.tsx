@@ -375,36 +375,69 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Curved divider with sun element */}
-      <div className="relative bg-primary -mb-1">
-        {/* Curved bottom edge */}
-        <svg viewBox="0 0 1440 120" className="w-full block" preserveAspectRatio="none">
+      {/* Curved divider with sun element & decorative assets */}
+      <div className="relative bg-primary -mb-1 overflow-visible">
+        {/* Floating battery icon — left */}
+        <div className="absolute left-[8%] sm:left-[15%] top-[10px] sm:top-[15px] z-10 opacity-60">
+          <div className="animate-[bounce_3s_ease-in-out_infinite]">
+            <Battery className="w-5 h-5 sm:w-7 sm:h-7 text-accent/70 rotate-[-15deg]" />
+          </div>
+        </div>
+
+        {/* Floating zap icon — right */}
+        <div className="absolute right-[8%] sm:right-[15%] top-[20px] sm:top-[25px] z-10 opacity-60">
+          <div className="animate-[bounce_3.5s_ease-in-out_infinite_0.5s]">
+            <Zap className="w-5 h-5 sm:w-7 sm:h-7 text-accent/70 rotate-[15deg]" />
+          </div>
+        </div>
+
+        {/* Sparkle dots */}
+        <div className="absolute left-[25%] top-[50px] w-1.5 h-1.5 rounded-full bg-accent/40 animate-pulse" />
+        <div className="absolute right-[30%] top-[35px] w-1 h-1 rounded-full bg-accent/30 animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute left-[40%] top-[70px] w-1 h-1 rounded-full bg-primary-foreground/20 animate-pulse" style={{ animationDelay: "0.5s" }} />
+        <div className="absolute right-[20%] top-[65px] w-1.5 h-1.5 rounded-full bg-accent/25 animate-pulse" style={{ animationDelay: "1.5s" }} />
+
+        {/* Wave SVG */}
+        <svg viewBox="0 0 1440 140" className="w-full block h-[80px] sm:h-[120px] md:h-[140px]" preserveAspectRatio="none">
+          {/* Top green fill */}
           <path
-            d="M0,0 L0,60 Q360,120 720,60 Q1080,0 1440,60 L1440,0 Z"
+            d="M0,0 L0,50 C240,100 480,110 720,70 C960,30 1200,80 1440,60 L1440,0 Z"
             fill="hsl(152, 65%, 29%)"
           />
+          {/* Bottom dark transition */}
           <path
-            d="M0,60 Q360,120 720,60 Q1080,0 1440,60 L1440,120 L0,120 Z"
+            d="M0,50 C240,100 480,110 720,70 C960,30 1200,80 1440,60 L1440,140 L0,140 Z"
             fill="hsl(152, 53%, 9%)"
             fillOpacity="0.85"
           />
+          {/* Subtle kente accent line on the wave */}
+          <path
+            d="M0,50 C240,100 480,110 720,70 C960,30 1200,80 1440,60"
+            fill="none"
+            stroke="hsl(37, 91%, 55%)"
+            strokeWidth="2"
+            strokeOpacity="0.3"
+          />
         </svg>
-        {/* Decorative sun element at the center of the wave */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[30px] sm:top-[40px] z-10">
+
+        {/* Center sun element */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-[15px] sm:top-[20px] z-10">
           <div className="relative">
+            {/* Outer glow ring */}
+            <div className="absolute -inset-4 sm:-inset-6 rounded-full bg-accent/10 animate-ping" style={{ animationDuration: "3s" }} />
             {/* Sun rays */}
             <div className="absolute inset-0 animate-[spin_20s_linear_infinite]">
               {Array.from({ length: 12 }).map((_, i) => (
                 <div
                   key={i}
-                  className="absolute left-1/2 top-1/2 w-0.5 h-6 sm:h-8 bg-accent/30 rounded-full origin-bottom -translate-x-1/2"
+                  className="absolute left-1/2 top-1/2 w-0.5 h-7 sm:h-10 bg-accent/25 rounded-full"
                   style={{ transform: `translate(-50%, -100%) rotate(${i * 30}deg)`, transformOrigin: '50% 100%' }}
                 />
               ))}
             </div>
             {/* Sun circle */}
-            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-accent shadow-[0_0_30px_hsl(37_91%_55%/0.4)] flex items-center justify-center">
-              <Sun className="w-5 h-5 sm:w-7 sm:h-7 text-foreground" />
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-accent to-amber-400 shadow-[0_0_40px_hsl(37_91%_55%/0.5)] flex items-center justify-center border-2 border-accent/30">
+              <Sun className="w-6 h-6 sm:w-8 sm:h-8 text-foreground" />
             </div>
           </div>
         </div>
