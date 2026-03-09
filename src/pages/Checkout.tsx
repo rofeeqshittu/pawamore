@@ -176,9 +176,20 @@ const Checkout = () => {
         resolve();
         return;
       }
-      const existing = document.querySelector('script[src*="flutterwave"]');
+      const existing = document.querySelector('script[src*="flutterwave"]') as HTMLScriptElement | null;
       if (existing) {
-        existing.addEventListener("load", () => resolve());
+        // Script tag exists — check if already loaded
+        if ((window as any).FlutterwaveCheckout) {
+          resolve();
+        } else {
+          existing.addEventListener("load", () => resolve());
+          existing.addEventListener("error", () => reject(new Error("Failed to load payment script")));
+          // Timeout in case script is stuck
+          setTimeout(() => {
+            if ((window as any).FlutterwaveCheckout) resolve();
+            else reject(new Error("Payment script load timeout"));
+          }, 10000);
+        }
         return;
       }
       const script = document.createElement("script");

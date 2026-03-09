@@ -38,14 +38,14 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
     if (user?.email) setForm(f => ({ ...f, email: f.email || user.email || "" }));
   }, [user]);
 
-  // Eagerly fetch FLW key when user is logged in
+  // Eagerly fetch FLW key (works for both guests and logged-in users)
   useEffect(() => {
-    if (user && !flwPublicKey) {
+    if (!flwPublicKey) {
       supabase.functions.invoke("get-flutterwave-key").then(({ data }) => {
         if (data?.publicKey) setFlwPublicKey(data.publicKey);
       });
     }
-  }, [user, flwPublicKey]);
+  }, [flwPublicKey]);
 
   const unitPrice = product.discount_price || product.price;
 
