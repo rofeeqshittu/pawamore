@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, User, LogOut, Shield, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,15 @@ const navLinks = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
   const { itemCount } = useCart();
+
+  const handleLoginClick = () => {
+    // Save current page to return after login
+    sessionStorage.setItem("intendedPath", location.pathname + location.search);
+    navigate("/login");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-forest/95 backdrop-blur-md">
@@ -73,17 +80,15 @@ const Navbar = () => {
                 <LogOut className="w-4 h-4 mr-1" /> Logout
               </Button>
             </>
-          ) : (
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-accent">
-                <User className="w-4 h-4 mr-1" /> Login
-              </Button>
-            </Link>
-          )}
-          <Link to="/contact">
-            <Button variant="amber" size="default">Book Free Power Audit →</Button>
-          </Link>
-        </div>
+           ) : (
+            <Button variant="ghost" size="sm" onClick={handleLoginClick} className="text-primary-foreground/80 hover:text-accent">
+              <User className="w-4 h-4 mr-1" /> Login
+            </Button>
+           )}
+           <Link to="/contact">
+             <Button variant="amber" size="default">Book Free Power Audit →</Button>
+           </Link>
+         </div>
 
         {/* Mobile toggle */}
         <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-primary-foreground p-2" aria-label="Toggle menu">
@@ -127,11 +132,14 @@ const Navbar = () => {
                       <LogOut className="w-4 h-4 inline mr-2" /> Logout
                     </button>
                   </>
-                ) : (
-                  <Link to="/login" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20">
-                    <User className="w-4 h-4 inline mr-2" /> Login / Sign Up
-                  </Link>
-                )}
+                 ) : (
+                   <button
+                     onClick={() => { handleLoginClick(); setIsOpen(false); }}
+                     className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20"
+                   >
+                     <User className="w-4 h-4 inline mr-2" /> Login / Sign Up
+                   </button>
+                 )}
               </div>
 
               <Link to="/contact" onClick={() => setIsOpen(false)}>

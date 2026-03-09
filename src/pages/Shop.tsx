@@ -8,6 +8,7 @@ import QuickBuyButton from "@/components/QuickBuyButton";
 import { supabase } from "@/integrations/supabase/client";
 import useSEO from "@/hooks/useSEO";
 import { useCart } from "@/contexts/CartContext";
+import { useAuthReady } from "@/hooks/useAuthReady";
 
 interface Product {
   id: string;
@@ -35,6 +36,7 @@ interface Category {
 const Shop = () => {
   useSEO({ title: "Shop All Products — PawaMore Systems Nigeria", description: "Browse our full range of solar panels, battery systems, inverters and accessories. Genuine products with professional installation." });
   const { addToCart } = useCart();
+  const { isReady } = useAuthReady();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -43,17 +45,24 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isReady) return; // Wait for auth to be ready
+    
     const fetchData = async () => {
-      const [prodResult, catResult] = await Promise.all([
-        supabase.from("products").select("*, product_images(image_url, is_primary), product_categories(name, slug)").eq("status", "active").order("is_featured", { ascending: false }).order("is_popular", { ascending: false }),
-        supabase.from("product_categories").select("*").order("sort_order"),
-      ]);
-      setProducts((prodResult.data as any) || []);
-      setCategories((catResult.data as any) || []);
-      setLoading(false);
+      try {
+        const [prodResult, catResult] = await Promise.all([
+          supabase.from("products").select("*, product_images(image_url, is_primary), product_categories(name, slug)").eq("status", "active").order("is_featured", { ascending: false }).order("is_popular", { ascending: false }),
+          supabase.from("product_categories").select("*").order("sort_order"),
+        ]);
+        setProducts((prodResult.data as any) || []);
+        setCategories((catResult.data as any) || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
-  }, []);
+  }, [isReady]);
 
   const filteredProducts = products.filter((p) => {
     const matchesCategory = activeCategory === "all" || (p.product_categories as any)?.slug === activeCategory;

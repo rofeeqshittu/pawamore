@@ -17,11 +17,15 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
+    
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setError(error.message);
     } else {
-      navigate("/");
+      // Redirect to intended path saved before redirect to login, or fall back to home
+      const intendedPath = sessionStorage.getItem("intendedPath") || "/";
+      sessionStorage.removeItem("intendedPath");
+      navigate(intendedPath, { replace: true });
     }
     setLoading(false);
   };

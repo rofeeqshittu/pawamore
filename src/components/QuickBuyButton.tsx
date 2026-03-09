@@ -33,22 +33,26 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
   const [flwPublicKey, setFlwPublicKey] = useState("");
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", city: "" });
 
+  // Pre-fill email from user profile
   useEffect(() => {
     if (user?.email) setForm(f => ({ ...f, email: f.email || user.email || "" }));
   }, [user]);
 
+  // Eagerly fetch FLW key when user is logged in
   useEffect(() => {
-    if (open && !flwPublicKey) {
+    if (user && !flwPublicKey) {
       supabase.functions.invoke("get-flutterwave-key").then(({ data }) => {
         if (data?.publicKey) setFlwPublicKey(data.publicKey);
       });
     }
-  }, [open]);
+  }, [user, flwPublicKey]);
 
   const unitPrice = product.discount_price || product.price;
 
   const handleQuickBuy = () => {
     if (!user) {
+      // Save current page so we can return after login
+      sessionStorage.setItem("intendedPath", window.location.pathname + window.location.search);
       toast({ title: "Please log in first", variant: "destructive" });
       navigate("/login");
       return;
@@ -60,6 +64,10 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
     e.preventDefault();
     if (!form.name || !form.phone || !form.address || !form.city || !form.email) {
       toast({ title: "Please fill all fields", variant: "destructive" });
+      return;
+    }
+    if (!flwPublicKey) {
+      toast({ title: "Payment not configured", variant: "destructive" });
       return;
     }
     setSubmitting(true);
@@ -85,10 +93,8 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
         unit_price: unitPrice,
       });
 
-      // Launch Flutterwave
-      const script = document.createElement("script");
-      script.src = "https://checkout.flutterwave.com/v3.js";
-      script.onload = () => {
+      // Launch Flutterwave (script might already be loaded)
+      const launchFlutterwave = () => {
         const FlutterwaveCheckout = (window as any).FlutterwaveCheckout;
         if (!FlutterwaveCheckout) {
           toast({ title: "Payment failed to load", variant: "destructive" });
@@ -125,7 +131,15 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
           },
         });
       };
-      document.body.appendChild(script);
+
+      if ((window as any).FlutterwaveCheckout) {
+        launchFlutterwave();
+      } else {
+        const script = document.createElement("script");
+        script.src = "https://checkout.flutterwave.com/v3.js";
+        script.onload = launchFlutterwave;
+        document.body.appendChild(script);
+      }
     } catch (err: any) {
       toast({ title: "Failed", description: err.message, variant: "destructive" });
       setSubmitting(false);
@@ -134,7 +148,13 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
 
   return (
     <>
-      <Button variant="forest" size={size} onClick={handleQuickBuy} className={`gap-1.5 ${className}`} disabled={!flwPublicKey && !!user}>
+      <Button
+        variant="forest"
+        size={size}
+        onClick={handleQuickBuy}
+        className={`gap-1.5 ${className}`}
+        disabled={submitting}
+      >
         <Zap className="w-3.5 h-3.5" /> Quick Buy
       </Button>
 
@@ -150,8 +170,8 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
             <Input type="email" placeholder="Email *" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
             <Input placeholder="Delivery Address *" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} required />
             <Input placeholder="City *" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required />
-            <Button variant="amber" className="w-full" type="submit" disabled={submitting}>
-              {submitting ? "Processing..." : `Pay ₦${Number(unitPrice).toLocaleString()} →`}
+            <Button variant="amber" className="w-full" type="submit" disabled={submitting || !flwPublicKey}>
+              {submitting ? "Processing..." : !flwPublicKey ? "Loading payment..." : `Pay ₦${Number(unitPrice).toLocaleString()} →`}
             </Button>
           </form>
         </DialogContent>

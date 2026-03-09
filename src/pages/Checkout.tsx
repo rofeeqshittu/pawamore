@@ -29,7 +29,17 @@ const Checkout = () => {
     });
   }, []);
 
-  if (!user) return <Layout><div className="min-h-[60vh] flex flex-col items-center justify-center gap-4"><p>Please log in.</p><Link to="/login"><Button variant="amber">Login</Button></Link></div></Layout>;
+  if (!user) {
+    sessionStorage.setItem("intendedPath", "/checkout");
+    return (
+      <Layout>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+          <p>Please log in to continue.</p>
+          <Link to="/login"><Button variant="amber">Login</Button></Link>
+        </div>
+      </Layout>
+    );
+  }
   if (items.length === 0) return <Layout><div className="min-h-[60vh] flex flex-col items-center justify-center gap-4"><ShoppingCart className="w-12 h-12 text-muted-foreground/30" /><p className="text-muted-foreground">Your cart is empty.</p><Link to="/products"><Button variant="amber">Browse Products</Button></Link></div></Layout>;
 
   const createOrder = async () => {
