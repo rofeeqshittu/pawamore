@@ -148,36 +148,36 @@ const Shop = () => {
                         <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-8 h-8 text-muted-foreground/20" /></div>
                       )}
                     </div>
-                    <div className="p-4">
+                    <div className="p-3 sm:p-4">
                       {(product.product_categories as any) && (
-                        <span className="text-[10px] font-display font-semibold text-primary uppercase tracking-wider">
+                        <span className="text-[9px] sm:text-[10px] font-display font-semibold text-primary uppercase tracking-wider">
                           {(product.product_categories as any).name}
                         </span>
                       )}
-                      <h3 className="font-display font-bold text-sm mt-1 mb-1 truncate">{product.name}</h3>
-                      <p className="text-muted-foreground text-xs leading-relaxed mb-3 line-clamp-2">
+                      <h3 className="font-display font-bold text-sm sm:text-base mt-1 mb-1 truncate">{product.name}</h3>
+                      <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-3 line-clamp-2">
                         {product.short_description || ""}
                       </p>
                       <div className="flex items-end justify-between mb-3">
                         <div>
                           {product.discount_price ? (
                             <div>
-                              <span className="font-display font-extrabold text-base text-primary">₦{Number(product.discount_price).toLocaleString()}</span>
-                              <span className="text-muted-foreground text-[10px] line-through ml-1">₦{Number(product.price).toLocaleString()}</span>
+                              <span className="font-display font-extrabold text-sm sm:text-base text-primary">₦{Number(product.discount_price).toLocaleString()}</span>
+                              <span className="text-muted-foreground text-[9px] sm:text-[10px] line-through ml-1">₦{Number(product.price).toLocaleString()}</span>
                             </div>
                           ) : (
-                            <span className="font-display font-extrabold text-base text-primary">₦{Number(product.price).toLocaleString()}</span>
+                            <span className="font-display font-extrabold text-sm sm:text-base text-primary">₦{Number(product.price).toLocaleString()}</span>
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-1.5 sm:gap-2">
                         <Link to={`/products/${product.slug}`} className="flex-1">
-                          <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-xs" size="sm">View Details</Button>
+                          <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-xs min-h-[36px]" size="sm">View Details</Button>
                         </Link>
-                        <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2.5">
-                          <ShoppingCart className="w-3.5 h-3.5" />
+                        <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px] flex items-center justify-center">
+                          <ShoppingCart className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                         </Button>
-                        <QuickBuyButton product={product} size="sm" className="px-2.5" />
+                        <QuickBuyButton product={product} size="sm" className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px]" />
                       </div>
                     </div>
                   </div>
