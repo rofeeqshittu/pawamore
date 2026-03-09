@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, ReactNode, useCallback } from "react";
+import { useRef, useState, useEffect, ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -25,51 +25,50 @@ const MobileScrollSection = ({
   const isMobile = useIsMobile();
   const totalItems = children.length;
 
-  // Use direct child element measurement for accurate tracking
-  const getActiveFromScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el || !el.children.length) return 0;
-
-    const containerRect = el.getBoundingClientRect();
-    const containerCenter = containerRect.left + containerRect.width / 2;
-
-    let closestIndex = 0;
-    let closestDist = Infinity;
-
-    Array.from(el.children).forEach((child, i) => {
-      const rect = child.getBoundingClientRect();
-      const childCenter = rect.left + rect.width / 2;
-      const dist = Math.abs(childCenter - containerCenter);
-      if (dist < closestDist) {
-        closestDist = dist;
-        closestIndex = i;
-      }
-    });
-
-    return closestIndex;
-  }, []);
-
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
+    let ticking = false;
+
     const onScroll = () => {
-      const idx = getActiveFromScroll();
-      setActiveIndex(idx);
-      if (el.scrollLeft > 10) setHasScrolled(true);
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          if (!el) { ticking = false; return; }
+          
+          const { scrollLeft, scrollWidth, clientWidth } = el;
+          
+          if (scrollLeft > 10) setHasScrolled(true);
+
+          // Calculate which child is most centered
+          const maxScroll = scrollWidth - clientWidth;
+          if (maxScroll <= 0) { ticking = false; return; }
+          
+          const progress = scrollLeft / maxScroll;
+          const idx = Math.round(progress * (totalItems - 1));
+          setActiveIndex(Math.max(0, Math.min(totalItems - 1, idx)));
+          
+          ticking = false;
+        });
+      }
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
+    // Fire once on mount
+    onScroll();
     return () => el.removeEventListener("scroll", onScroll);
-  }, [getActiveFromScroll]);
+  }, [totalItems]);
 
-  const scrollToIndex = useCallback((index: number) => {
+  const scrollToIndex = (index: number) => {
     const el = scrollRef.current;
-    if (!el || !el.children[index]) return;
-    const child = el.children[index] as HTMLElement;
-    const targetScroll = child.offsetLeft - (el.clientWidth - child.offsetWidth) / 2;
-    el.scrollTo({ left: Math.max(0, targetScroll), behavior: "smooth" });
-  }, []);
+    if (!el) return;
+    const { scrollWidth, clientWidth } = el;
+    const maxScroll = scrollWidth - clientWidth;
+    if (totalItems <= 1) return;
+    const targetScroll = (index / (totalItems - 1)) * maxScroll;
+    el.scrollTo({ left: targetScroll, behavior: "smooth" });
+  };
 
   const scrollTo = (direction: "left" | "right") => {
     const newIndex = direction === "left"
@@ -128,7 +127,7 @@ const MobileScrollSection = ({
                 <button
                   key={i}
                   onClick={() => scrollToIndex(i)}
-                  className={`rounded-full transition-all duration-300 ${
+                  className={`rounded-full transition-all duration-200 ${
                     i === activeIndex
                       ? "w-6 h-2 bg-accent"
                       : "w-2 h-2 bg-muted-foreground/30"
@@ -141,7 +140,7 @@ const MobileScrollSection = ({
           {indicatorStyle === "bar" && (
             <div className="mx-auto max-w-[120px] h-1 bg-muted-foreground/20 rounded-full overflow-hidden">
               <div
-                className="h-full bg-accent rounded-full transition-all duration-300"
+                className="h-full bg-accent rounded-full transition-all duration-200"
                 style={{ width: `${((activeIndex + 1) / totalItems) * 100}%` }}
               />
             </div>
