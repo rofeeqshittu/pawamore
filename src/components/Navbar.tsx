@@ -56,10 +56,10 @@ const Navbar = () => {
 
         {/* Desktop CTA / Auth */}
         <div className="hidden lg:flex items-center gap-2">
-          <Link to="/cart" className="relative text-primary-foreground/80 hover:text-accent p-2">
+          <Link to="/cart" className="relative text-primary-foreground/80 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ShoppingCart className="w-5 h-5" />
             {itemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-accent text-foreground text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">{itemCount}</span>
+              <span className="absolute -top-0.5 -right-0.5 bg-accent text-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{itemCount}</span>
             )}
           </Link>
           {user ? (
