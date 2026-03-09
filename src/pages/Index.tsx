@@ -11,6 +11,9 @@ import batteryImg from "@/assets/battery-system.jpg";
 import avatarEmeka from "@/assets/avatar-emeka.jpg";
 import avatarFunke from "@/assets/avatar-funke.jpg";
 import avatarChidi from "@/assets/avatar-chidi.jpg";
+import avatarTunde from "@/assets/avatar-tunde.jpg";
+import avatarAlhaji from "@/assets/avatar-alhaji.jpg";
+import avatarNgozi from "@/assets/avatar-ngozi.jpg";
 
 const painPoints = [
   {
@@ -66,22 +69,40 @@ const products = [
 
 const testimonials = [
   {
-    quote: "My generator has not moved in 3 months. My fuel bill is zero. I wish I had done this years ago.",
+    quote: "My generator has been collecting dust for 3 months. Fuel bill? Zero. I'm only angry I didn't do this sooner.",
     name: "Emeka A.",
     location: "Lekki, Lagos",
     avatar: avatarEmeka,
   },
   {
-    quote: "The installation was clean, fast, and professional. Best decision for my business.",
+    quote: "Clean work, fast installation, zero wahala. My boutique now runs AC all day — customers stay longer, sales went up.",
     name: "Mrs. Funke O.",
     location: "Ibadan, Oyo State",
     avatar: avatarFunke,
   },
   {
-    quote: "They followed up a week after installation just to check everything was perfect.",
+    quote: "One week after installation, they called to check on me. That kind of after-sales? In Nigeria? I was shocked.",
     name: "Chidi M.",
     location: "Wuse 2, Abuja",
     avatar: avatarChidi,
+  },
+  {
+    quote: "During my final year, NEPA nearly ended my project. PawaMore saved me — I could study and code through the night. I graduated with a First Class.",
+    name: "Tunde B.",
+    location: "UNILAG, Lagos",
+    avatar: avatarTunde,
+  },
+  {
+    quote: "My family can now pray, study Quran at night, and the children do homework without candle. Alhamdulillah, this is a blessing for my household.",
+    name: "Alhaji Musa K.",
+    location: "GRA, Ilorin",
+    avatar: avatarAlhaji,
+  },
+  {
+    quote: "As a nurse working night shifts, I need my home ready when I get back. No more coming home to a hot, dark house. PawaMore changed everything.",
+    name: "Ngozi E.",
+    location: "Trans-Ekulu, Enugu",
+    avatar: avatarNgozi,
   },
 ];
 
