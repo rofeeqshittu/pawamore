@@ -120,7 +120,7 @@ const stats = [
 
 const heroImages = [
   { src: heroImg, alt: "Solar installation on Nigerian home" },
-  { src: heroSolarRoof, alt: "Solar panels on Nigerian rooftop at sunset" },
+  { src: heroBusinessPower, alt: "Nigerian business office powered reliably" },
 ];
 
 const Index = () => {
