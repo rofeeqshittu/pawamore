@@ -118,7 +118,21 @@ const stats = [
   { value: "₦0", label: "Fuel Bills" },
 ];
 
+const heroImages = [
+  { src: heroImg, alt: "Solar installation on Nigerian home" },
+  { src: heroSolarRoof, alt: "Solar panels on Nigerian rooftop at sunset" },
+];
+
 const Index = () => {
+  const [activeHero, setActiveHero] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveHero((prev) => (prev + 1) % heroImages.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
   useSEO({
     title: "PawaMore Systems — Solar & Battery Installation Nigeria",
     description: "PawaMore Systems installs world-class solar panels and battery storage for Nigerian homes and businesses. Free power audit. 90-day guarantee. Lagos, Abuja, Ibadan.",
