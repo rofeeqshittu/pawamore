@@ -7,6 +7,7 @@ import { Fuel, Volume2, Clock, ClipboardCheck, Settings, Wrench, HeartHandshake,
 import { useState, useEffect } from "react";
 import heroImg from "@/assets/hero-install.jpg";
 import heroBusinessPower from "@/assets/hero-business-power.jpg";
+import heroFamilyHome from "@/assets/hero-family-home.jpg";
 import familyImg from "@/assets/family-power.jpg";
 import useSEO from "@/hooks/useSEO";
 import batteryImg from "@/assets/battery-system.jpg";
