@@ -354,7 +354,7 @@ const Index = () => {
       {/* Why PawaMore Trust */}
       <section className="py-12 sm:py-20 md:py-28 bg-primary diagonal-top -mt-6 sm:-mt-8 pt-20 sm:pt-28 pb-16 sm:pb-24 relative overflow-hidden">
         {/* Floating mascot — eco plug */}
-        <img src={mascotEco} alt="" aria-hidden="true" className="absolute right-2 sm:right-8 top-20 sm:top-24 w-24 sm:w-32 md:w-40 opacity-[0.12] sm:opacity-[0.18] animate-float pointer-events-none select-none" style={{ animationDelay: '1.5s' }} />
+        <img src={mascotEco} alt="" aria-hidden="true" className="absolute right-4 sm:right-10 top-20 sm:top-24 w-28 sm:w-36 md:w-44 opacity-[0.15] sm:opacity-[0.2] pointer-events-none select-none" style={{ animationDelay: '1.5s' }} />
         <div className="container relative z-10">
           <ScrollReveal>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center text-primary-foreground mb-8 sm:mb-12">
