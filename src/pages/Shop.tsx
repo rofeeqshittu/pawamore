@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Image as ImageIcon, ShoppingCart, Search } from "lucide-react";
 import QuickBuyButton from "@/components/QuickBuyButton";
+import WishlistButton from "@/components/WishlistButton";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import ProductSkeleton from "@/components/ProductSkeleton";
+import OptimizedImage from "@/components/OptimizedImage";
+import InventoryAlert from "@/components/InventoryAlert";
 import { supabase } from "@/integrations/supabase/client";
 import useSEO from "@/hooks/useSEO";
 import { useCart } from "@/contexts/CartContext";
@@ -73,6 +78,7 @@ const Shop = () => {
   const primaryImage = (p: Product) => p.product_images?.find((i) => i.is_primary)?.image_url || p.product_images?.[0]?.image_url;
 
   return (
+    <ErrorBoundary>
     <Layout>
       {/* Header */}
       <section className="relative py-6 sm:py-10 lg:py-14" style={{ background: "var(--gradient-hero)" }}>
@@ -124,8 +130,13 @@ const Shop = () => {
         <div className="container px-4 sm:px-6">
           <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">{filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""} found</p>
 
+          <InventoryAlert />
           {loading ? (
-            <div className="text-center py-12 sm:py-20 text-muted-foreground text-sm sm:text-base">Loading products...</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
+            </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-12 sm:py-20">
               <p className="text-muted-foreground mb-4 text-sm sm:text-base px-4">No products found. Try a different search or category.</p>
@@ -143,7 +154,7 @@ const Shop = () => {
                     )}
                     <div className="aspect-video bg-secondary relative overflow-hidden">
                       {primaryImage(product) ? (
-                        <img src={primaryImage(product)} alt={product.name} className="w-full h-full object-cover" />
+                        <OptimizedImage src={primaryImage(product)} alt={product.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-8 h-8 text-muted-foreground/20" /></div>
                       )}
@@ -177,6 +188,7 @@ const Shop = () => {
                         <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px] flex items-center justify-center">
                           <ShoppingCart className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                         </Button>
+                        <WishlistButton productId={product.id} productName={product.name} size="sm" variant="outline" className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px]" />
                         <QuickBuyButton product={product} size="sm" className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px]" />
                       </div>
                     </div>
@@ -201,6 +213,7 @@ const Shop = () => {
         </div>
       </section>
     </Layout>
+    </ErrorBoundary>
   );
 };
 

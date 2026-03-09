@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import { Battery, Sun, Zap, CheckCircle, Star, Image as ImageIcon, ShoppingCart, ArrowRight, Heart } from "lucide-react";
 import QuickBuyButton from "@/components/QuickBuyButton";
 import WishlistButton from "@/components/WishlistButton";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import ProductSkeleton from "@/components/ProductSkeleton";
+import OptimizedImage from "@/components/OptimizedImage";
 import { supabase } from "@/integrations/supabase/client";
 import useSEO from "@/hooks/useSEO";
 import { useCart } from "@/contexts/CartContext";
@@ -173,7 +176,11 @@ const Products = () => {
             </ScrollReveal>
             <ScrollReveal delay={200}>
               <div className="rounded-2xl overflow-hidden shadow-[var(--shadow-elevated)]">
-                <img src={batteryImg} alt="Power tanks, batteries and inverters by PawaMore" className="w-full h-full object-cover aspect-[4/3]" />
+                <OptimizedImage 
+                  src={batteryImg} 
+                  alt="Power tanks, batteries and inverters by PawaMore" 
+                  className="w-full h-full object-cover aspect-[4/3]" 
+                />
               </div>
             </ScrollReveal>
           </div>
@@ -269,7 +276,11 @@ const Products = () => {
           {authLoading ? (
             <div className="text-center py-12 text-muted-foreground">Loading authentication...</div>
           ) : loading ? (
-            <div className="text-center py-12 text-muted-foreground">Loading products...</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
+            </div>
           ) : error ? (
             <div className="text-center py-12">
               <p className="text-destructive mb-4">Error loading products: {error}</p>
@@ -293,7 +304,11 @@ const Products = () => {
                       )}
                       <div className="aspect-video bg-secondary relative overflow-hidden">
                         {primaryImage(product) ? (
-                          <img src={primaryImage(product)} alt={product.name} className="w-full h-full object-cover" />
+                          <OptimizedImage 
+                            src={primaryImage(product)} 
+                            alt={product.name} 
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-10 h-10 text-muted-foreground/20" /></div>
                         )}

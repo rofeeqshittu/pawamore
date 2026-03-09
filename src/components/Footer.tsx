@@ -1,11 +1,24 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin } from "lucide-react";
 import logo from "@/assets/logo.png";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 const Footer = () => {
   return (
     <footer className="bg-forest text-primary-foreground">
       <div className="kente-strip" />
+      
+      {/* Newsletter Section */}
+      <div className="container py-10 border-b border-primary-foreground/10">
+        <div className="max-w-xl mx-auto text-center">
+          <h3 className="font-display font-bold text-xl mb-2">Stay Powered Up</h3>
+          <p className="text-primary-foreground/70 text-sm mb-4">
+            Get energy tips, exclusive offers, and product updates in your inbox.
+          </p>
+          <NewsletterSignup source="footer" />
+        </div>
+      </div>
+
       <div className="container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
@@ -29,6 +42,7 @@ const Footer = () => {
               {[
               { to: "/services", label: "Services" },
               { to: "/products", label: "Products" },
+              { to: "/shop", label: "Shop" },
               { to: "/why-pawamore", label: "Why PawaMore" },
               { to: "/about", label: "About Us" },
               { to: "/faqs", label: "FAQs" }].
@@ -45,11 +59,14 @@ const Footer = () => {
             <h4 className="font-display font-bold text-accent mb-4 uppercase text-sm tracking-wider">Contact</h4>
             <div className="flex flex-col gap-3 text-sm text-primary-foreground/70">
               <a className="flex items-center gap-2 hover:text-accent transition-colors" href="tel:+2347062716154">
-                <Phone className="w-4 h-4" /> +234 000 0000 000
+                <Phone className="w-4 h-4" /> +234 706 271 6154
               </a>
               <a href="mailto:hello@pawamore.com.ng" className="flex items-center gap-2 hover:text-accent transition-colors">
                 <Mail className="w-4 h-4" /> hello@pawamore.com.ng
               </a>
+              <Link to="/order-lookup" className="hover:text-accent transition-colors">
+                Track Your Order
+              </Link>
             </div>
           </div>
 

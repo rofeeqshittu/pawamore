@@ -12,10 +12,11 @@ const emailSchema = z.object({
 
 interface NewsletterSignupProps {
   variant?: "default" | "compact" | "inline";
+  source?: string;
   className?: string;
 }
 
-const NewsletterSignup = ({ variant = "default", className = "" }: NewsletterSignupProps) => {
+const NewsletterSignup = ({ variant = "default", source = "website", className = "" }: NewsletterSignupProps) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +33,7 @@ const NewsletterSignup = ({ variant = "default", className = "" }: NewsletterSig
         .from("newsletter_subscriptions")
         .insert({
           email: email.toLowerCase().trim(),
-          source: "website",
+          source: source,
           user_agent: navigator.userAgent,
         });
 
