@@ -193,7 +193,7 @@ const Index = () => {
       {/* Pain Section — card-based on mobile */}
       <section className="py-12 sm:py-20 md:py-28 kente-pattern relative overflow-hidden">
         {/* Floating mascot — tired generator */}
-        <img src={mascotTiredGen} alt="" aria-hidden="true" className="absolute right-4 sm:right-8 top-4 sm:top-8 w-24 sm:w-32 md:w-40 opacity-[0.18] sm:opacity-[0.22] pointer-events-none select-none" />
+        <img src={mascotTiredGen} alt="" aria-hidden="true" className="absolute right-6 sm:right-12 md:right-16 top-8 sm:top-12 w-20 sm:w-28 md:w-36 opacity-[0.2] sm:opacity-[0.25] pointer-events-none select-none" />
         <div className="container relative z-10">
           <ScrollReveal>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-3 sm:mb-4 px-2">
@@ -354,7 +354,7 @@ const Index = () => {
       {/* Why PawaMore Trust */}
       <section className="py-12 sm:py-20 md:py-28 bg-primary diagonal-top -mt-6 sm:-mt-8 pt-20 sm:pt-28 pb-16 sm:pb-24 relative overflow-hidden">
         {/* Floating mascot — eco plug */}
-        <img src={mascotEco} alt="" aria-hidden="true" className="absolute right-4 sm:right-10 top-20 sm:top-24 w-28 sm:w-36 md:w-44 opacity-[0.15] sm:opacity-[0.2] pointer-events-none select-none" style={{ animationDelay: '1.5s' }} />
+        <img src={mascotEco} alt="" aria-hidden="true" className="absolute right-6 sm:right-12 md:right-20 top-24 sm:top-28 w-24 sm:w-32 md:w-40 opacity-[0.18] sm:opacity-[0.22] pointer-events-none select-none" />
         <div className="container relative z-10">
           <ScrollReveal>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center text-primary-foreground mb-8 sm:mb-12">
