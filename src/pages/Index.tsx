@@ -375,72 +375,129 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Curved divider with sun element & decorative assets */}
+      {/* Epic transition divider — Nigerian skyline + energy story */}
       <div className="relative bg-primary -mb-1 overflow-visible">
-        {/* Floating battery icon — left */}
-        <div className="absolute left-[8%] sm:left-[15%] top-[10px] sm:top-[15px] z-10 opacity-60">
-          <div className="animate-[bounce_3s_ease-in-out_infinite]">
-            <Battery className="w-5 h-5 sm:w-7 sm:h-7 text-accent/70 rotate-[-15deg]" />
-          </div>
-        </div>
+        
+        {/* Main landscape SVG */}
+        <svg viewBox="0 0 1440 200" className="w-full block h-[120px] sm:h-[160px] md:h-[200px]" preserveAspectRatio="none">
+          <defs>
+            {/* Sunset gradient behind skyline */}
+            <linearGradient id="sunsetGlow" x1="0.5" y1="0" x2="0.5" y2="1">
+              <stop offset="0%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="hsl(152, 53%, 9%)" stopOpacity="0.9" />
+            </linearGradient>
+            {/* Energy flow gradient */}
+            <linearGradient id="energyFlow" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0" />
+              <stop offset="50%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
 
-        {/* Floating zap icon — right */}
-        <div className="absolute right-[8%] sm:right-[15%] top-[20px] sm:top-[25px] z-10 opacity-60">
-          <div className="animate-[bounce_3.5s_ease-in-out_infinite_0.5s]">
-            <Zap className="w-5 h-5 sm:w-7 sm:h-7 text-accent/70 rotate-[15deg]" />
-          </div>
-        </div>
+          {/* Green base */}
+          <rect width="1440" height="200" fill="hsl(152, 65%, 29%)" />
 
-        {/* Sparkle dots */}
-        <div className="absolute left-[25%] top-[50px] w-1.5 h-1.5 rounded-full bg-accent/40 animate-pulse" />
-        <div className="absolute right-[30%] top-[35px] w-1 h-1 rounded-full bg-accent/30 animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute left-[40%] top-[70px] w-1 h-1 rounded-full bg-primary-foreground/20 animate-pulse" style={{ animationDelay: "0.5s" }} />
-        <div className="absolute right-[20%] top-[65px] w-1.5 h-1.5 rounded-full bg-accent/25 animate-pulse" style={{ animationDelay: "1.5s" }} />
+          {/* Sunset glow zone */}
+          <ellipse cx="720" cy="60" rx="500" ry="80" fill="url(#sunsetGlow)" />
 
-        {/* Wave SVG */}
-        <svg viewBox="0 0 1440 140" className="w-full block h-[80px] sm:h-[120px] md:h-[140px]" preserveAspectRatio="none">
-          {/* Top green fill */}
-          <path
-            d="M0,0 L0,50 C240,100 480,110 720,70 C960,30 1200,80 1440,60 L1440,0 Z"
-            fill="hsl(152, 65%, 29%)"
-          />
-          {/* Bottom dark transition */}
-          <path
-            d="M0,50 C240,100 480,110 720,70 C960,30 1200,80 1440,60 L1440,140 L0,140 Z"
-            fill="hsl(152, 53%, 9%)"
-            fillOpacity="0.85"
-          />
-          {/* Subtle kente accent line on the wave */}
-          <path
-            d="M0,50 C240,100 480,110 720,70 C960,30 1200,80 1440,60"
-            fill="none"
-            stroke="hsl(37, 91%, 55%)"
-            strokeWidth="2"
-            strokeOpacity="0.3"
-          />
+          {/* Nigerian city skyline silhouette */}
+          {/* Left cluster — residential */}
+          <path d="M0,130 L0,200 L180,200 L180,120 L170,120 L170,110 L160,110 L160,120 L140,120 L140,100 L130,95 L120,100 L120,120 L100,120 L100,105 L90,105 L90,120 L60,120 L60,110 L50,105 L40,110 L40,130 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.7" />
+          
+          {/* Center — mosque/church spire + solar panels on roof */}
+          <path d="M620,200 L620,95 L640,70 L660,95 L660,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.6" />
+          <circle cx="640" cy="68" r="5" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" />
+          
+          {/* Solar panel rooftop — center-left */}
+          <path d="M400,200 L400,110 L500,110 L500,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.6" />
+          {/* Solar panels on the roof */}
+          <line x1="405" y1="110" x2="430" y2="95" stroke="hsl(37, 91%, 55%)" strokeWidth="1.5" strokeOpacity="0.5" />
+          <line x1="430" y1="110" x2="455" y2="95" stroke="hsl(37, 91%, 55%)" strokeWidth="1.5" strokeOpacity="0.5" />
+          <line x1="455" y1="110" x2="480" y2="95" stroke="hsl(37, 91%, 55%)" strokeWidth="1.5" strokeOpacity="0.5" />
+          <rect x="405" y="93" width="75" height="18" rx="1" fill="hsl(152, 65%, 29%)" fillOpacity="0.3" stroke="hsl(37, 91%, 55%)" strokeWidth="0.5" strokeOpacity="0.3" />
+
+          {/* Right cluster — commercial buildings */}
+          <path d="M1100,200 L1100,90 L1130,90 L1130,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.65" />
+          <path d="M1150,200 L1150,105 L1200,105 L1200,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.55" />
+          <path d="M1220,200 L1220,115 L1280,115 L1280,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.6" />
+          
+          {/* Tower with antenna */}
+          <path d="M1300,200 L1300,75 L1320,75 L1320,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.7" />
+          <line x1="1310" y1="75" x2="1310" y2="55" stroke="hsl(152, 53%, 9%)" strokeWidth="2" strokeOpacity="0.5" />
+          
+          {/* Palm trees — scattered */}
+          <path d="M250,130 L255,90 L260,130" fill="none" stroke="hsl(152, 53%, 9%)" strokeWidth="3" strokeOpacity="0.5" />
+          <ellipse cx="255" cy="88" rx="20" ry="12" fill="hsl(152, 65%, 29%)" fillOpacity="0.4" />
+          
+          <path d="M850,130 L855,95 L860,130" fill="none" stroke="hsl(152, 53%, 9%)" strokeWidth="3" strokeOpacity="0.4" />
+          <ellipse cx="855" cy="93" rx="18" ry="10" fill="hsl(152, 65%, 29%)" fillOpacity="0.35" />
+
+          {/* Ground wave — organic curve */}
+          <path d="M0,140 C200,125 400,150 720,130 C1040,110 1240,145 1440,135 L1440,200 L0,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.85" />
+          
+          {/* Energy flow line — animated pulse across the city */}
+          <path d="M0,138 C200,123 400,148 720,128 C1040,108 1240,143 1440,133" fill="none" stroke="url(#energyFlow)" strokeWidth="2">
+            <animate attributeName="stroke-dasharray" values="0,1440;1440,0" dur="4s" repeatCount="indefinite" />
+            <animate attributeName="stroke-dashoffset" values="1440;0" dur="4s" repeatCount="indefinite" />
+          </path>
+
+          {/* Window lights on buildings — tiny amber dots */}
+          <rect x="1108" y="100" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
+          <rect x="1118" y="108" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
+          <rect x="1108" y="116" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.6" rx="0.5" />
+          <rect x="1160" y="115" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
+          <rect x="1175" y="125" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
+          <rect x="1190" y="115" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
+          <rect x="1230" y="125" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
+          <rect x="1250" y="120" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.6" rx="0.5" />
+          <rect x="410" y="115" width="3" height="2" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
+          <rect x="440" y="118" width="3" height="2" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
+          <rect x="470" y="115" width="3" height="2" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
         </svg>
 
-        {/* Center sun element */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[15px] sm:top-[20px] z-10">
+        {/* Center sun — rising behind the skyline */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-[5px] sm:top-[8px] z-10">
           <div className="relative">
-            {/* Outer glow ring */}
-            <div className="absolute -inset-4 sm:-inset-6 rounded-full bg-accent/10 animate-ping" style={{ animationDuration: "3s" }} />
-            {/* Sun rays */}
-            <div className="absolute inset-0 animate-[spin_20s_linear_infinite]">
-              {Array.from({ length: 12 }).map((_, i) => (
+            {/* Outer glow */}
+            <div className="absolute -inset-6 sm:-inset-10 rounded-full bg-accent/8 animate-pulse" style={{ animationDuration: "4s" }} />
+            <div className="absolute -inset-3 sm:-inset-5 rounded-full bg-accent/10 animate-pulse" style={{ animationDuration: "2.5s" }} />
+            {/* Rays */}
+            <div className="absolute inset-0 animate-[spin_30s_linear_infinite]">
+              {Array.from({ length: 16 }).map((_, i) => (
                 <div
                   key={i}
-                  className="absolute left-1/2 top-1/2 w-0.5 h-7 sm:h-10 bg-accent/25 rounded-full"
-                  style={{ transform: `translate(-50%, -100%) rotate(${i * 30}deg)`, transformOrigin: '50% 100%' }}
+                  className={`absolute left-1/2 top-1/2 rounded-full ${i % 2 === 0 ? 'w-0.5 h-8 sm:h-12 bg-accent/20' : 'w-px h-6 sm:h-9 bg-accent/10'}`}
+                  style={{ transform: `translate(-50%, -100%) rotate(${i * 22.5}deg)`, transformOrigin: '50% 100%' }}
                 />
               ))}
             </div>
-            {/* Sun circle */}
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-accent to-amber-400 shadow-[0_0_40px_hsl(37_91%_55%/0.5)] flex items-center justify-center border-2 border-accent/30">
-              <Sun className="w-6 h-6 sm:w-8 sm:h-8 text-foreground" />
+            {/* Sun disc */}
+            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-b from-accent via-amber-400 to-accent/80 shadow-[0_0_60px_hsl(37_91%_55%/0.4),0_0_120px_hsl(37_91%_55%/0.15)] flex items-center justify-center">
+              <Sun className="w-7 h-7 sm:w-10 sm:h-10 text-foreground/90" />
             </div>
           </div>
         </div>
+
+        {/* Floating energy particles */}
+        {[
+          { left: '12%', top: '40%', size: 'w-1.5 h-1.5', delay: '0s', dur: '3s' },
+          { left: '28%', top: '55%', size: 'w-1 h-1', delay: '0.8s', dur: '2.5s' },
+          { left: '72%', top: '45%', size: 'w-1 h-1', delay: '1.2s', dur: '3.5s' },
+          { left: '85%', top: '50%', size: 'w-1.5 h-1.5', delay: '0.4s', dur: '2.8s' },
+          { left: '38%', top: '60%', size: 'w-1 h-1', delay: '1.8s', dur: '3.2s' },
+          { left: '60%', top: '35%', size: 'w-1 h-1', delay: '2.2s', dur: '2.6s' },
+        ].map((p, i) => (
+          <div
+            key={i}
+            className={`absolute ${p.size} rounded-full bg-accent/50`}
+            style={{
+              left: p.left,
+              top: p.top,
+              animation: `pulse ${p.dur} ease-in-out infinite`,
+              animationDelay: p.delay,
+            }}
+          />
+        ))}
       </div>
 
       {/* Final CTA */}
