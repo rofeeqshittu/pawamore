@@ -15,8 +15,10 @@ const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { user, loading: authLoading } = useAuth();
   const [product, setProduct] = useState<any>(null);
+  const [videos, setVideos] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewStats, setReviewStats] = useState({ average: 0, total: 0 });
+  const [activeTab, setActiveTab] = useState<'images' | 'videos'>('images');
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [copied, setCopied] = useState(false);
