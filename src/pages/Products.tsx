@@ -265,8 +265,15 @@ const Products = () => {
             </p>
           </ScrollReveal>
 
-          {loading ? (
+          {authLoading ? (
+            <div className="text-center py-12 text-muted-foreground">Loading authentication...</div>
+          ) : loading ? (
             <div className="text-center py-12 text-muted-foreground">Loading products...</div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-destructive mb-4">Error loading products: {error}</p>
+              <Button onClick={() => window.location.reload()}>Retry</Button>
+            </div>
           ) : products.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">Products coming soon! Contact us for a custom quote.</p>
