@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, ReactNode } from "react";
+import { useRef, useState, useEffect, ReactNode, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -20,55 +20,63 @@ const MobileScrollSection = ({
   indicatorStyle = "dots",
 }: MobileScrollSectionProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [hasScrolled, setHasScrolled] = useState(false);
   const isMobile = useIsMobile();
   const totalItems = children.length;
 
+  // Use IntersectionObserver to track which item is most visible
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
-    let ticking = false;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let maxRatio = 0;
+        let maxIndex = activeIndex;
 
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          if (!el) { ticking = false; return; }
-          
-          const { scrollLeft, scrollWidth, clientWidth } = el;
-          
-          if (scrollLeft > 10) setHasScrolled(true);
-
-          // Calculate which child is most centered
-          const maxScroll = scrollWidth - clientWidth;
-          if (maxScroll <= 0) { ticking = false; return; }
-          
-          const progress = scrollLeft / maxScroll;
-          const idx = Math.round(progress * (totalItems - 1));
-          setActiveIndex(Math.max(0, Math.min(totalItems - 1, idx)));
-          
-          ticking = false;
+        entries.forEach((entry) => {
+          const idx = Number(entry.target.getAttribute("data-index"));
+          if (entry.intersectionRatio > maxRatio) {
+            maxRatio = entry.intersectionRatio;
+            maxIndex = idx;
+          }
         });
+
+        if (maxRatio > 0.5) {
+          setActiveIndex(maxIndex);
+        }
+      },
+      {
+        root: el,
+        threshold: [0, 0.25, 0.5, 0.75, 1],
       }
-    };
+    );
 
-    el.addEventListener("scroll", onScroll, { passive: true });
-    // Fire once on mount
-    onScroll();
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [totalItems]);
+    itemRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
 
-  const scrollToIndex = (index: number) => {
+    return () => observer.disconnect();
+  }, [totalItems, isMobile]);
+
+  // Track hasScrolled
+  useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    const { scrollWidth, clientWidth } = el;
-    const maxScroll = scrollWidth - clientWidth;
-    if (totalItems <= 1) return;
-    const targetScroll = (index / (totalItems - 1)) * maxScroll;
-    el.scrollTo({ left: targetScroll, behavior: "smooth" });
-  };
+    const onScroll = () => {
+      if (el.scrollLeft > 10) setHasScrolled(true);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollToIndex = useCallback((index: number) => {
+    const item = itemRefs.current[index];
+    if (!item) return;
+    item.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, []);
 
   const scrollTo = (direction: "left" | "right") => {
     const newIndex = direction === "left"
@@ -88,7 +96,12 @@ const MobileScrollSection = ({
         className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-6 px-6"
       >
         {children.map((child, i) => (
-          <div key={i} className="min-w-[280px] max-w-[85vw] snap-center flex-shrink-0">
+          <div
+            key={i}
+            ref={(el) => { itemRefs.current[i] = el; }}
+            data-index={i}
+            className="min-w-[280px] max-w-[85vw] snap-center flex-shrink-0"
+          >
             {child}
           </div>
         ))}
