@@ -37,6 +37,19 @@ const Orders = () => {
     fetchOrders();
   }, [user]);
 
+  const cancelOrder = async (orderId: string) => {
+    const { error } = await supabase
+      .from("orders")
+      .update({ status: "cancelled" as any })
+      .eq("id", orderId);
+    if (!error) {
+      setOrders(orders.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
+      toast({ title: "Order cancelled", description: "Your order has been cancelled." });
+    } else {
+      toast({ title: "Failed to cancel", description: error.message, variant: "destructive" });
+    }
+  };
+
   const handlePrint = (order: any) => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
