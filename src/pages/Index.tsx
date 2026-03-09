@@ -379,125 +379,212 @@ const Index = () => {
       <div className="relative bg-primary -mb-1 overflow-visible">
         
         {/* Main landscape SVG */}
-        <svg viewBox="0 0 1440 200" className="w-full block h-[120px] sm:h-[160px] md:h-[200px]" preserveAspectRatio="none">
+        <svg viewBox="0 0 1440 260" className="w-full block h-[140px] sm:h-[200px] md:h-[260px]" preserveAspectRatio="none">
           <defs>
-            {/* Sunset gradient behind skyline */}
             <linearGradient id="sunsetGlow" x1="0.5" y1="0" x2="0.5" y2="1">
-              <stop offset="0%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="hsl(152, 53%, 9%)" stopOpacity="0.9" />
+              <stop offset="0%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0.2" />
+              <stop offset="60%" stopColor="hsl(37, 91%, 45%)" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="hsl(152, 53%, 9%)" stopOpacity="0.95" />
             </linearGradient>
-            {/* Energy flow gradient */}
             <linearGradient id="energyFlow" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0" />
-              <stop offset="50%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0.6" />
+              <stop offset="30%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0.7" />
+              <stop offset="50%" stopColor="hsl(37, 91%, 65%)" stopOpacity="1" />
+              <stop offset="70%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0.7" />
               <stop offset="100%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0" />
             </linearGradient>
+            <radialGradient id="sunDisc" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="hsl(37, 95%, 70%)" />
+              <stop offset="60%" stopColor="hsl(37, 91%, 55%)" />
+              <stop offset="100%" stopColor="hsl(37, 80%, 40%)" stopOpacity="0.6" />
+            </radialGradient>
+            <radialGradient id="sunHalo" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="hsl(37, 91%, 55%)" stopOpacity="0" />
+            </radialGradient>
+            {/* Flicker filter for window lights */}
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="1.5" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+            <filter id="softGlow">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
           </defs>
 
-          {/* Green base */}
-          <rect width="1440" height="200" fill="hsl(152, 65%, 29%)" />
+          {/* Sky base */}
+          <rect width="1440" height="260" fill="hsl(152, 65%, 29%)" />
 
-          {/* Sunset glow zone */}
-          <ellipse cx="720" cy="60" rx="500" ry="80" fill="url(#sunsetGlow)" />
+          {/* Sunset glow behind city */}
+          <ellipse cx="720" cy="100" rx="600" ry="120" fill="url(#sunsetGlow)" />
 
-          {/* Nigerian city skyline silhouette */}
-          {/* Left cluster — residential */}
-          <path d="M0,130 L0,200 L180,200 L180,120 L170,120 L170,110 L160,110 L160,120 L140,120 L140,100 L130,95 L120,100 L120,120 L100,120 L100,105 L90,105 L90,120 L60,120 L60,110 L50,105 L40,110 L40,130 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.7" />
-          
-          {/* Center — mosque/church spire + solar panels on roof */}
-          <path d="M620,200 L620,95 L640,70 L660,95 L660,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.6" />
-          <circle cx="640" cy="68" r="5" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" />
-          
-          {/* Solar panel rooftop — center-left */}
-          <path d="M400,200 L400,110 L500,110 L500,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.6" />
-          {/* Solar panels on the roof */}
-          <line x1="405" y1="110" x2="430" y2="95" stroke="hsl(37, 91%, 55%)" strokeWidth="1.5" strokeOpacity="0.5" />
-          <line x1="430" y1="110" x2="455" y2="95" stroke="hsl(37, 91%, 55%)" strokeWidth="1.5" strokeOpacity="0.5" />
-          <line x1="455" y1="110" x2="480" y2="95" stroke="hsl(37, 91%, 55%)" strokeWidth="1.5" strokeOpacity="0.5" />
-          <rect x="405" y="93" width="75" height="18" rx="1" fill="hsl(152, 65%, 29%)" fillOpacity="0.3" stroke="hsl(37, 91%, 55%)" strokeWidth="0.5" strokeOpacity="0.3" />
+          {/* Sun disc with halo */}
+          <circle cx="720" cy="65" r="80" fill="url(#sunHalo)" />
+          <circle cx="720" cy="65" r="35" fill="url(#sunDisc)" filter="url(#softGlow)">
+            <animate attributeName="r" values="33;37;33" dur="4s" repeatCount="indefinite" />
+          </circle>
 
-          {/* Right cluster — commercial buildings */}
-          <path d="M1100,200 L1100,90 L1130,90 L1130,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.65" />
-          <path d="M1150,200 L1150,105 L1200,105 L1200,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.55" />
-          <path d="M1220,200 L1220,115 L1280,115 L1280,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.6" />
-          
-          {/* Tower with antenna */}
-          <path d="M1300,200 L1300,75 L1320,75 L1320,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.7" />
-          <line x1="1310" y1="75" x2="1310" y2="55" stroke="hsl(152, 53%, 9%)" strokeWidth="2" strokeOpacity="0.5" />
-          
-          {/* Palm trees — scattered */}
-          <path d="M250,130 L255,90 L260,130" fill="none" stroke="hsl(152, 53%, 9%)" strokeWidth="3" strokeOpacity="0.5" />
-          <ellipse cx="255" cy="88" rx="20" ry="12" fill="hsl(152, 65%, 29%)" fillOpacity="0.4" />
-          
-          <path d="M850,130 L855,95 L860,130" fill="none" stroke="hsl(152, 53%, 9%)" strokeWidth="3" strokeOpacity="0.4" />
-          <ellipse cx="855" cy="93" rx="18" ry="10" fill="hsl(152, 65%, 29%)" fillOpacity="0.35" />
+          {/* ===== BACK LAYER — distant buildings (lighter) ===== */}
+          <g opacity="0.3">
+            {/* Far left apartments */}
+            <rect x="30" y="105" width="25" height="95" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="60" y="115" width="20" height="85" fill="hsl(152, 53%, 9%)" rx="1" />
+            {/* Far center */}
+            <rect x="520" y="100" width="18" height="100" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="545" y="110" width="22" height="90" fill="hsl(152, 53%, 9%)" rx="1" />
+            {/* Far right */}
+            <rect x="1050" y="108" width="20" height="92" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="1380" y="100" width="25" height="100" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="1410" y="110" width="30" height="90" fill="hsl(152, 53%, 9%)" rx="1" />
+          </g>
 
-          {/* Ground wave — organic curve */}
-          <path d="M0,140 C200,125 400,150 720,130 C1040,110 1240,145 1440,135 L1440,200 L0,200 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.85" />
-          
+          {/* ===== MID LAYER — main buildings ===== */}
+          <g opacity="0.55">
+            {/* Left residential cluster */}
+            <rect x="80" y="95" width="35" height="105" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="120" y="110" width="28" height="90" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="155" y="100" width="30" height="100" fill="hsl(152, 53%, 9%)" rx="1" />
+            {/* Pitched roof house */}
+            <path d="M200,120 L215,100 L230,120 L230,200 L200,200 Z" fill="hsl(152, 53%, 9%)" />
+            
+            {/* Center-left — house with SOLAR PANELS */}
+            <rect x="350" y="105" width="80" height="95" fill="hsl(152, 53%, 9%)" rx="1" />
+            {/* Angled solar panel array on roof */}
+            <polygon points="348,105 432,105 440,85 340,85" fill="hsl(152, 40%, 15%)" stroke="hsl(37, 91%, 55%)" strokeWidth="0.8" strokeOpacity="0.6" />
+            {/* Panel grid lines */}
+            <line x1="362" y1="105" x2="356" y2="85" stroke="hsl(37, 91%, 55%)" strokeWidth="0.5" strokeOpacity="0.4" />
+            <line x1="380" y1="105" x2="374" y2="85" stroke="hsl(37, 91%, 55%)" strokeWidth="0.5" strokeOpacity="0.4" />
+            <line x1="398" y1="105" x2="392" y2="85" stroke="hsl(37, 91%, 55%)" strokeWidth="0.5" strokeOpacity="0.4" />
+            <line x1="416" y1="105" x2="410" y2="85" stroke="hsl(37, 91%, 55%)" strokeWidth="0.5" strokeOpacity="0.4" />
+            {/* Glowing panel reflection */}
+            <polygon points="348,105 432,105 440,85 340,85" fill="hsl(37, 91%, 55%)" fillOpacity="0.08">
+              <animate attributeName="fill-opacity" values="0.05;0.15;0.05" dur="3s" repeatCount="indefinite" />
+            </polygon>
+
+            {/* Mosque with dome and minaret */}
+            <rect x="610" y="90" width="50" height="110" fill="hsl(152, 53%, 9%)" rx="1" />
+            <ellipse cx="635" cy="90" rx="25" ry="12" fill="hsl(152, 53%, 9%)" />
+            {/* Crescent on dome */}
+            <path d="M632,78 A4,4 0 1,1 638,78 A3,3 0 1,0 632,78" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" />
+            {/* Minaret */}
+            <rect x="670" y="70" width="8" height="130" fill="hsl(152, 53%, 9%)" rx="1" />
+            <circle cx="674" cy="68" r="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" />
+
+            {/* Church spire */}
+            <rect x="770" y="95" width="35" height="105" fill="hsl(152, 53%, 9%)" rx="1" />
+            <path d="M775,95 L787,65 L800,95" fill="hsl(152, 53%, 9%)" />
+            <line x1="787" y1="65" x2="787" y2="58" stroke="hsl(152, 53%, 9%)" strokeWidth="2" />
+            <line x1="783" y1="62" x2="791" y2="62" stroke="hsl(152, 53%, 9%)" strokeWidth="1.5" />
+
+            {/* Right commercial district */}
+            <rect x="950" y="85" width="30" height="115" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="985" y="95" width="40" height="105" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="1030" y="80" width="25" height="120" fill="hsl(152, 53%, 9%)" rx="1" />
+            
+            {/* Tall telecom tower */}
+            <rect x="1130" y="55" width="8" height="145" fill="hsl(152, 53%, 9%)" rx="0.5" />
+            <line x1="1118" y1="80" x2="1146" y2="80" stroke="hsl(152, 53%, 9%)" strokeWidth="1.5" />
+            <line x1="1122" y1="95" x2="1142" y2="95" stroke="hsl(152, 53%, 9%)" strokeWidth="1" />
+            {/* Blinking tower light */}
+            <circle cx="1134" cy="53" r="2.5" fill="hsl(0, 80%, 55%)" fillOpacity="0.8">
+              <animate attributeName="fill-opacity" values="0.8;0.2;0.8" dur="1.5s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Right apartments + solar */}
+            <rect x="1200" y="100" width="45" height="100" fill="hsl(152, 53%, 9%)" rx="1" />
+            <rect x="1255" y="90" width="35" height="110" fill="hsl(152, 53%, 9%)" rx="1" />
+            {/* Solar panels on right building */}
+            <polygon points="1200,100 1245,100 1250,85 1195,85" fill="hsl(152, 40%, 15%)" stroke="hsl(37, 91%, 55%)" strokeWidth="0.6" strokeOpacity="0.4" />
+            <polygon points="1200,100 1245,100 1250,85 1195,85" fill="hsl(37, 91%, 55%)" fillOpacity="0.06">
+              <animate attributeName="fill-opacity" values="0.04;0.12;0.04" dur="3.5s" repeatCount="indefinite" />
+            </polygon>
+          </g>
+
+          {/* ===== FRONT LAYER — foreground elements ===== */}
+
+          {/* Palm trees */}
+          {/* Palm 1 — left */}
+          <path d="M260,165 Q262,130 258,110" fill="none" stroke="hsl(152, 35%, 18%)" strokeWidth="4" />
+          <path d="M258,110 Q240,105 225,115" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="2.5" />
+          <path d="M258,110 Q250,95 238,100" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="2" />
+          <path d="M258,110 Q265,95 275,98" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="2.5" />
+          <path d="M258,110 Q270,100 282,108" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="2" />
+          <path d="M258,110 Q255,95 250,90" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="1.5" />
+
+          {/* Palm 2 — right */}
+          <path d="M880,170 Q882,138 878,118" fill="none" stroke="hsl(152, 35%, 18%)" strokeWidth="3.5" />
+          <path d="M878,118 Q860,112 848,120" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="2" />
+          <path d="M878,118 Q872,103 862,108" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="1.8" />
+          <path d="M878,118 Q888,105 898,110" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="2" />
+          <path d="M878,118 Q892,112 900,118" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="1.8" />
+
+          {/* Palm 3 — far right small */}
+          <path d="M1340,172 Q1342,148 1339,135" fill="none" stroke="hsl(152, 35%, 18%)" strokeWidth="3" />
+          <path d="M1339,135 Q1325,130 1318,138" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="1.8" />
+          <path d="M1339,135 Q1348,125 1358,130" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="1.8" />
+          <path d="M1339,135 Q1335,122 1330,120" fill="none" stroke="hsl(152, 50%, 25%)" strokeWidth="1.5" />
+
+          {/* Window lights — animated flicker */}
+          <g filter="url(#glow)">
+            {/* Left building windows */}
+            <rect x="88" y="108" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.7" rx="0.5">
+              <animate attributeName="fill-opacity" values="0.7;0.3;0.7" dur="2s" repeatCount="indefinite" />
+            </rect>
+            <rect x="100" y="118" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
+            <rect x="88" y="130" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.6" rx="0.5">
+              <animate attributeName="fill-opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite" />
+            </rect>
+            {/* Center building windows */}
+            <rect x="618" y="105" width="4" height="5" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
+            <rect x="640" y="115" width="4" height="5" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5">
+              <animate attributeName="fill-opacity" values="0.5;0.15;0.5" dur="2.5s" repeatCount="indefinite" />
+            </rect>
+            {/* Right building windows */}
+            <rect x="958" y="100" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.6" rx="0.5" />
+            <rect x="968" y="112" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5">
+              <animate attributeName="fill-opacity" values="0.4;0.1;0.4" dur="3.5s" repeatCount="indefinite" />
+            </rect>
+            <rect x="995" y="108" width="5" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.55" rx="0.5" />
+            <rect x="1010" y="120" width="5" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
+            <rect x="1038" y="95" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5">
+              <animate attributeName="fill-opacity" values="0.5;0.2;0.5" dur="2.8s" repeatCount="indefinite" />
+            </rect>
+            <rect x="1210" y="112" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
+            <rect x="1225" y="125" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5">
+              <animate attributeName="fill-opacity" values="0.4;0.1;0.4" dur="2.2s" repeatCount="indefinite" />
+            </rect>
+            <rect x="1262" y="105" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.55" rx="0.5" />
+            <rect x="1270" y="118" width="4" height="4" fill="hsl(37, 91%, 55%)" fillOpacity="0.35" rx="0.5" />
+          </g>
+
+          {/* Stars in the sky */}
+          <circle cx="150" cy="30" r="1" fill="hsl(0, 0%, 100%)" fillOpacity="0.3">
+            <animate attributeName="fill-opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="320" cy="18" r="0.8" fill="hsl(0, 0%, 100%)" fillOpacity="0.25" />
+          <circle cx="500" cy="25" r="1" fill="hsl(0, 0%, 100%)" fillOpacity="0.2">
+            <animate attributeName="fill-opacity" values="0.2;0.05;0.2" dur="3s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="920" cy="20" r="0.8" fill="hsl(0, 0%, 100%)" fillOpacity="0.25" />
+          <circle cx="1100" cy="28" r="1" fill="hsl(0, 0%, 100%)" fillOpacity="0.3">
+            <animate attributeName="fill-opacity" values="0.3;0.08;0.3" dur="2.5s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="1350" cy="15" r="0.7" fill="hsl(0, 0%, 100%)" fillOpacity="0.2" />
+
+          {/* Ground wave — organic terrain */}
+          <path d="M0,175 C180,160 360,180 540,168 C720,156 900,175 1080,162 C1260,150 1350,170 1440,165 L1440,260 L0,260 Z" fill="hsl(152, 53%, 9%)" fillOpacity="0.9" />
+
           {/* Energy flow line — animated pulse across the city */}
-          <path d="M0,138 C200,123 400,148 720,128 C1040,108 1240,143 1440,133" fill="none" stroke="url(#energyFlow)" strokeWidth="2">
-            <animate attributeName="stroke-dasharray" values="0,1440;1440,0" dur="4s" repeatCount="indefinite" />
-            <animate attributeName="stroke-dashoffset" values="1440;0" dur="4s" repeatCount="indefinite" />
+          <path d="M0,173 C180,158 360,178 540,166 C720,154 900,173 1080,160 C1260,148 1350,168 1440,163" fill="none" stroke="url(#energyFlow)" strokeWidth="2.5" strokeLinecap="round">
+            <animate attributeName="stroke-dasharray" values="0,2880;1440,1440;2880,0" dur="5s" repeatCount="indefinite" />
           </path>
 
-          {/* Window lights on buildings — tiny amber dots */}
-          <rect x="1108" y="100" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
-          <rect x="1118" y="108" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
-          <rect x="1108" y="116" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.6" rx="0.5" />
-          <rect x="1160" y="115" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
-          <rect x="1175" y="125" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
-          <rect x="1190" y="115" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
-          <rect x="1230" y="125" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
-          <rect x="1250" y="120" width="3" height="3" fill="hsl(37, 91%, 55%)" fillOpacity="0.6" rx="0.5" />
-          <rect x="410" y="115" width="3" height="2" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
-          <rect x="440" y="118" width="3" height="2" fill="hsl(37, 91%, 55%)" fillOpacity="0.4" rx="0.5" />
-          <rect x="470" y="115" width="3" height="2" fill="hsl(37, 91%, 55%)" fillOpacity="0.5" rx="0.5" />
+          {/* Second subtle energy line */}
+          <path d="M0,178 C180,163 360,183 540,171 C720,159 900,178 1080,165 C1260,153 1350,173 1440,168" fill="none" stroke="hsl(37, 91%, 55%)" strokeWidth="0.8" strokeOpacity="0.15" strokeDasharray="8,12">
+            <animate attributeName="stroke-dashoffset" values="0;-40" dur="2s" repeatCount="indefinite" />
+          </path>
         </svg>
-
-        {/* Center sun — rising behind the skyline */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[5px] sm:top-[8px] z-10">
-          <div className="relative">
-            {/* Outer glow */}
-            <div className="absolute -inset-6 sm:-inset-10 rounded-full bg-accent/8 animate-pulse" style={{ animationDuration: "4s" }} />
-            <div className="absolute -inset-3 sm:-inset-5 rounded-full bg-accent/10 animate-pulse" style={{ animationDuration: "2.5s" }} />
-            {/* Rays */}
-            <div className="absolute inset-0 animate-[spin_30s_linear_infinite]">
-              {Array.from({ length: 16 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`absolute left-1/2 top-1/2 rounded-full ${i % 2 === 0 ? 'w-0.5 h-8 sm:h-12 bg-accent/20' : 'w-px h-6 sm:h-9 bg-accent/10'}`}
-                  style={{ transform: `translate(-50%, -100%) rotate(${i * 22.5}deg)`, transformOrigin: '50% 100%' }}
-                />
-              ))}
-            </div>
-            {/* Sun disc */}
-            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-b from-accent via-amber-400 to-accent/80 shadow-[0_0_60px_hsl(37_91%_55%/0.4),0_0_120px_hsl(37_91%_55%/0.15)] flex items-center justify-center">
-              <Sun className="w-7 h-7 sm:w-10 sm:h-10 text-foreground/90" />
-            </div>
-          </div>
-        </div>
-
-        {/* Floating energy particles */}
-        {[
-          { left: '12%', top: '40%', size: 'w-1.5 h-1.5', delay: '0s', dur: '3s' },
-          { left: '28%', top: '55%', size: 'w-1 h-1', delay: '0.8s', dur: '2.5s' },
-          { left: '72%', top: '45%', size: 'w-1 h-1', delay: '1.2s', dur: '3.5s' },
-          { left: '85%', top: '50%', size: 'w-1.5 h-1.5', delay: '0.4s', dur: '2.8s' },
-          { left: '38%', top: '60%', size: 'w-1 h-1', delay: '1.8s', dur: '3.2s' },
-          { left: '60%', top: '35%', size: 'w-1 h-1', delay: '2.2s', dur: '2.6s' },
-        ].map((p, i) => (
-          <div
-            key={i}
-            className={`absolute ${p.size} rounded-full bg-accent/50`}
-            style={{
-              left: p.left,
-              top: p.top,
-              animation: `pulse ${p.dur} ease-in-out infinite`,
-              animationDelay: p.delay,
-            }}
-          />
-        ))}
       </div>
 
       {/* Final CTA */}
