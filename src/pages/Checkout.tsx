@@ -170,34 +170,59 @@ const Checkout = () => {
     return order.id;
   };
 
-  const handleFlutterwavePayment = async (orderId: string) => {
-    // Load Flutterwave inline script
-    const script = document.createElement("script");
-    script.src = "https://checkout.flutterwave.com/v3.js";
-    script.onload = () => {
-      const FlutterwaveCheckout = (window as any).FlutterwaveCheckout;
-      if (!FlutterwaveCheckout) {
-        toast({ title: "Payment failed to load", variant: "destructive" });
+  const loadFlutterwaveScript = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if ((window as any).FlutterwaveCheckout) {
+        resolve();
         return;
       }
-      FlutterwaveCheckout({
-        public_key: flwPublicKey,
-        tx_ref: `PAWA-${orderId}-${Date.now()}`,
-        amount: total,
-        currency: "NGN",
-        payment_options: "card,banktransfer,ussd",
-        customer: {
-          email: form.email || user.email,
-          phone_number: form.phone,
-          name: form.name,
-        },
-        customizations: {
-          title: "PawaMore Systems",
-          description: `Order #${orderId.slice(0, 8)}`,
-          logo: window.location.origin + "/favicon.png",
-        },
-        callback: async (response: any) => {
-          // Verify payment server-side
+      const existing = document.querySelector('script[src*="flutterwave"]');
+      if (existing) {
+        existing.addEventListener("load", () => resolve());
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.flutterwave.com/v3.js";
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Failed to load payment script"));
+      document.head.appendChild(script);
+    });
+  };
+
+  const handleFlutterwavePayment = async (orderId: string) => {
+    try {
+      await loadFlutterwaveScript();
+    } catch {
+      toast({ title: "Payment script failed to load", description: "Please try again or choose Pay on Delivery.", variant: "destructive" });
+      setSubmitting(false);
+      return;
+    }
+
+    const FlutterwaveCheckout = (window as any).FlutterwaveCheckout;
+    if (!FlutterwaveCheckout) {
+      toast({ title: "Payment failed to initialize", variant: "destructive" });
+      setSubmitting(false);
+      return;
+    }
+
+    FlutterwaveCheckout({
+      public_key: flwPublicKey,
+      tx_ref: `PAWA-${orderId}-${Date.now()}`,
+      amount: total,
+      currency: "NGN",
+      payment_options: "card,banktransfer,ussd",
+      customer: {
+        email: form.email || user.email,
+        phone_number: form.phone,
+        name: form.name,
+      },
+      customizations: {
+        title: "PawaMore Systems",
+        description: `Order #${orderId.slice(0, 8)}`,
+        logo: window.location.origin + "/favicon.png",
+      },
+      callback: async (response: any) => {
+        try {
           const { data } = await supabase.functions.invoke("verify-payment", {
             body: { transaction_id: response.transaction_id, order_id: orderId },
           });
@@ -208,14 +233,16 @@ const Checkout = () => {
           } else {
             toast({ title: "Payment verification failed", description: "Please contact support.", variant: "destructive" });
           }
-        },
-        onclose: () => {
-          toast({ title: "Payment window closed", description: "Your order is saved. You can pay later from Orders." });
+        } catch (err) {
+          toast({ title: "Verification error", description: "Your payment may have succeeded. Please check your orders.", variant: "destructive" });
           navigate("/orders");
-        },
-      });
-    };
-    document.body.appendChild(script);
+        }
+      },
+      onclose: () => {
+        toast({ title: "Payment window closed", description: "Your order is saved. You can pay later from Orders." });
+        navigate("/orders");
+      },
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

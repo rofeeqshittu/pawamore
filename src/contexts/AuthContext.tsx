@@ -99,18 +99,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     initializeAuth();
 
-    // Fallback timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      if (mountedRef.current && loading) {
-        console.warn("Auth initialization timeout - setting loading to false");
-        setLoading(false);
-      }
-    }, 5000);
-
     return () => {
       mountedRef.current = false;
       subscription.unsubscribe();
-      clearTimeout(timeoutId);
     };
   }, []);
 
