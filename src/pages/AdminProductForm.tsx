@@ -100,6 +100,27 @@ const AdminProductForm = () => {
     setImages((prev) => prev.map((img, i) => ({ ...img, is_primary: i === index })));
   };
 
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setVideoUploading(true);
+
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop();
+      const path = `videos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("product-images").upload(path, file);
+      if (!error) {
+        const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
+        setVideos((prev) => [...prev, { video_url: urlData.publicUrl, sort_order: prev.length }]);
+      }
+    }
+    setVideoUploading(false);
+  };
+
+  const removeVideo = (index: number) => {
+    setVideos((prev) => prev.filter((_, i) => i !== index).map((vid, i) => ({ ...vid, sort_order: i })));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
