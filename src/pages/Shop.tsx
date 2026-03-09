@@ -8,6 +8,7 @@ import QuickBuyButton from "@/components/QuickBuyButton";
 import { supabase } from "@/integrations/supabase/client";
 import useSEO from "@/hooks/useSEO";
 import { useCart } from "@/contexts/CartContext";
+import { useAuthReady } from "@/hooks/useAuthReady";
 
 interface Product {
   id: string;
