@@ -134,7 +134,7 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
 
   return (
     <>
-      <Button variant="forest" size={size} onClick={handleQuickBuy} className={`gap-1.5 ${className}`} disabled={!flwPublicKey && !!user}>
+      <Button variant="forest" size={size} onClick={handleQuickBuy} className={`gap-1.5 ${className}`} disabled={user && !flwPublicKey}>
         <Zap className="w-3.5 h-3.5" /> Quick Buy
       </Button>
 

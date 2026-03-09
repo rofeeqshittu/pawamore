@@ -12,16 +12,29 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Store the intended path when component mounts
+  useEffect(() => {
+    const currentPath = window.location.pathname + window.location.search;
+    if (currentPath !== "/login") {
+      sessionStorage.setItem("intendedPath", currentPath);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+    
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setError(error.message);
     } else {
-      navigate("/");
+      // Redirect to intended path or fallback to home
+      const intendedPath = sessionStorage.getItem("intendedPath") || "/";
+      sessionStorage.removeItem("intendedPath");
+      navigate(intendedPath);
     }
     setLoading(false);
   };
