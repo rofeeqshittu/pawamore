@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const mountedRef = useRef(true);
 
   const checkAdmin = async (userId: string) => {
     try {
@@ -31,14 +31,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .eq("user_id", userId)
         .eq("role", "admin")
         .maybeSingle();
-      setIsAdmin(!!data);
+      if (mountedRef.current) {
+        setIsAdmin(!!data);
+      }
     } catch (error) {
       console.error("Error checking admin role:", error);
-      setIsAdmin(false);
+      if (mountedRef.current) {
+        setIsAdmin(false);
+      }
     }
   };
 
   const handleAuthChange = async (session: Session | null) => {
+    if (!mountedRef.current) return;
+    
     setSession(session);
     setUser(session?.user ?? null);
     
@@ -48,22 +54,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsAdmin(false);
     }
     
-    // Only set loading to false after we're mounted and processed the session
-    if (mounted) {
+    if (mountedRef.current) {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    let isMounted = true;
-    
-    // Set mounted flag
-    setMounted(true);
+    mountedRef.current = true;
     
     // Auth state listener (for multi-tab sync)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (!isMounted) return;
+        if (!mountedRef.current) return;
         
         // Handle sign out in other tabs
         if (event === 'SIGNED_OUT') {
@@ -84,12 +86,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
         
-        if (isMounted) {
+        if (mountedRef.current) {
           await handleAuthChange(session);
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
-        if (isMounted) {
+        if (mountedRef.current) {
           setLoading(false);
         }
       }
@@ -99,28 +101,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Fallback timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      if (isMounted && loading) {
+      if (mountedRef.current && loading) {
         console.warn("Auth initialization timeout - setting loading to false");
         setLoading(false);
       }
     }, 5000);
 
     return () => {
-      isMounted = false;
+      mountedRef.current = false;
       subscription.unsubscribe();
       clearTimeout(timeoutId);
     };
-  }, []); // Remove dependency array to avoid re-runs
+  }, []);
 
   const signOut = useCallback(async () => {
     try {
       await supabase.auth.signOut();
-      // Don't manually set state here - let onAuthStateChange handle it
-      // This ensures multi-tab sync works properly
       window.location.href = "/";
     } catch (error) {
       console.error("Sign out error:", error);
-      // Fallback manual cleanup
       setUser(null);
       setSession(null);
       setIsAdmin(false);
