@@ -115,7 +115,7 @@ const ProductDetail = () => {
           <ChevronLeft className="w-4 h-4 mr-1" /> Back to Products
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* Images */}
           <div>
             <div className="aspect-square bg-secondary rounded-2xl overflow-hidden mb-3">
@@ -129,7 +129,7 @@ const ProductDetail = () => {
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {images.map((img: any, i: number) => (
                   <button key={img.id} onClick={() => setSelectedImage(i)}
-                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 flex-shrink-0 ${i === selectedImage ? "border-primary" : "border-border"}`}>
+                    className={`w-20 h-20 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 flex-shrink-0 ${i === selectedImage ? "border-primary" : "border-border"}`}>
                     <img src={img.image_url} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -172,17 +172,23 @@ const ProductDetail = () => {
               {product.stock_quantity > 0 ? <span className="text-primary font-semibold">✓ In Stock ({product.stock_quantity} available)</span> : <span className="text-destructive font-semibold">Out of Stock</span>}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <Button variant="amber" size="lg" className="flex-1" onClick={() => addToCart(product.id)} disabled={product.stock_quantity <= 0}>
+            {/* Primary Actions - Mobile First */}
+            <div className="flex flex-col gap-3 mb-4">
+              <Button variant="amber" size="lg" className="w-full" onClick={() => addToCart(product.id)} disabled={product.stock_quantity <= 0}>
                 <ShoppingCart className="w-5 h-5 mr-2" /> Add to Cart
               </Button>
-              <QuickBuyButton product={product} size="lg" className="flex-1" />
-              <Button variant="outline" size="lg" onClick={handleShare}>
-                <Share2 className="w-4 h-4 mr-2" /> Share
+              <QuickBuyButton product={product} size="lg" className="w-full" />
+            </div>
+
+            {/* Secondary Actions - Compact on Mobile */}
+            <div className="flex gap-2 mb-6">
+              <Button variant="outline" size="sm" onClick={handleShare} className="flex-1">
+                <Share2 className="w-4 h-4 mr-1 sm:mr-2" /> 
+                <span className="hidden xs:inline">Share</span>
               </Button>
-              <Button variant="ghost" size="lg" onClick={handleCopyLink}>
-                {copied ? <CheckCircle className="w-4 h-4 mr-2 text-primary" /> : <Copy className="w-4 h-4 mr-2" />}
-                {copied ? "Copied!" : "Copy Link"}
+              <Button variant="ghost" size="sm" onClick={handleCopyLink} className="flex-1">
+                {copied ? <CheckCircle className="w-4 h-4 mr-1 sm:mr-2 text-primary" /> : <Copy className="w-4 h-4 mr-1 sm:mr-2" />}
+                <span className="hidden xs:inline">{copied ? "Copied!" : "Copy Link"}</span>
               </Button>
             </div>
 
@@ -196,10 +202,10 @@ const ProductDetail = () => {
             {product.specs && Object.keys(product.specs).length > 0 && (
               <div className="border-t border-border pt-6 mt-6">
                 <h3 className="font-display font-bold text-lg mb-3">Specifications</h3>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3">
                   {Object.entries(product.specs).map(([key, value]) => (
-                    <div key={key} className="bg-secondary rounded-lg p-2">
-                      <span className="text-xs text-muted-foreground capitalize">{key.replace(/_/g, " ")}</span>
+                    <div key={key} className="bg-secondary rounded-lg p-3">
+                      <span className="text-xs text-muted-foreground capitalize block mb-1">{key.replace(/_/g, " ")}</span>
                       <p className="text-sm font-semibold">{String(value)}</p>
                     </div>
                   ))}
@@ -208,8 +214,9 @@ const ProductDetail = () => {
             )}
           </div>
         </div>
-          {/* Reviews Section */}
-          <div className="col-span-2">
+
+        {/* Reviews Section */}
+        <div className="mt-12 lg:mt-16">
             <ProductReviews
               productId={product.id}
               productName={product.name}

@@ -17,7 +17,9 @@ const AdminProductForm = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [videoUploading, setVideoUploading] = useState(false);
   const [images, setImages] = useState<{ id?: string; url: string; is_primary: boolean }[]>([]);
+  const [videos, setVideos] = useState<{ id?: string; video_url: string; thumbnail_url?: string; sort_order: number }[]>([]);
 
   const [form, setForm] = useState({
     name: "", slug: "", category_id: "", description: "", short_description: "",
@@ -41,7 +43,7 @@ const AdminProductForm = () => {
   };
 
   const fetchProduct = async () => {
-    const { data } = await supabase.from("products").select("*, product_images(id, image_url, is_primary, sort_order)").eq("id", id!).single();
+    const { data } = await supabase.from("products").select("*, product_images(id, image_url, is_primary, sort_order), product_videos(id, video_url, thumbnail_url, sort_order)").eq("id", id!).single();
     if (data) {
       setForm({
         name: data.name, slug: data.slug, category_id: data.category_id || "",
@@ -53,6 +55,7 @@ const AdminProductForm = () => {
         specs: data.specs ? JSON.stringify(data.specs, null, 2) : "",
       });
       setImages(((data as any).product_images || []).map((img: any) => ({ id: img.id, url: img.image_url, is_primary: img.is_primary })));
+      setVideos(((data as any).product_videos || []).map((vid: any) => ({ id: vid.id, video_url: vid.video_url, thumbnail_url: vid.thumbnail_url, sort_order: vid.sort_order })));
     }
   };
 
@@ -97,6 +100,27 @@ const AdminProductForm = () => {
     setImages((prev) => prev.map((img, i) => ({ ...img, is_primary: i === index })));
   };
 
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setVideoUploading(true);
+
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop();
+      const path = `videos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("product-images").upload(path, file);
+      if (!error) {
+        const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
+        setVideos((prev) => [...prev, { video_url: urlData.publicUrl, sort_order: prev.length }]);
+      }
+    }
+    setVideoUploading(false);
+  };
+
+  const removeVideo = (index: number) => {
+    setVideos((prev) => prev.filter((_, i) => i !== index).map((vid, i) => ({ ...vid, sort_order: i })));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -119,21 +143,36 @@ const AdminProductForm = () => {
 
     if (isEditing) {
       await supabase.from("products").update(productData).eq("id", id!);
-      // Delete old images and re-insert
+      // Delete old images and videos, then re-insert
       await supabase.from("product_images").delete().eq("product_id", id!);
+      await supabase.from("product_videos").delete().eq("product_id", id!);
     } else {
       const { data } = await supabase.from("products").insert(productData).select("id").single();
       productId = data?.id;
     }
 
-    if (productId && images.length > 0) {
-      const imageRows = images.map((img, i) => ({
-        product_id: productId!,
-        image_url: img.url,
-        is_primary: img.is_primary,
-        sort_order: i,
-      }));
-      await supabase.from("product_images").insert(imageRows);
+    if (productId) {
+      // Insert images
+      if (images.length > 0) {
+        const imageRows = images.map((img, i) => ({
+          product_id: productId!,
+          image_url: img.url,
+          is_primary: img.is_primary,
+          sort_order: i,
+        }));
+        await supabase.from("product_images").insert(imageRows);
+      }
+
+      // Insert videos
+      if (videos.length > 0) {
+        const videoRows = videos.map((vid, i) => ({
+          product_id: productId!,
+          video_url: vid.video_url,
+          thumbnail_url: vid.thumbnail_url || null,
+          sort_order: i,
+        }));
+        await supabase.from("product_videos").insert(videoRows);
+      }
     }
 
     setSaving(false);
@@ -277,6 +316,34 @@ const AdminProductForm = () => {
                 <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" disabled={uploading} />
               </label>
             </div>
+          </div>
+
+          {/* Videos */}
+          <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4">
+            <h2 className="font-display font-bold text-lg">Product Videos</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {videos.map((vid, i) => (
+                <div key={i} className="relative rounded-lg overflow-hidden border border-border aspect-video bg-secondary">
+                  <video src={vid.video_url} className="w-full h-full object-cover" muted />
+                  <button type="button" onClick={() => removeVideo(i)} className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5">
+                    <X className="w-3 h-3" />
+                  </button>
+                  <div className="absolute bottom-1 left-1 bg-background/80 text-foreground text-[9px] font-bold px-1.5 py-0.5 rounded">
+                    Video {i + 1}
+                  </div>
+                </div>
+              ))}
+              <label className="aspect-video rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                {videoUploading ? <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /> : (
+                  <>
+                    <Upload className="w-6 h-6 text-muted-foreground mb-1" />
+                    <span className="text-[10px] text-muted-foreground">Upload Video</span>
+                  </>
+                )}
+                <input type="file" accept="video/*" multiple onChange={handleVideoUpload} className="hidden" disabled={videoUploading} />
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground">Upload short videos (MP4, WebM). Keep file sizes under 50MB for best performance.</p>
           </div>
 
           {/* Specs */}
