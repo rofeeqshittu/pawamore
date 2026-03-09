@@ -379,7 +379,7 @@ const Products = () => {
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary-foreground mb-4 sm:mb-6">Not Sure Which System?</h2>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Link to="/contact" className="w-full sm:w-auto"><Button variant="amber" size="lg" className="w-full sm:w-auto">Book a Free Audit →</Button></Link>
-            <a href="https://wa.me/YOUR_WHATSAPP_NUMBER_HERE" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+            <a href="https://wa.me/2347062716154" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
               <Button variant="hero-outline" size="lg" className="w-full sm:w-auto">WhatsApp Us to Order →</Button>
             </a>
           </div>

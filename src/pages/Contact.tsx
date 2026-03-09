@@ -62,7 +62,7 @@ const Contact = () => {
       setTimeout(() => {
         if (confirm("Would you also like to reach us on WhatsApp for faster response?")) {
           const whatsappMsg = `Hi PawaMore! I'm ${validatedData.name} from ${validatedData.city}. I'm interested in: ${validatedData.interest}. ${validatedData.message}`;
-          window.open(`https://wa.me/YOUR_WHATSAPP_NUMBER_HERE?text=${encodeURIComponent(whatsappMsg)}`, "_blank");
+          window.open(`https://wa.me/2347062716154?text=${encodeURIComponent(whatsappMsg)}`, "_blank");
         }
       }, 1000);
     } catch (error: any) {
@@ -112,8 +112,8 @@ const Contact = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
-                  { icon: MessageCircle, title: "WhatsApp", detail: "YOUR_PHONE_NUMBER_HERE", sub: "Our fastest channel — respond within the hour", href: "https://wa.me/YOUR_WHATSAPP_NUMBER_HERE" },
-                  { icon: Phone, title: "Phone", detail: "YOUR_PHONE_NUMBER_HERE", sub: "Mon–Sat | 8am–6pm", href: "tel:YOUR_PHONE_NUMBER_HERE" },
+                  { icon: MessageCircle, title: "WhatsApp", detail: "+234 706 271 6154", sub: "Our fastest channel — respond within the hour", href: "https://wa.me/2347062716154" },
+                  { icon: Phone, title: "Phone", detail: "+234 706 271 6154", sub: "Mon–Sat | 8am–6pm", href: "tel:+2347062716154" },
                   { icon: Mail, title: "Email", detail: "support@pawamore.com", sub: "Response within 24 hours", href: "mailto:support@pawamore.com" },
                 ].map((c, i) => (
                   <ScrollReveal key={i} delay={i * 100}>

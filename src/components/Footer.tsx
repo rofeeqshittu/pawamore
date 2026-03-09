@@ -54,8 +54,8 @@ const Footer = () => {
           <div>
             <h4 className="font-display font-bold text-accent mb-4 uppercase text-sm tracking-wider">Contact</h4>
             <div className="flex flex-col gap-3 text-sm text-primary-foreground/70">
-              <a className="flex items-center gap-2 hover:text-accent transition-colors" href="tel:YOUR_PHONE_NUMBER_HERE">
-                <Phone className="w-4 h-4" /> YOUR_PHONE_NUMBER_HERE
+              <a className="flex items-center gap-2 hover:text-accent transition-colors" href="tel:+2347062716154">
+                <Phone className="w-4 h-4" /> +234 706 271 6154
               </a>
               <a href="mailto:hello@pawamore.com.ng" className="flex items-center gap-2 hover:text-accent transition-colors">
                 <Mail className="w-4 h-4" /> hello@pawamore.com.ng

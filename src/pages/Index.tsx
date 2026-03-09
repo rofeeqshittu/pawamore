@@ -341,7 +341,7 @@ const Index = () => {
               <Link to="/contact">
                 <Button variant="hero" size="xl">Book FREE Power Audit Now →</Button>
               </Link>
-              <a href="https://wa.me/2340000000000" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/2347062716154" target="_blank" rel="noopener noreferrer">
                 <Button variant="hero-outline" size="xl">WhatsApp Us Directly →</Button>
               </a>
             </div>

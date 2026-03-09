@@ -102,7 +102,7 @@ const BlogPost = () => {
                 <Link to="/contact" className="w-full sm:w-auto">
                   <Button variant="amber" size="lg" className="w-full sm:w-auto">Book Free Power Audit →</Button>
                 </Link>
-                <a href="https://wa.me/YOUR_WHATSAPP_NUMBER_HERE" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <a href="https://wa.me/2347062716154" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
                   <Button variant="outline" size="lg" className="w-full sm:w-auto">WhatsApp Us →</Button>
                 </a>
               </div>

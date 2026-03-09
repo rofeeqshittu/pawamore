@@ -206,7 +206,7 @@ const Shop = () => {
           <h2 className="text-lg sm:text-xl lg:text-2xl font-extrabold text-primary-foreground mb-3 sm:mb-4">Need Help Choosing?</h2>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/contact"><Button variant="amber" size="lg" className="min-h-[44px] sm:min-h-[48px]">Book a Free Power Audit →</Button></Link>
-            <a href="https://wa.me/YOUR_WHATSAPP_NUMBER_HERE" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/2347062716154" target="_blank" rel="noopener noreferrer">
               <Button variant="hero-outline" size="lg" className="min-h-[44px] sm:min-h-[48px]">WhatsApp Us →</Button>
             </a>
           </div>

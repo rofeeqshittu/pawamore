@@ -89,7 +89,7 @@ const Orders = () => {
       </table>
       <div class="footer">
         <p>Thank you for choosing PawaMore Systems!</p>
-        <p>For support: WhatsApp YOUR_PHONE_NUMBER_HERE</p>
+        <p>For support: WhatsApp +234 706 271 6154</p>
       </div>
       <script>window.print();</script>
       </body></html>
