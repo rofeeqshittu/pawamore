@@ -32,11 +32,11 @@ const Login = () => {
 
   return (
     <Layout>
-      <section className="py-12 sm:py-20">
-        <div className="container max-w-md px-4">
-          <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-[var(--shadow-card)]">
-            <h1 className="font-display font-extrabold text-2xl sm:text-3xl mb-2">Welcome Back</h1>
-            <p className="text-muted-foreground text-sm mb-6">Log in to your PawaMore account</p>
+      <section className="py-6 sm:py-12 lg:py-20">
+        <div className="container max-w-md px-4 sm:px-6">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 lg:p-8 border border-border shadow-[var(--shadow-card)] mx-auto">
+            <h1 className="font-display font-extrabold text-xl sm:text-2xl lg:text-3xl mb-2">Welcome Back</h1>
+            <p className="text-muted-foreground text-sm sm:text-base mb-4 sm:mb-6">Log in to your PawaMore account</p>
 
             {error && <div className="bg-destructive/10 text-destructive text-sm rounded-lg p-3 mb-4">{error}</div>}
 
