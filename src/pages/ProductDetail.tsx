@@ -182,13 +182,13 @@ const ProductDetail = () => {
 
             {/* Secondary Actions - Compact on Mobile */}
             <div className="flex gap-2 mb-6">
-              <Button variant="outline" size="sm" onClick={handleShare} className="flex-1">
-                <Share2 className="w-4 h-4 mr-1 sm:mr-2" /> 
-                <span className="hidden xs:inline">Share</span>
+              <Button variant="outline" size="sm" onClick={handleShare} className="flex-1 min-h-[44px]">
+                <Share2 className="w-4 h-4 mr-1.5 sm:mr-2" /> 
+                <span>Share</span>
               </Button>
-              <Button variant="ghost" size="sm" onClick={handleCopyLink} className="flex-1">
-                {copied ? <CheckCircle className="w-4 h-4 mr-1 sm:mr-2 text-primary" /> : <Copy className="w-4 h-4 mr-1 sm:mr-2" />}
-                <span className="hidden xs:inline">{copied ? "Copied!" : "Copy Link"}</span>
+              <Button variant="ghost" size="sm" onClick={handleCopyLink} className="flex-1 min-h-[44px]">
+                {copied ? <CheckCircle className="w-4 h-4 mr-1.5 sm:mr-2 text-primary" /> : <Copy className="w-4 h-4 mr-1.5 sm:mr-2" />}
+                <span>{copied ? "Copied!" : "Copy Link"}</span>
               </Button>
             </div>
 

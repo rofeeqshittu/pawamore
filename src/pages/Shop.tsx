@@ -183,13 +183,13 @@ const Shop = () => {
                       </div>
                       <div className="flex gap-1.5 sm:gap-2">
                         <Link to={`/products/${product.slug}`} className="flex-1">
-                          <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-xs min-h-[36px]" size="sm">View Details</Button>
+                          <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-xs min-h-[44px] sm:min-h-[40px]" size="sm">View Details</Button>
                         </Link>
-                        <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px] flex items-center justify-center">
-                          <ShoppingCart className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+                        <Button variant="outline" size="sm" onClick={() => addToCart(product.id)} className="px-2.5 min-h-[44px] sm:min-h-[40px] min-w-[44px] sm:min-w-[40px] flex items-center justify-center" aria-label="Add to cart">
+                          <ShoppingCart className="w-4 h-4" />
                         </Button>
-                        <WishlistButton productId={product.id} productName={product.name} size="sm" variant="outline" className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px]" />
-                        <QuickBuyButton product={product} size="sm" className="px-2 sm:px-2.5 min-h-[36px] min-w-[36px]" />
+                        <WishlistButton productId={product.id} productName={product.name} size="sm" variant="outline" className="px-2.5 min-h-[44px] sm:min-h-[40px] min-w-[44px] sm:min-w-[40px]" />
+                        <QuickBuyButton product={product} size="sm" className="px-2.5 min-h-[44px] sm:min-h-[40px] min-w-[44px] sm:min-w-[40px]" />
                       </div>
                     </div>
                   </div>
