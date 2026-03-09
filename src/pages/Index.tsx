@@ -6,7 +6,7 @@ import Layout from "@/components/Layout";
 import { Fuel, Volume2, Clock, ClipboardCheck, Settings, Wrench, HeartHandshake, Shield, CheckCircle, Star, ChevronRight, Zap, Battery, Sun, ArrowRight, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import heroImg from "@/assets/hero-install.jpg";
-import heroSolarRoof from "@/assets/hero-solar-roof.jpg";
+import heroBusinessPower from "@/assets/hero-business-power.jpg";
 import familyImg from "@/assets/family-power.jpg";
 import useSEO from "@/hooks/useSEO";
 import batteryImg from "@/assets/battery-system.jpg";
@@ -120,7 +120,7 @@ const stats = [
 
 const heroImages = [
   { src: heroImg, alt: "Solar installation on Nigerian home" },
-  { src: heroSolarRoof, alt: "Solar panels on Nigerian rooftop at sunset" },
+  { src: heroBusinessPower, alt: "Nigerian business office powered reliably" },
 ];
 
 const Index = () => {
@@ -376,7 +376,7 @@ const Index = () => {
       {/* Why PawaMore Trust */}
       <section className="py-12 sm:py-20 md:py-28 bg-primary diagonal-top -mt-6 sm:-mt-8 pt-20 sm:pt-28 pb-16 sm:pb-24 relative overflow-hidden">
         {/* Floating mascot — eco plug */}
-        <img src={mascotEco} alt="" aria-hidden="true" className="absolute right-8 sm:right-16 md:right-24 lg:right-32 top-28 sm:top-32 w-40 sm:w-56 md:w-72 opacity-100 pointer-events-none select-none" />
+        <img src={mascotEco} alt="" aria-hidden="true" className="absolute -right-8 sm:-right-12 md:-right-16 lg:-right-20 top-28 sm:top-32 w-40 sm:w-56 md:w-72 opacity-100 pointer-events-none select-none" />
         <div className="container relative z-10">
           <ScrollReveal>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center text-primary-foreground mb-8 sm:mb-12">
