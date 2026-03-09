@@ -39,15 +39,17 @@ const Checkout = () => {
     setProfileLoading(true);
     setForm(f => ({ ...f, email: f.email || user.email || "" }));
     
-    // Fetch and pre-fill delivery info from profile
-    supabase
-      .from("profiles")
-      .select("display_name, phone, address, city, state")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data, error }) => {
+    const fetchProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("display_name, phone, address, city, state")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        
         if (error) {
           console.warn("Profile fetch warning:", error.message);
+          return;
         }
         
         if (data) {
@@ -60,33 +62,35 @@ const Checkout = () => {
             state: f.state || data.state || "",
           }));
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Profile fetch error:", err);
         setError("Failed to load profile data");
-      })
-      .finally(() => {
+      } finally {
         setProfileLoading(false);
-      });
+      }
+    };
+
+    fetchProfile();
   }, [user]);
 
   useEffect(() => {
-    setFlwLoading(true);
-    supabase.functions.invoke("get-flutterwave-key")
-      .then(({ data, error }) => {
+    const fetchFlwKey = async () => {
+      setFlwLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("get-flutterwave-key");
         if (error) {
           console.warn("Flutterwave key fetch error:", error);
-          setError("Payment system temporarily unavailable");
         } else if (data?.publicKey) {
           setFlwPublicKey(data.publicKey);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Flutterwave fetch error:", err);
-      })
-      .finally(() => {
+      } finally {
         setFlwLoading(false);
-      });
+      }
+    };
+
+    fetchFlwKey();
   }, []);
 
   // Show loading state while auth is loading
