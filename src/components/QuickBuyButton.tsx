@@ -125,8 +125,12 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
             }
           },
           onclose: () => {
-            toast({ title: "Payment window closed", description: "Order saved — pay later from Orders." });
-            navigate("/orders");
+            toast({ title: "Payment window closed", description: user ? "Order saved — pay later from Orders." : "Order saved — check your email." });
+            if (user) {
+              navigate("/orders");
+            } else {
+              navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${order.id}`);
+            }
           },
         });
       };
