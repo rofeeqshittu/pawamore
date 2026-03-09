@@ -8,6 +8,9 @@ import heroImg from "@/assets/hero-install.jpg";
 import familyImg from "@/assets/family-power.jpg";
 import useSEO from "@/hooks/useSEO";
 import batteryImg from "@/assets/battery-system.jpg";
+import avatarEmeka from "@/assets/avatar-emeka.jpg";
+import avatarFunke from "@/assets/avatar-funke.jpg";
+import avatarChidi from "@/assets/avatar-chidi.jpg";
 
 const painPoints = [
   {
