@@ -69,16 +69,19 @@ const testimonials = [
     quote: "My generator has not moved in 3 months. My fuel bill is zero. I wish I had done this years ago.",
     name: "Emeka A.",
     location: "Lekki, Lagos",
+    avatar: avatarEmeka,
   },
   {
     quote: "The installation was clean, fast, and professional. Best decision for my business.",
     name: "Mrs. Funke O.",
     location: "Ibadan, Oyo State",
+    avatar: avatarFunke,
   },
   {
     quote: "They followed up a week after installation just to check everything was perfect.",
     name: "Chidi M.",
     location: "Wuse 2, Abuja",
+    avatar: avatarChidi,
   },
 ];
 
