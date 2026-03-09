@@ -71,9 +71,22 @@ const Checkout = () => {
   }, [user]);
 
   useEffect(() => {
-    supabase.functions.invoke("get-flutterwave-key").then(({ data }) => {
-      if (data?.publicKey) setFlwPublicKey(data.publicKey);
-    });
+    setFlwLoading(true);
+    supabase.functions.invoke("get-flutterwave-key")
+      .then(({ data, error }) => {
+        if (error) {
+          console.warn("Flutterwave key fetch error:", error);
+          setError("Payment system temporarily unavailable");
+        } else if (data?.publicKey) {
+          setFlwPublicKey(data.publicKey);
+        }
+      })
+      .catch((err) => {
+        console.error("Flutterwave fetch error:", err);
+      })
+      .finally(() => {
+        setFlwLoading(false);
+      });
   }, []);
 
   if (!user) {
