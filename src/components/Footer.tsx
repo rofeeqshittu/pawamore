@@ -1,11 +1,21 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin } from "lucide-react";
 import logo from "@/assets/logo.png";
+import mascotFooter from "@/assets/mascot-footer.png";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
 const Footer = () => {
   return (
-    <footer className="bg-forest text-primary-foreground">
+    <footer className="bg-forest text-primary-foreground relative">
+      {/* Mascot sitting on top of footer */}
+      <div className="absolute left-1/2 -translate-x-1/2 -top-16 sm:-top-20 md:-top-24 z-20 pointer-events-none select-none">
+        <img 
+          src={mascotFooter} 
+          alt="" 
+          aria-hidden="true"
+          className="w-20 sm:w-28 md:w-36 h-auto drop-shadow-lg animate-float"
+        />
+      </div>
       <div className="kente-strip" />
       
       {/* Newsletter Section */}
