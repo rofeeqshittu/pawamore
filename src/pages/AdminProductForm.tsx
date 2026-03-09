@@ -17,7 +17,9 @@ const AdminProductForm = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [videoUploading, setVideoUploading] = useState(false);
   const [images, setImages] = useState<{ id?: string; url: string; is_primary: boolean }[]>([]);
+  const [videos, setVideos] = useState<{ id?: string; video_url: string; thumbnail_url?: string; sort_order: number }[]>([]);
 
   const [form, setForm] = useState({
     name: "", slug: "", category_id: "", description: "", short_description: "",
