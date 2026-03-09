@@ -109,11 +109,11 @@ const Navbar = () => {
         {isOpen && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
             className="lg:hidden bg-forest border-t border-primary-foreground/10 overflow-hidden">
-            <div className="container py-4 flex flex-col gap-2">
+            <div className="container py-4 px-4 sm:px-6 flex flex-col gap-2 max-h-[calc(100vh-80px)] overflow-y-auto">
               {navLinks.map((link, i) => (
                 <motion.div key={link.to} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
                   <Link to={link.to} onClick={() => setIsOpen(false)}
-                    className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                    className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] flex items-center ${
                       location.pathname === link.to ? "bg-primary text-primary-foreground" : "text-primary-foreground/80 hover:bg-primary/20"
                     }`}>
                     {link.label}
