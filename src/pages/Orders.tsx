@@ -4,7 +4,8 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, ChevronDown, ChevronUp, Printer, CreditCard, Truck } from "lucide-react";
+import { Package, ChevronDown, ChevronUp, Printer, CreditCard, Truck, XCircle } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const statusColors: Record<string, string> = {
   pending: "bg-accent/20 text-accent",
