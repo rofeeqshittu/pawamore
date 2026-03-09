@@ -193,8 +193,10 @@ const Index = () => {
       </section>
 
       {/* Pain Section — card-based on mobile */}
-      <section className="py-12 sm:py-20 md:py-28 kente-pattern">
-        <div className="container">
+      <section className="py-12 sm:py-20 md:py-28 kente-pattern relative overflow-hidden">
+        {/* Floating mascot — battery buddy */}
+        <img src={mascotBattery} alt="" aria-hidden="true" className="absolute -right-6 top-4 sm:right-4 sm:top-8 w-20 sm:w-28 md:w-36 opacity-[0.15] sm:opacity-20 animate-float pointer-events-none select-none" />
+        <div className="container relative z-10">
           <ScrollReveal>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-3 sm:mb-4 px-2">
               We Know How This <span className="text-accent">Feels.</span>
