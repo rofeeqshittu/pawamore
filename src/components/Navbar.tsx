@@ -100,7 +100,7 @@ const Navbar = () => {
            </Link>
          </div>
 
-        {/* Mobile Cart & Toggle */}
+        {/* Mobile Cart & Wishlist & Toggle */}
         <div className="flex items-center gap-2 lg:hidden">
           <Link to="/cart" className="relative text-primary-foreground/80 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ShoppingCart className="w-5 h-5" />
@@ -108,6 +108,11 @@ const Navbar = () => {
               <span className="absolute -top-0.5 -right-0.5 bg-accent text-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{itemCount}</span>
             )}
           </Link>
+          {user && (
+            <Link to="/wishlist" className="text-primary-foreground/80 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
+              <Heart className="w-5 h-5" />
+            </Link>
+          )}
           <button onClick={() => setIsOpen(!isOpen)} className="text-primary-foreground p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Toggle menu">
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
