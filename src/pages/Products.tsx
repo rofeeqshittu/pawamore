@@ -276,7 +276,11 @@ const Products = () => {
           {authLoading ? (
             <div className="text-center py-12 text-muted-foreground">Loading authentication...</div>
           ) : loading ? (
-            <div className="text-center py-12 text-muted-foreground">Loading products...</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
+            </div>
           ) : error ? (
             <div className="text-center py-12">
               <p className="text-destructive mb-4">Error loading products: {error}</p>
