@@ -23,6 +23,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import OrderLookup from "./pages/OrderLookup";
+import Wishlist from "./pages/Wishlist";
 import Orders from "./pages/Orders";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProductForm from "./pages/AdminProductForm";
@@ -63,6 +65,8 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order-lookup" element={<OrderLookup />} />
+              <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/products/new" element={<AdminProductForm />} />

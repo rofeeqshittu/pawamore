@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, User, LogOut, Shield, ShoppingCart } from "lucide-react";
+import { Menu, X, User, LogOut, Shield, ShoppingCart, Heart, Settings } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,6 +62,11 @@ const Navbar = () => {
               <span className="absolute -top-0.5 -right-0.5 bg-accent text-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{itemCount}</span>
             )}
           </Link>
+          {user && (
+            <Link to="/wishlist" className="text-primary-foreground/80 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
+              <Heart className="w-5 h-5" />
+            </Link>
+          )}
           {user ? (
             <>
               {isAdmin && (
@@ -71,6 +76,11 @@ const Navbar = () => {
                   </Button>
                 </Link>
               )}
+              <Link to="/profile">
+                <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-accent">
+                  <Settings className="w-4 h-4 mr-1" /> Profile
+                </Button>
+              </Link>
               <Link to="/orders">
                 <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-accent">
                   <User className="w-4 h-4 mr-1" /> Orders
@@ -90,7 +100,7 @@ const Navbar = () => {
            </Link>
          </div>
 
-        {/* Mobile Cart & Toggle */}
+        {/* Mobile Cart & Wishlist & Toggle */}
         <div className="flex items-center gap-2 lg:hidden">
           <Link to="/cart" className="relative text-primary-foreground/80 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ShoppingCart className="w-5 h-5" />
@@ -98,6 +108,11 @@ const Navbar = () => {
               <span className="absolute -top-0.5 -right-0.5 bg-accent text-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{itemCount}</span>
             )}
           </Link>
+          {user && (
+            <Link to="/wishlist" className="text-primary-foreground/80 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
+              <Heart className="w-5 h-5" />
+            </Link>
+          )}
           <button onClick={() => setIsOpen(!isOpen)} className="text-primary-foreground p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Toggle menu">
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -130,6 +145,12 @@ const Navbar = () => {
                        <Shield className="w-4 h-4 inline mr-2" /> Admin Dashboard
                      </Link>
                      )}
+                     <Link to="/profile" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20 min-h-[44px] flex items-center">
+                       <Settings className="w-4 h-4 inline mr-2" /> Profile
+                     </Link>
+                     <Link to="/wishlist" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20 min-h-[44px] flex items-center">
+                       <Heart className="w-4 h-4 inline mr-2" /> Wishlist
+                     </Link>
                      <Link to="/orders" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20 min-h-[44px] flex items-center">
                        <User className="w-4 h-4 inline mr-2" /> My Orders
                      </Link>

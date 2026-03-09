@@ -49,6 +49,78 @@ export type Database = {
           },
         ]
       }
+      contact_submissions: {
+        Row: {
+          city: string | null
+          email: string
+          id: string
+          interest: string | null
+          ip_address: unknown
+          message: string | null
+          name: string
+          phone: string | null
+          status: string | null
+          submitted_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          city?: string | null
+          email: string
+          id?: string
+          interest?: string | null
+          ip_address?: unknown
+          message?: string | null
+          name: string
+          phone?: string | null
+          status?: string | null
+          submitted_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          city?: string | null
+          email?: string
+          id?: string
+          interest?: string | null
+          ip_address?: unknown
+          message?: string | null
+          name?: string
+          phone?: string | null
+          status?: string | null
+          submitted_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscriptions: {
+        Row: {
+          email: string
+          id: string
+          ip_address: unknown
+          is_active: boolean
+          source: string | null
+          subscribed_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          email: string
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean
+          source?: string | null
+          subscribed_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean
+          source?: string | null
+          subscribed_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -97,6 +169,7 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          guest_email: string | null
           id: string
           notes: string | null
           payment_method: string | null
@@ -110,10 +183,11 @@ export type Database = {
           status: Database["public"]["Enums"]["order_status"]
           total_amount: number
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
+          guest_email?: string | null
           id?: string
           notes?: string | null
           payment_method?: string | null
@@ -127,10 +201,11 @@ export type Database = {
           status?: Database["public"]["Enums"]["order_status"]
           total_amount?: number
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
+          guest_email?: string | null
           id?: string
           notes?: string | null
           payment_method?: string | null
@@ -144,7 +219,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["order_status"]
           total_amount?: number
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -423,11 +498,55 @@ export type Database = {
         }
         Relationships: []
       }
+      wishlist: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlist_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_guest_order: {
+        Args: { p_guest_email: string; p_order_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          payment_method: string
+          payment_status: string
+          shipping_address: string
+          shipping_city: string
+          shipping_name: string
+          shipping_phone: string
+          status: string
+          total_amount: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

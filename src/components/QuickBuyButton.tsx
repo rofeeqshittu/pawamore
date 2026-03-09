@@ -50,13 +50,6 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
   const unitPrice = product.discount_price || product.price;
 
   const handleQuickBuy = () => {
-    if (!user) {
-      // Save current page so we can return after login
-      sessionStorage.setItem("intendedPath", window.location.pathname + window.location.search);
-      toast({ title: "Please log in first", variant: "destructive" });
-      navigate("/login");
-      return;
-    }
     setOpen(true);
   };
 
@@ -73,9 +66,10 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
     setSubmitting(true);
 
     try {
-      // Create order with single item
+      // Create order with user_id or guest email
       const { data: order, error } = await supabase.from("orders").insert({
-        user_id: user!.id,
+        user_id: user?.id || null,
+        guest_email: !user ? form.email : null,
         total_amount: unitPrice,
         shipping_name: form.name,
         shipping_phone: form.phone,
@@ -119,15 +113,24 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
               body: { transaction_id: response.transaction_id, order_id: order.id },
             });
             if (data?.success) {
-              toast({ title: "Payment successful! 🎉" });
-              navigate("/orders");
+              toast({ title: "Payment successful! 🎉", description: user ? "Check your orders page for details." : "Check your email for order confirmation." });
+              if (user) {
+                navigate("/orders");
+              } else {
+                // For guests, show order confirmation or redirect to order lookup
+                navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${order.id}`);
+              }
             } else {
               toast({ title: "Verification failed", variant: "destructive" });
             }
           },
           onclose: () => {
-            toast({ title: "Payment window closed", description: "Order saved — pay later from Orders." });
-            navigate("/orders");
+            toast({ title: "Payment window closed", description: user ? "Order saved — pay later from Orders." : "Order saved — check your email." });
+            if (user) {
+              navigate("/orders");
+            } else {
+              navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${order.id}`);
+            }
           },
         });
       };
@@ -163,7 +166,10 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
           <DialogHeader className="pb-2 sm:pb-4">
             <DialogTitle className="font-display text-lg sm:text-xl">Quick Buy — {product.name}</DialogTitle>
           </DialogHeader>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">₦{Number(unitPrice).toLocaleString()} — Pay instantly with card or bank transfer</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            ₦{Number(unitPrice).toLocaleString()} — Pay instantly with card or bank transfer
+            {!user && <span className="block mt-1 text-amber-600">✨ No account needed - checkout as guest!</span>}
+          </p>
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <Input placeholder="Full Name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
             <Input placeholder="Phone *" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required className="min-h-[44px] text-sm sm:text-base" />
