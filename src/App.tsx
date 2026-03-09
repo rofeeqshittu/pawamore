@@ -72,6 +72,7 @@ const App = () => (
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/products/new" element={<AdminProductForm />} />
               <Route path="/admin/products/:id" element={<AdminProductForm />} />
+              <Route path="/help" element={<HelpCenter />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </CartProvider>

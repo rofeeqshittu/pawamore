@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import SEOHelmet from "./SEOHelmet";
 import ErrorBoundary from "./ErrorBoundary";
+import LiveChat from "./support/LiveChat";
 
 interface LayoutProps {
   children: ReactNode;
@@ -25,6 +26,7 @@ const Layout = ({ children, seoTitle, seoDescription, seoImage }: LayoutProps) =
           {children}
         </main>
         <Footer />
+        <LiveChat />
       </div>
     </ErrorBoundary>
   );
