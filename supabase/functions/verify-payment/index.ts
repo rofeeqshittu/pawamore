@@ -39,6 +39,15 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     if (verifyData.status === "success" && verifyData.data?.status === "successful") {
+      // Validate that the transaction reference matches the order to prevent fraud
+      const txRef = verifyData.data?.tx_ref || "";
+      if (!txRef.startsWith(`PAWA-${order_id}-`)) {
+        return new Response(JSON.stringify({ error: "Transaction does not match order" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       await supabase.from("orders").update({
         payment_status: "paid",
         payment_reference: String(transaction_id),
