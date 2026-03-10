@@ -613,6 +613,52 @@ const AdminDashboard = () => {
             )}
           </TabsContent>
 
+          {/* Newsletter Tab - add composer above subscriber list */}
+          <TabsContent value="newsletter">
+            <div className="space-y-6">
+              <NewsletterComposer subscribers={newsletters} />
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-extrabold">Subscribers</h2>
+                <span className="text-sm text-muted-foreground">{activeNewsletters} active / {newsletters.length} total</span>
+              </div>
+              {newsletters.length > 0 && (
+                <div className="bg-card border border-border rounded-xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-secondary border-b border-border">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">Email</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase hidden sm:table-cell">Source</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase hidden md:table-cell">Date</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {newsletters.map(sub => (
+                          <tr key={sub.id} className="border-b border-border last:border-0 hover:bg-secondary/20">
+                            <td className="px-4 py-3 font-medium">{sub.email}</td>
+                            <td className="px-4 py-3 text-muted-foreground capitalize hidden sm:table-cell">{sub.source || "website"}</td>
+                            <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{new Date(sub.subscribed_at).toLocaleDateString()}</td>
+                            <td className="px-4 py-3">
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${sub.is_active ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"}`}>
+                                {sub.is_active ? "Active" : "Inactive"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Customers Tab */}
+          <TabsContent value="customers">
+            <CustomerManagement />
+          </TabsContent>
+
           {/* Support Tickets Tab */}
           <TabsContent value="support">
             <h2 className="text-lg sm:text-xl font-extrabold mb-6">Support Tickets</h2>
