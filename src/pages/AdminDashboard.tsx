@@ -96,7 +96,7 @@ const orderStatuses = ["pending", "confirmed", "processing", "shipped", "deliver
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "orders" | "reviews" | "newsletter">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "orders" | "reviews" | "newsletter" | "customers">("dashboard");
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
