@@ -15,6 +15,9 @@ import {
 } from "lucide-react";
 import SupportTicketManagement from "@/components/admin/SupportTicketManagement";
 import FAQManagement from "@/components/admin/FAQManagement";
+import SalesAnalytics from "@/components/admin/SalesAnalytics";
+import CustomerManagement from "@/components/admin/CustomerManagement";
+import NewsletterComposer from "@/components/admin/NewsletterComposer";
 import logo from "@/assets/logo.png";
 
 interface Product {
