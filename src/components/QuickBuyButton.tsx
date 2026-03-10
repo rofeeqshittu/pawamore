@@ -137,7 +137,7 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
                 navigate("/orders");
               } else {
                 // For guests, show order confirmation or redirect to order lookup
-                navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${order.id}`);
+                navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${orderId}`);
               }
             } else {
               toast({ title: "Verification failed", variant: "destructive" });
