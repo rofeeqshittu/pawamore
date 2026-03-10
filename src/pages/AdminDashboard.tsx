@@ -102,16 +102,31 @@ const AdminDashboard = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [serverVerifiedAdmin, setServerVerifiedAdmin] = useState<boolean | null>(null);
+
+  // Server-side admin verification — prevents DevTools bypass
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    const verifyAdmin = async () => {
+      const { data } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
+      if (!data) {
+        navigate("/");
+        return;
+      }
+      setServerVerifiedAdmin(true);
+    };
+    verifyAdmin();
+  }, [user, loading, navigate]);
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) navigate("/login");
-  }, [user, isAdmin, loading, navigate]);
-
-  useEffect(() => {
-    if (isAdmin) {
+    if (serverVerifiedAdmin) {
       loadAllData();
     }
-  }, [isAdmin]);
+  }, [serverVerifiedAdmin]);
 
   const loadAllData = async () => {
     setLoadingData(true);

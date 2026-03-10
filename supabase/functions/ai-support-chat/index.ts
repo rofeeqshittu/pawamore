@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { message, conversation_id, user_id, guest_id } = await req.json();
+    const { message, conversation_id, guest_id } = await req.json();
 
     if (!message) {
       return new Response(
@@ -120,11 +120,42 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Validate user identity from JWT — never trust client-supplied user_id
+    let verifiedUserId: string | null = null;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader) {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const { createClient: createAnonClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+      const userClient = createAnonClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: { user: authUser } } = await userClient.auth.getUser();
+      if (authUser) verifiedUserId = authUser.id;
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     let convId = conversation_id;
+
+    // Validate conversation ownership if conversation_id provided
+    if (convId) {
+      const { data: conv } = await supabase
+        .from("chat_conversations")
+        .select("user_id, guest_id")
+        .eq("id", convId)
+        .single();
+      if (conv) {
+        if (conv.user_id && conv.user_id !== verifiedUserId) {
+          return new Response(
+            JSON.stringify({ error: "Unauthorized" }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+    }
 
     if (!convId) {
       const conversationData: any = {
@@ -133,8 +164,8 @@ Deno.serve(async (req) => {
         guest_id: null,
       };
 
-      if (user_id) {
-        conversationData.user_id = user_id;
+      if (verifiedUserId) {
+        conversationData.user_id = verifiedUserId;
       } else {
         conversationData.guest_id = guest_id || `guest_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       }

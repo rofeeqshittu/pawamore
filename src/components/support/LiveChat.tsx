@@ -73,7 +73,6 @@ const LiveChat = () => {
         body: {
           message: userMessage.content,
           conversation_id: conversationId,
-          user_id: user?.id || null,
           guest_id: user ? null : guestId,
         },
       });

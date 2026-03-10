@@ -66,26 +66,45 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
     setSubmitting(true);
 
     try {
-      // Create order with user_id or guest email
-      const { data: order, error } = await supabase.from("orders").insert({
-        user_id: user?.id || null,
-        guest_email: !user ? form.email : null,
-        total_amount: unitPrice,
-        shipping_name: form.name,
-        shipping_phone: form.phone,
-        shipping_address: form.address,
-        shipping_city: form.city,
-        payment_method: "flutterwave",
-      } as any).select("id").single();
-      if (error) throw error;
+      let orderId: string;
 
-      await supabase.from("order_items").insert({
-        order_id: order.id,
-        product_id: product.id,
-        product_name: product.name,
-        quantity: 1,
-        unit_price: unitPrice,
-      });
+      if (user) {
+        // Authenticated user: direct insert
+        const { data: order, error } = await supabase.from("orders").insert({
+          user_id: user.id,
+          total_amount: unitPrice,
+          shipping_name: form.name,
+          shipping_phone: form.phone,
+          shipping_address: form.address,
+          shipping_city: form.city,
+          payment_method: "flutterwave",
+        } as any).select("id").single();
+        if (error) throw error;
+
+        await supabase.from("order_items").insert({
+          order_id: order.id,
+          product_id: product.id,
+          product_name: product.name,
+          quantity: 1,
+          unit_price: unitPrice,
+        });
+        orderId = order.id;
+      } else {
+        // Guest user: use server-side edge function
+        const { data, error } = await supabase.functions.invoke("create-guest-order", {
+          body: {
+            guest_email: form.email,
+            shipping_name: form.name,
+            shipping_phone: form.phone,
+            shipping_address: form.address,
+            shipping_city: form.city,
+            payment_method: "flutterwave",
+            items: [{ product_id: product.id, quantity: 1 }],
+          },
+        });
+        if (error) throw error;
+        orderId = data.order_id;
+      }
 
       // Launch Flutterwave (script might already be loaded)
       const launchFlutterwave = () => {
@@ -98,7 +117,7 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
         setOpen(false);
         FlutterwaveCheckout({
           public_key: flwPublicKey,
-          tx_ref: `PAWA-QB-${order.id}-${Date.now()}`,
+          tx_ref: `PAWA-${orderId}-${Date.now()}`,
           amount: unitPrice,
           currency: "NGN",
           payment_options: "card,banktransfer,ussd",
@@ -110,7 +129,7 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
           },
           callback: async (response: any) => {
             const { data } = await supabase.functions.invoke("verify-payment", {
-              body: { transaction_id: response.transaction_id, order_id: order.id },
+              body: { transaction_id: response.transaction_id, order_id: orderId },
             });
             if (data?.success) {
               toast({ title: "Payment successful! 🎉", description: user ? "Check your orders page for details." : "Check your email for order confirmation." });
@@ -118,7 +137,7 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
                 navigate("/orders");
               } else {
                 // For guests, show order confirmation or redirect to order lookup
-                navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${order.id}`);
+                navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${orderId}`);
               }
             } else {
               toast({ title: "Verification failed", variant: "destructive" });
@@ -129,7 +148,7 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
             if (user) {
               navigate("/orders");
             } else {
-              navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${order.id}`);
+              navigate(`/order-lookup?email=${encodeURIComponent(form.email)}&order=${orderId}`);
             }
           },
         });
