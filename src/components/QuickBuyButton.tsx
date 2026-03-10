@@ -117,7 +117,7 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
         setOpen(false);
         FlutterwaveCheckout({
           public_key: flwPublicKey,
-          tx_ref: `PAWA-QB-${order.id}-${Date.now()}`,
+          tx_ref: `PAWA-${orderId}-${Date.now()}`,
           amount: unitPrice,
           currency: "NGN",
           payment_options: "card,banktransfer,ussd",
