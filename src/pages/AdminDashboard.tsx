@@ -277,30 +277,8 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              <div className="bg-card border border-border rounded-xl p-4">
-                <Package className="w-5 h-5 text-primary mb-2" />
-                <p className="font-display font-extrabold text-xl sm:text-2xl">{products.length}</p>
-                <p className="text-xs text-muted-foreground">Total Products</p>
-              </div>
-              <div className="bg-card border border-border rounded-xl p-4">
-                <ShoppingBag className="w-5 h-5 text-primary mb-2" />
-                <p className="font-display font-extrabold text-xl sm:text-2xl">{orders.length}</p>
-                <p className="text-xs text-muted-foreground">Total Orders</p>
-              </div>
-              <div className="bg-card border border-border rounded-xl p-4">
-                <DollarSign className="w-5 h-5 text-accent mb-2" />
-                <p className="font-display font-extrabold text-lg sm:text-xl">₦{(totalRevenue / 1000).toFixed(0)}k</p>
-                <p className="text-xs text-muted-foreground">Revenue</p>
-              </div>
-              <div className="bg-card border border-border rounded-xl p-4">
-                <Users className="w-5 h-5 text-blue-500 mb-2" />
-                <p className="font-display font-extrabold text-xl sm:text-2xl">{activeNewsletters}</p>
-                <p className="text-xs text-muted-foreground">Subscribers</p>
-              </div>
-            </div>
+            <SalesAnalytics orders={orders} />
 
             {/* Alerts */}
             <div className="space-y-3">
@@ -331,26 +309,6 @@ const AdminDashboard = () => {
                   <p className="text-sm font-medium">All clear! No pending actions.</p>
                 </div>
               )}
-            </div>
-
-            {/* Quick order status breakdown */}
-            <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
-              <h3 className="font-display font-bold mb-4">Orders by Status</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {orderStatuses.map(status => {
-                  const count = orders.filter(o => o.status === status).length;
-                  const StatusIcon = statusIcons[status] || Clock;
-                  return (
-                    <div key={status} className="p-3 bg-secondary rounded-lg flex items-center gap-3">
-                      <StatusIcon className="w-4 h-4 text-muted-foreground" />
-                      <div>
-                        <p className="font-bold text-sm">{count}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{status}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
             </div>
 
             {/* Recent orders */}
