@@ -613,6 +613,35 @@ export type Database = {
         }
         Relationships: []
       }
+      review_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          review_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          review_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          review_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_images_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "product_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_tickets: {
         Row: {
           assigned_to: string | null
