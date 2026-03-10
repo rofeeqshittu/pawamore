@@ -129,7 +129,7 @@ const QuickBuyButton = ({ product, size = "default", className = "" }: QuickBuyB
           },
           callback: async (response: any) => {
             const { data } = await supabase.functions.invoke("verify-payment", {
-              body: { transaction_id: response.transaction_id, order_id: order.id },
+              body: { transaction_id: response.transaction_id, order_id: orderId },
             });
             if (data?.success) {
               toast({ title: "Payment successful! 🎉", description: user ? "Check your orders page for details." : "Check your email for order confirmation." });
