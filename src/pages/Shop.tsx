@@ -3,17 +3,21 @@ import Layout from "@/components/Layout";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Search, X, GitCompare } from "lucide-react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ProductSkeleton from "@/components/ProductSkeleton";
 import InventoryAlert from "@/components/InventoryAlert";
 import ShopFilters, { ShopFiltersSidebar, type ShopFilterState } from "@/components/shop/ShopFilters";
 import ProductCard from "@/components/shop/ProductCard";
+import ShopPagination from "@/components/shop/ShopPagination";
+import ProductComparison from "@/components/shop/ProductComparison";
 import { supabase } from "@/integrations/supabase/client";
 import useSEO from "@/hooks/useSEO";
 import { useCart } from "@/contexts/CartContext";
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
 
 interface Product {
   id: string;
@@ -41,6 +45,8 @@ interface Category {
 }
 
 const KNOWN_BRANDS = ["EcoFlow", "Itel Energy", "Felicity Solar", "Luminous", "Bluetti", "Growatt", "Victron", "SunKing"];
+const PRODUCTS_PER_PAGE = 12;
+const MAX_COMPARE = 3;
 
 const Shop = () => {
   useSEO({
@@ -54,6 +60,9 @@ const Shop = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [compareProducts, setCompareProducts] = useState<Product[]>([]);
+  const [compareOpen, setCompareOpen] = useState(false);
 
   const [filters, setFilters] = useState<ShopFilterState>({
     category: "all",
@@ -86,7 +95,11 @@ const Shop = () => {
     fetchData();
   }, [isReady]);
 
-  // Extract brands from product names
+  // Reset page when filters/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters]);
+
   const availableBrands = useMemo(() => {
     const found = new Set<string>();
     products.forEach((p) => {
@@ -101,7 +114,6 @@ const Shop = () => {
 
   const filteredProducts = useMemo(() => {
     let result = products.filter((p) => {
-      // Search
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         const matches =
@@ -110,22 +122,17 @@ const Shop = () => {
           (p.description || "").toLowerCase().includes(q);
         if (!matches) return false;
       }
-      // Category
       if (filters.category !== "all" && (p.product_categories as any)?.slug !== filters.category) return false;
-      // Brand
       if (filters.brands.length > 0) {
         const matchesBrand = filters.brands.some((b) => p.name.toLowerCase().includes(b.toLowerCase()));
         if (!matchesBrand) return false;
       }
-      // Price
       const effectivePrice = p.discount_price ?? p.price;
       if (effectivePrice < filters.minPrice || effectivePrice > filters.maxPrice) return false;
-      // Stock
       if (filters.inStock && p.stock_quantity !== null && p.stock_quantity <= 0) return false;
       return true;
     });
 
-    // Sort
     switch (filters.sortBy) {
       case "price-low":
         result.sort((a, b) => (a.discount_price ?? a.price) - (b.discount_price ?? b.price));
@@ -134,7 +141,6 @@ const Shop = () => {
         result.sort((a, b) => (b.discount_price ?? b.price) - (a.discount_price ?? a.price));
         break;
       case "newest":
-        // no created_at in select but we can reverse default order
         result.reverse();
         break;
       case "popular":
@@ -151,6 +157,31 @@ const Shop = () => {
     }
     return result;
   }, [products, searchQuery, filters]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * PRODUCTS_PER_PAGE,
+    currentPage * PRODUCTS_PER_PAGE
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Compare
+  const toggleCompare = (product: Product) => {
+    setCompareProducts((prev) => {
+      const exists = prev.find((p) => p.id === product.id);
+      if (exists) return prev.filter((p) => p.id !== product.id);
+      if (prev.length >= MAX_COMPARE) {
+        toast({ title: `Compare up to ${MAX_COMPARE} products`, variant: "destructive" });
+        return prev;
+      }
+      return [...prev, product];
+    });
+  };
 
   return (
     <ErrorBoundary>
@@ -175,7 +206,7 @@ const Shop = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search products by name, brand, or description..."
+                placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-10 min-h-[44px]"
@@ -253,18 +284,66 @@ const Shop = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                    {filteredProducts.map((product) => (
-                      <ScrollReveal key={product.id}>
-                        <ProductCard product={product} onAddToCart={addToCart} />
-                      </ScrollReveal>
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                      {paginatedProducts.map((product) => (
+                        <ScrollReveal key={product.id}>
+                          <ProductCard
+                            product={product}
+                            onAddToCart={addToCart}
+                            isComparing={!!compareProducts.find((p) => p.id === product.id)}
+                            onToggleCompare={toggleCompare}
+                            compareDisabled={compareProducts.length >= MAX_COMPARE}
+                          />
+                        </ScrollReveal>
+                      ))}
+                    </div>
+                    <ShopPagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </>
                 )}
               </div>
             </div>
           </div>
         </section>
+
+        {/* Compare Floating Bar */}
+        {compareProducts.length > 0 && (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-card border-2 border-primary rounded-xl shadow-xl px-3 sm:px-5 py-3 flex items-center gap-2 sm:gap-3 max-w-[95vw]">
+            <GitCompare className="w-4 h-4 text-primary shrink-0" />
+            <span className="text-xs sm:text-sm font-display font-bold whitespace-nowrap">
+              {compareProducts.length}/{MAX_COMPARE}
+            </span>
+            <div className="flex gap-1">
+              {compareProducts.map((p) => (
+                <Badge key={p.id} variant="secondary" className="text-[10px] max-w-[80px] sm:max-w-[120px] truncate gap-1">
+                  {p.name.split(" ").slice(0, 2).join(" ")}
+                  <X className="w-2.5 h-2.5 shrink-0 cursor-pointer" onClick={() => toggleCompare(p)} />
+                </Badge>
+              ))}
+            </div>
+            <Button
+              variant="amber"
+              size="sm"
+              onClick={() => setCompareOpen(true)}
+              disabled={compareProducts.length < 2}
+              className="text-[10px] sm:text-xs min-h-[36px] px-3"
+            >
+              Compare
+            </Button>
+          </div>
+        )}
+
+        <ProductComparison
+          products={compareProducts}
+          onRemove={(id) => setCompareProducts((prev) => prev.filter((p) => p.id !== id))}
+          onClear={() => setCompareProducts([])}
+          open={compareOpen}
+          onOpenChange={setCompareOpen}
+        />
 
         {/* CTA */}
         <section className="py-8 sm:py-10 lg:py-14 bg-forest">
