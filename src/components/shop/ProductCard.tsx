@@ -81,25 +81,30 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           )}
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-1.5 mt-auto">
-          <Link to={`/products/${product.slug}`} className="flex-1">
-            <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-xs min-h-[44px]" size="sm">
+      {/* Actions — stacked on mobile, row on larger screens */}
+        <div className="flex flex-col gap-2 mt-auto">
+          {/* Primary action row */}
+          <Link to={`/products/${product.slug}`} className="w-full">
+            <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-xs min-h-[40px] sm:min-h-[44px]" size="sm">
               View Details
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onAddToCart(product.id)}
-            disabled={outOfStock}
-            className="px-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center"
-            aria-label="Add to cart"
-          >
-            <ShoppingCart className="w-4 h-4" />
-          </Button>
-          <WishlistButton productId={product.id} productName={product.name} size="sm" variant="outline" className="px-2.5 min-h-[44px] min-w-[44px]" />
-          <QuickBuyButton product={product} size="sm" className="px-2.5 min-h-[44px] min-w-[44px]" />
+          {/* Secondary actions row */}
+          <div className="flex gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onAddToCart(product.id)}
+              disabled={outOfStock}
+              className="flex-1 min-h-[36px] sm:min-h-[40px] text-[10px] sm:text-xs gap-1"
+              aria-label="Add to cart"
+            >
+              <ShoppingCart className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden xs:inline">Cart</span>
+            </Button>
+            <WishlistButton productId={product.id} productName={product.name} size="sm" variant="outline" className="flex-1 min-h-[36px] sm:min-h-[40px] text-[10px] sm:text-xs" />
+            <QuickBuyButton product={product} size="sm" className="flex-1 min-h-[36px] sm:min-h-[40px] text-[10px] sm:text-xs" />
+          </div>
         </div>
       </div>
     </div>
