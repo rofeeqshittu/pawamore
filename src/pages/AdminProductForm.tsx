@@ -270,13 +270,20 @@ const AdminProductForm = () => {
 
           {/* Category & Status */}
           <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4">
-            <h2 className="font-display font-bold text-lg">Category & Status</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <h2 className="font-display font-bold text-lg">Category, Brand & Status</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Category</label>
                 <select className={inputClass} value={form.category_id} onChange={(e) => handleChange("category_id", e.target.value)}>
                   <option value="">No category</option>
                   {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Brand</label>
+                <select className={inputClass} value={form.brand_id} onChange={(e) => handleChange("brand_id", e.target.value)}>
+                  <option value="">No brand</option>
+                  {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
               </div>
               <div>
