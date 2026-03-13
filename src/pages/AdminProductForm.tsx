@@ -55,6 +55,7 @@ const AdminProductForm = () => {
     if (data) {
       setForm({
         name: data.name, slug: data.slug, category_id: data.category_id || "",
+        brand_id: (data as any).brand_id || "",
         description: data.description || "", short_description: data.short_description || "",
         price: String(data.price), discount_price: data.discount_price ? String(data.discount_price) : "",
         powers: data.powers || "", ideal_for: data.ideal_for || "", promo_label: data.promo_label || "",
