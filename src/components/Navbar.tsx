@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, User, LogOut, Shield, ShoppingCart, Heart, Settings } from "lucide-react";
+import { Menu, X, User, LogOut, Shield, ShoppingCart, Heart, Settings, ChevronDown } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logo from "@/assets/logo.png";
 
 const navLinks = [
@@ -26,7 +33,6 @@ const Navbar = () => {
   const { itemCount } = useCart();
 
   const handleLoginClick = () => {
-    // Save current page to return after login
     sessionStorage.setItem("intendedPath", location.pathname + location.search);
     navigate("/login");
   };
@@ -55,7 +61,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop CTA / Auth */}
+        {/* Desktop CTA / Auth — grouped into dropdown */}
         <div className="hidden lg:flex items-center gap-2">
           <Link to="/cart" className="relative text-primary-foreground/80 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ShoppingCart className="w-5 h-5" />
@@ -69,28 +75,35 @@ const Navbar = () => {
             </Link>
           )}
           {user ? (
-            <>
-              {isAdmin && (
-                <Link to="/admin">
-                  <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-accent">
-                    <Shield className="w-4 h-4 mr-1" /> Admin
-                  </Button>
-                </Link>
-              )}
-              <Link to="/profile">
-                <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-accent">
-                  <Settings className="w-4 h-4 mr-1" /> Profile
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-accent gap-1">
+                  <User className="w-4 h-4" />
+                  <span className="max-w-[80px] truncate text-xs">Account</span>
+                  <ChevronDown className="w-3 h-3" />
                 </Button>
-              </Link>
-              <Link to="/orders">
-                <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-accent">
-                  <User className="w-4 h-4 mr-1" /> Orders
-                </Button>
-              </Link>
-              <Button variant="ghost" size="sm" onClick={signOut} className="text-primary-foreground/80 hover:text-accent">
-                <LogOut className="w-4 h-4 mr-1" /> Logout
-              </Button>
-            </>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate("/admin")} className="gap-2 cursor-pointer">
+                      <Shield className="w-4 h-4" /> Admin Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                <DropdownMenuItem onClick={() => navigate("/profile")} className="gap-2 cursor-pointer">
+                  <Settings className="w-4 h-4" /> Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/orders")} className="gap-2 cursor-pointer">
+                  <ShoppingCart className="w-4 h-4" /> My Orders
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="gap-2 cursor-pointer text-destructive">
+                  <LogOut className="w-4 h-4" /> Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
            ) : (
             <Button variant="ghost" size="sm" onClick={handleLoginClick} className="text-primary-foreground/80 hover:text-accent">
               <User className="w-4 h-4 mr-1" /> Login
@@ -102,7 +115,7 @@ const Navbar = () => {
          </div>
 
         {/* Mobile Cart & Wishlist & Toggle */}
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-1 lg:hidden">
           <Link to="/cart" className="relative text-primary-foreground/80 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ShoppingCart className="w-5 h-5" />
             {itemCount > 0 && (
@@ -149,11 +162,8 @@ const Navbar = () => {
                      <Link to="/profile" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20 min-h-[44px] flex items-center">
                        <Settings className="w-4 h-4 inline mr-2" /> Profile
                      </Link>
-                     <Link to="/wishlist" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20 min-h-[44px] flex items-center">
-                       <Heart className="w-4 h-4 inline mr-2" /> Wishlist
-                     </Link>
                      <Link to="/orders" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20 min-h-[44px] flex items-center">
-                       <User className="w-4 h-4 inline mr-2" /> My Orders
+                       <ShoppingCart className="w-4 h-4 inline mr-2" /> My Orders
                      </Link>
                      <button onClick={() => { signOut(); setIsOpen(false); }} className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-primary-foreground/80 hover:bg-primary/20 min-h-[44px] flex items-center">
                        <LogOut className="w-4 h-4 inline mr-2" /> Logout

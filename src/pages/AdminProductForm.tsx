@@ -7,6 +7,7 @@ import { ArrowLeft, Upload, X, Loader2 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 interface Category { id: string; name: string; slug: string; }
+interface Brand { id: string; name: string; slug: string; }
 
 const AdminProductForm = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
@@ -15,6 +16,7 @@ const AdminProductForm = () => {
   const isEditing = id && id !== "new";
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
@@ -22,7 +24,7 @@ const AdminProductForm = () => {
   const [videos, setVideos] = useState<{ id?: string; video_url: string; thumbnail_url?: string; sort_order: number }[]>([]);
 
   const [form, setForm] = useState({
-    name: "", slug: "", category_id: "", description: "", short_description: "",
+    name: "", slug: "", category_id: "", brand_id: "", description: "", short_description: "",
     price: "", discount_price: "", powers: "", ideal_for: "", promo_label: "",
     stock_quantity: "0", status: "active", is_featured: false, is_popular: false,
     specs: "",
@@ -34,6 +36,7 @@ const AdminProductForm = () => {
 
   useEffect(() => {
     fetchCategories();
+    fetchBrands();
     if (isEditing) fetchProduct();
   }, [isEditing]);
 
@@ -42,11 +45,17 @@ const AdminProductForm = () => {
     setCategories((data as any) || []);
   };
 
+  const fetchBrands = async () => {
+    const { data } = await supabase.from("brands").select("id, name, slug").order("name");
+    setBrands((data as any) || []);
+  };
+
   const fetchProduct = async () => {
     const { data } = await supabase.from("products").select("*, product_images(id, image_url, is_primary, sort_order), product_videos(id, video_url, thumbnail_url, sort_order)").eq("id", id!).single();
     if (data) {
       setForm({
         name: data.name, slug: data.slug, category_id: data.category_id || "",
+        brand_id: (data as any).brand_id || "",
         description: data.description || "", short_description: data.short_description || "",
         price: String(data.price), discount_price: data.discount_price ? String(data.discount_price) : "",
         powers: data.powers || "", ideal_for: data.ideal_for || "", promo_label: data.promo_label || "",
@@ -132,6 +141,7 @@ const AdminProductForm = () => {
 
     const productData = {
       name: form.name, slug: form.slug, category_id: form.category_id || null,
+      brand_id: form.brand_id || null,
       description: form.description, short_description: form.short_description,
       price: parseFloat(form.price), discount_price: form.discount_price ? parseFloat(form.discount_price) : null,
       powers: form.powers || null, ideal_for: form.ideal_for || null, promo_label: form.promo_label || null,
@@ -260,13 +270,20 @@ const AdminProductForm = () => {
 
           {/* Category & Status */}
           <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4">
-            <h2 className="font-display font-bold text-lg">Category & Status</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <h2 className="font-display font-bold text-lg">Category, Brand & Status</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Category</label>
                 <select className={inputClass} value={form.category_id} onChange={(e) => handleChange("category_id", e.target.value)}>
                   <option value="">No category</option>
                   {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Brand</label>
+                <select className={inputClass} value={form.brand_id} onChange={(e) => handleChange("brand_id", e.target.value)}>
+                  <option value="">No brand</option>
+                  {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
               </div>
               <div>

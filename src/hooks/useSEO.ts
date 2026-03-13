@@ -3,29 +3,48 @@ import { useEffect } from "react";
 interface SEOProps {
   title: string;
   description: string;
+  image?: string;
+  url?: string;
+  type?: string;
 }
 
-const useSEO = ({ title, description }: SEOProps) => {
+const useSEO = ({ title, description, image, url, type = "website" }: SEOProps) => {
   useEffect(() => {
     document.title = title;
-    
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute("content", description);
+
+    const updateMeta = (attr: string, key: string, content: string) => {
+      let el = document.querySelector(`meta[${attr}="${key}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+
+    updateMeta("name", "description", description);
+    updateMeta("property", "og:title", title);
+    updateMeta("property", "og:description", description);
+    updateMeta("property", "og:type", type);
+    updateMeta("property", "og:site_name", "PawaMore Systems");
+    updateMeta("name", "twitter:card", "summary_large_image");
+    updateMeta("name", "twitter:title", title);
+    updateMeta("name", "twitter:description", description);
+
+    if (image) {
+      // Ensure absolute URL for OG image
+      const absoluteImage = image.startsWith("http") ? image : `${window.location.origin}${image}`;
+      updateMeta("property", "og:image", absoluteImage);
+      updateMeta("name", "twitter:image", absoluteImage);
     }
 
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute("content", title);
-
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute("content", description);
-
-    const twTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twTitle) twTitle.setAttribute("content", title);
-
-    const twDesc = document.querySelector('meta[name="twitter:description"]');
-    if (twDesc) twDesc.setAttribute("content", description);
-  }, [title, description]);
+    if (url) {
+      const absoluteUrl = url.startsWith("http") ? url : `${window.location.origin}${url}`;
+      updateMeta("property", "og:url", absoluteUrl);
+    } else {
+      updateMeta("property", "og:url", window.location.href);
+    }
+  }, [title, description, image, url, type]);
 };
 
 export default useSEO;

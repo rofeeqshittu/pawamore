@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { Image as ImageIcon, ShoppingCart, GitCompare } from "lucide-react";
+import { Image as ImageIcon, ShoppingCart, GitCompare, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import QuickBuyButton from "@/components/QuickBuyButton";
 import WishlistButton from "@/components/WishlistButton";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import OptimizedImage from "@/components/OptimizedImage";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface Product {
   id: string;
@@ -32,17 +32,17 @@ interface ProductCardProps {
 const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compareDisabled }: ProductCardProps) => {
   const primaryImage = product.product_images?.find((i) => i.is_primary)?.image_url || product.product_images?.[0]?.image_url;
   const outOfStock = product.stock_quantity !== null && product.stock_quantity !== undefined && product.stock_quantity <= 0;
+  const effectivePrice = product.discount_price ?? product.price;
+  const productUrl = `${window.location.origin}/products/${product.slug}`;
 
   return (
     <div className={`rounded-xl overflow-hidden border-2 bg-card transition-all hover:shadow-[var(--shadow-elevated)] flex flex-col ${isComparing ? "border-primary ring-2 ring-primary/20" : product.is_popular ? "border-accent" : "border-border"}`}>
-      {/* Promo / Popular label */}
       {(product.promo_label || product.is_popular) && (
         <div className={`text-center py-1 font-display font-bold text-[10px] uppercase tracking-wider ${product.promo_label ? "bg-destructive text-destructive-foreground" : "bg-accent text-foreground"}`}>
           {product.promo_label || "⭐ Popular"}
         </div>
       )}
 
-      {/* Image */}
       <div className="aspect-[4/3] bg-secondary relative overflow-hidden">
         {primaryImage ? (
           <OptimizedImage src={primaryImage} alt={product.name} className="w-full h-full object-cover" />
@@ -59,7 +59,6 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
             <span className="font-display font-bold text-sm text-destructive bg-background/80 px-3 py-1 rounded-full">Out of Stock</span>
           </div>
         )}
-        {/* Compare checkbox overlay */}
         {onToggleCompare && (
           <button
             onClick={(e) => { e.preventDefault(); onToggleCompare(product); }}
@@ -74,8 +73,7 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
         )}
       </div>
 
-      {/* Info */}
-      <div className="p-2.5 sm:p-4 flex flex-col flex-1">
+      <div className="p-2.5 sm:p-4 flex flex-col flex-1 min-w-0">
         {(product.product_categories as any) && (
           <span className="text-[9px] sm:text-[10px] font-display font-semibold text-primary uppercase tracking-wider">
             {(product.product_categories as any).name}
@@ -86,7 +84,6 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
           {product.short_description || ""}
         </p>
 
-        {/* Price */}
         <div className="mb-2 sm:mb-3">
           {product.discount_price ? (
             <div className="flex items-baseline gap-1.5 flex-wrap">
@@ -98,39 +95,50 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
           )}
         </div>
 
-        {/* Actions — mobile: stacked icon buttons; desktop: labeled */}
+        {/* Actions */}
         <div className="flex flex-col gap-1.5 sm:gap-2 mt-auto">
-          {/* View Details — always full width */}
           <Link to={`/products/${product.slug}`} className="w-full">
-            <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-[11px] sm:text-xs min-h-[38px] sm:min-h-[44px]" size="sm">
+            <Button variant={product.is_popular ? "amber" : "outline"} className="w-full text-[11px] sm:text-xs min-h-[36px] sm:min-h-[44px]" size="sm">
               View Details
             </Button>
           </Link>
-          {/* Secondary actions — icon-only on mobile, with text on sm+ */}
-          <div className="grid grid-cols-3 gap-1 sm:gap-1.5">
+          <div className="grid grid-cols-4 gap-1 sm:gap-1.5">
             <Button
               variant="outline"
               size="sm"
               onClick={() => onAddToCart(product.id)}
               disabled={outOfStock}
-              className="min-h-[34px] sm:min-h-[40px] text-[10px] sm:text-xs px-1 sm:px-2 gap-0.5 sm:gap-1"
+              className="min-h-[32px] sm:min-h-[38px] text-[10px] sm:text-xs px-1 sm:px-2 gap-0.5"
               aria-label="Add to cart"
             >
-              <ShoppingCart className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden sm:inline truncate">Cart</span>
+              <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
             </Button>
             <WishlistButton
               productId={product.id}
               productName={product.name}
               size="sm"
               variant="outline"
-              className="min-h-[34px] sm:min-h-[40px] text-[10px] sm:text-xs px-1 sm:px-2 w-full"
+              className="min-h-[32px] sm:min-h-[38px] text-[10px] sm:text-xs px-1 sm:px-2 w-full"
             />
             <QuickBuyButton
               product={product}
               size="sm"
-              className="min-h-[34px] sm:min-h-[40px] text-[10px] sm:text-xs px-1 sm:px-2"
+              className="min-h-[32px] sm:min-h-[38px] text-[10px] sm:text-xs px-1 sm:px-2"
             />
+            <a
+              href={`https://wa.me/2347062716154?text=${encodeURIComponent(`Hi PawaMore! I'm interested in: ${product.name}\nPrice: ₦${Number(effectivePrice).toLocaleString()}\n${productUrl}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-[32px] sm:min-h-[38px] text-[10px] sm:text-xs px-1 sm:px-2 w-full text-green-600 border-green-600/30 hover:bg-green-50"
+                aria-label="Ask on WhatsApp"
+              >
+                <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+              </Button>
+            </a>
           </div>
         </div>
       </div>

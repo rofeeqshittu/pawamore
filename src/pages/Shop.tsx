@@ -34,8 +34,10 @@ interface Product {
   status: string;
   stock_quantity: number | null;
   specs: any;
+  brand_id: string | null;
   product_images: { image_url: string; is_primary: boolean }[];
   product_categories: { name: string; slug: string } | null;
+  brands: { id: string; name: string; slug: string } | null;
 }
 
 interface Category {
@@ -44,7 +46,13 @@ interface Category {
   slug: string;
 }
 
-const KNOWN_BRANDS = ["EcoFlow", "Itel Energy", "Felicity Solar", "Luminous", "Bluetti", "Growatt", "Victron", "SunKing"];
+interface Brand {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string | null;
+}
+
 const PRODUCTS_PER_PAGE = 12;
 const MAX_COMPARE = 3;
 
@@ -58,6 +66,7 @@ const Shop = () => {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -77,15 +86,17 @@ const Shop = () => {
     if (!isReady) return;
     const fetchData = async () => {
       try {
-        const [prodResult, catResult] = await Promise.all([
+        const [prodResult, catResult, brandResult] = await Promise.all([
           supabase
             .from("products")
-            .select("*, product_images(image_url, is_primary), product_categories(name, slug)")
+            .select("*, product_images(image_url, is_primary), product_categories(name, slug), brands(id, name, slug)")
             .eq("status", "active"),
           supabase.from("product_categories").select("*").order("sort_order"),
+          supabase.from("brands").select("*").order("name"),
         ]);
         setProducts((prodResult.data as any) || []);
         setCategories((catResult.data as any) || []);
+        setBrands((brandResult.data as any) || []);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -95,22 +106,29 @@ const Shop = () => {
     fetchData();
   }, [isReady]);
 
-  // Reset page when filters/search change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, filters]);
 
+  // Use DB brands for filtering
   const availableBrands = useMemo(() => {
-    const found = new Set<string>();
-    products.forEach((p) => {
-      KNOWN_BRANDS.forEach((brand) => {
-        if (p.name.toLowerCase().includes(brand.toLowerCase())) {
-          found.add(brand);
-        }
+    // Show brands that have at least one product assigned, or all if none assigned yet
+    const assignedBrandIds = new Set(products.filter(p => p.brand_id).map(p => p.brand_id));
+    if (assignedBrandIds.size === 0) {
+      // Fallback: match by product name for unassigned products
+      const found = new Set<string>();
+      const brandNames = brands.map(b => b.name);
+      products.forEach((p) => {
+        brandNames.forEach((brand) => {
+          if (p.name.toLowerCase().includes(brand.toLowerCase())) {
+            found.add(brand);
+          }
+        });
       });
-    });
-    return Array.from(found).sort();
-  }, [products]);
+      return Array.from(found).sort();
+    }
+    return brands.filter(b => assignedBrandIds.has(b.id)).map(b => b.name).sort();
+  }, [products, brands]);
 
   const filteredProducts = useMemo(() => {
     let result = products.filter((p) => {
@@ -124,8 +142,10 @@ const Shop = () => {
       }
       if (filters.category !== "all" && (p.product_categories as any)?.slug !== filters.category) return false;
       if (filters.brands.length > 0) {
-        const matchesBrand = filters.brands.some((b) => p.name.toLowerCase().includes(b.toLowerCase()));
-        if (!matchesBrand) return false;
+        const brandName = (p.brands as any)?.name;
+        const matchesBrandDb = brandName && filters.brands.includes(brandName);
+        const matchesBrandName = filters.brands.some((b) => p.name.toLowerCase().includes(b.toLowerCase()));
+        if (!matchesBrandDb && !matchesBrandName) return false;
       }
       const effectivePrice = p.discount_price ?? p.price;
       if (effectivePrice < filters.minPrice || effectivePrice > filters.maxPrice) return false;
@@ -158,7 +178,6 @@ const Shop = () => {
     return result;
   }, [products, searchQuery, filters]);
 
-  // Pagination
   const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * PRODUCTS_PER_PAGE,
@@ -170,7 +189,6 @@ const Shop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Compare
   const toggleCompare = (product: Product) => {
     setCompareProducts((prev) => {
       const exists = prev.find((p) => p.id === product.id);
@@ -199,7 +217,7 @@ const Shop = () => {
           </div>
         </section>
 
-        {/* Search Bar - Sticky */}
+        {/* Search Bar */}
         <section className="py-3 sm:py-4 border-b border-border sticky top-14 xs:top-16 md:top-20 z-40 bg-background/95 backdrop-blur-sm">
           <div className="container px-4 sm:px-6">
             <div className="relative w-full max-w-xl mx-auto lg:mx-0">
@@ -212,10 +230,7 @@ const Shop = () => {
                 className="pl-10 pr-10 min-h-[44px]"
               />
               {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
+                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   <X className="w-4 h-4" />
                 </button>
               )}
@@ -225,11 +240,11 @@ const Shop = () => {
 
         {/* Main Content */}
         <section className="py-4 sm:py-6 lg:py-8">
-          <div className="container px-4 sm:px-6">
+          <div className="container px-4 sm:px-6 overflow-x-hidden">
             <InventoryAlert />
 
-            <div className="flex gap-6 lg:gap-8">
-              {/* Desktop Sidebar Filters */}
+            <div className="flex gap-4 sm:gap-6 lg:gap-8">
+              {/* Desktop Sidebar */}
               <aside className="hidden lg:block w-[240px] xl:w-[260px] shrink-0">
                 <div className="sticky top-36 space-y-4">
                   <h2 className="font-display font-bold text-base">Filters</h2>
@@ -242,9 +257,8 @@ const Shop = () => {
                 </div>
               </aside>
 
-              {/* Product Grid Area */}
-              <div className="flex-1 min-w-0">
-                {/* Mobile filter controls */}
+              {/* Product Grid */}
+              <div className="flex-1 min-w-0 overflow-hidden">
                 <div className="mb-4">
                   <ShopFilters
                     filters={filters}
@@ -256,7 +270,7 @@ const Shop = () => {
                 </div>
 
                 {loading ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
                     {Array.from({ length: 8 }).map((_, i) => (
                       <ProductSkeleton key={i} />
                     ))}
@@ -270,14 +284,7 @@ const Shop = () => {
                       variant="outline"
                       onClick={() => {
                         setSearchQuery("");
-                        setFilters({
-                          category: "all",
-                          brands: [],
-                          minPrice: 0,
-                          maxPrice: 10000000,
-                          sortBy: "featured",
-                          inStock: false,
-                        });
+                        setFilters({ category: "all", brands: [], minPrice: 0, maxPrice: 10000000, sortBy: "featured", inStock: false });
                       }}
                     >
                       Clear All Filters
@@ -285,7 +292,7 @@ const Shop = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
                       {paginatedProducts.map((product) => (
                         <ScrollReveal key={product.id}>
                           <ProductCard
@@ -317,9 +324,9 @@ const Shop = () => {
             <span className="text-xs sm:text-sm font-display font-bold whitespace-nowrap">
               {compareProducts.length}/{MAX_COMPARE}
             </span>
-            <div className="flex gap-1">
+            <div className="flex gap-1 overflow-hidden">
               {compareProducts.map((p) => (
-                <Badge key={p.id} variant="secondary" className="text-[10px] max-w-[80px] sm:max-w-[120px] truncate gap-1">
+                <Badge key={p.id} variant="secondary" className="text-[10px] max-w-[70px] sm:max-w-[120px] truncate gap-1">
                   {p.name.split(" ").slice(0, 2).join(" ")}
                   <X className="w-2.5 h-2.5 shrink-0 cursor-pointer" onClick={() => toggleCompare(p)} />
                 </Badge>
