@@ -141,6 +141,7 @@ const AdminProductForm = () => {
 
     const productData = {
       name: form.name, slug: form.slug, category_id: form.category_id || null,
+      brand_id: form.brand_id || null,
       description: form.description, short_description: form.short_description,
       price: parseFloat(form.price), discount_price: form.discount_price ? parseFloat(form.discount_price) : null,
       powers: form.powers || null, ideal_for: form.ideal_for || null, promo_label: form.promo_label || null,
