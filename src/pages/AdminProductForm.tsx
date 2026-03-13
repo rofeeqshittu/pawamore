@@ -16,6 +16,7 @@ const AdminProductForm = () => {
   const isEditing = id && id !== "new";
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
