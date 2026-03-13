@@ -7,6 +7,7 @@ import { ArrowLeft, Upload, X, Loader2 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 interface Category { id: string; name: string; slug: string; }
+interface Brand { id: string; name: string; slug: string; }
 
 const AdminProductForm = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
