@@ -11,13 +11,14 @@ import {
   Plus, Edit, Trash2, Image as ImageIcon, Package, LogOut, Eye,
   ShoppingBag, Users, DollarSign, ChevronDown, ChevronUp, Bell,
   Mail, Star, TrendingUp, AlertTriangle, CheckCircle, Clock, XCircle,
-  Ticket, HelpCircle
+  Ticket, HelpCircle, Bot
 } from "lucide-react";
 import SupportTicketManagement from "@/components/admin/SupportTicketManagement";
 import FAQManagement from "@/components/admin/FAQManagement";
 import SalesAnalytics from "@/components/admin/SalesAnalytics";
 import CustomerManagement from "@/components/admin/CustomerManagement";
 import NewsletterComposer from "@/components/admin/NewsletterComposer";
+import ScraperManager from "@/components/admin/ScraperManager";
 import logo from "@/assets/logo.png";
 
 interface Product {
@@ -274,6 +275,9 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="faqs" className="text-xs sm:text-sm whitespace-nowrap">
               <HelpCircle className="w-3.5 h-3.5 mr-1" />FAQs
+            </TabsTrigger>
+            <TabsTrigger value="scraper" className="text-xs sm:text-sm whitespace-nowrap">
+              <Bot className="w-3.5 h-3.5 mr-1" />Scraper
             </TabsTrigger>
           </TabsList>
 
@@ -625,6 +629,11 @@ const AdminDashboard = () => {
           {/* FAQs Tab */}
           <TabsContent value="faqs">
             <FAQManagement />
+          </TabsContent>
+
+          {/* Scraper Tab */}
+          <TabsContent value="scraper">
+            <ScraperManager />
           </TabsContent>
         </Tabs>
       </div>
