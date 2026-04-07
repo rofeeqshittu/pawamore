@@ -215,8 +215,9 @@ const ProductDetail = () => {
                   <div className="flex gap-2 overflow-x-auto pb-2">
                     {images.map((img: any, i: number) => (
                       <button key={img.id} onClick={() => setSelectedImage(i)}
+                        aria-label={`View image ${i + 1} of ${images.length}`}
                         className={`w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 ${i === selectedImage ? "border-primary" : "border-border"}`}>
-                        <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                        <img src={img.image_url} alt={`${product.name} - image ${i + 1}`} className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>
