@@ -29,6 +29,12 @@ const ProductDetail = () => {
   const primaryImage = images.find((i: any) => i.is_primary)?.image_url || images[0]?.image_url;
   const productUrl = typeof window !== "undefined" ? window.location.href : "";
   
+  // OG proxy URL for social sharing — crawlers read this and get product-specific meta tags
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const shareUrl = product?.slug 
+    ? `${supabaseUrl}/functions/v1/og-image-proxy?slug=${encodeURIComponent(product.slug)}`
+    : productUrl;
+  
   // Format price for display
   const displayPrice = product?.discount_price || product?.price;
   const formattedPrice = displayPrice ? `₦${Number(displayPrice).toLocaleString('en-NG')}` : '';
@@ -152,9 +158,9 @@ const ProductDetail = () => {
 
   const handleShare = async () => {
     if (navigator.share) {
-      await navigator.share({ title: product?.name, text: product?.short_description || "", url: productUrl });
+      await navigator.share({ title: product?.name, text: product?.short_description || "", url: shareUrl });
     } else {
-      await navigator.clipboard.writeText(productUrl);
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       toast({ title: "Link copied!" });
       setTimeout(() => setCopied(false), 2000);
@@ -162,7 +168,7 @@ const ProductDetail = () => {
   };
 
   const handleCopyLink = async () => {
-    await navigator.clipboard.writeText(productUrl);
+    await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     toast({ title: "Link copied to clipboard!" });
     setTimeout(() => setCopied(false), 2000);
@@ -209,8 +215,9 @@ const ProductDetail = () => {
                   <div className="flex gap-2 overflow-x-auto pb-2">
                     {images.map((img: any, i: number) => (
                       <button key={img.id} onClick={() => setSelectedImage(i)}
+                        aria-label={`View image ${i + 1} of ${images.length}`}
                         className={`w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 ${i === selectedImage ? "border-primary" : "border-border"}`}>
-                        <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                        <img src={img.image_url} alt={`${product.name} - image ${i + 1}`} className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>
@@ -275,7 +282,7 @@ const ProductDetail = () => {
                 <WhatsAppButton
                   productName={product.name}
                   productPrice={price}
-                  productUrl={productUrl}
+                  productUrl={shareUrl}
                   size="default"
                   className="min-h-[40px] sm:min-h-[44px]"
                 />

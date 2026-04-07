@@ -33,7 +33,8 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
   const primaryImage = product.product_images?.find((i) => i.is_primary)?.image_url || product.product_images?.[0]?.image_url;
   const outOfStock = product.stock_quantity !== null && product.stock_quantity !== undefined && product.stock_quantity <= 0;
   const effectivePrice = product.discount_price ?? product.price;
-  const productUrl = `${window.location.origin}/products/${product.slug}`;
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const shareUrl = `${supabaseUrl}/functions/v1/og-image-proxy?slug=${encodeURIComponent(product.slug)}`;
 
   return (
     <div className={`rounded-xl overflow-hidden border-2 bg-card transition-all hover:shadow-[var(--shadow-elevated)] flex flex-col ${isComparing ? "border-primary ring-2 ring-primary/20" : product.is_popular ? "border-accent" : "border-border"}`}>
@@ -126,7 +127,7 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
               className="min-h-[32px] sm:min-h-[38px] text-[10px] sm:text-xs px-1 sm:px-2"
             />
             <a
-              href={`https://wa.me/2347062716154?text=${encodeURIComponent(`Hi PawaMore! I'm interested in: ${product.name}\nPrice: ₦${Number(effectivePrice).toLocaleString()}\n${productUrl}`)}`}
+              href={`https://wa.me/2347062716154?text=${encodeURIComponent(`Hi PawaMore! I'm interested in: ${product.name}\nPrice: ₦${Number(effectivePrice).toLocaleString()}\n${shareUrl}`)}`}
               target="_blank"
               rel="noopener noreferrer"
             >
