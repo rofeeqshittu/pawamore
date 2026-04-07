@@ -184,16 +184,8 @@ const ProductImportModal = ({ open, onOpenChange, onSuccess }: ProductImportModa
         if (imagesError) console.error('Failed to insert images:', imagesError);
       }
 
-      // Update import log with product_id if we have log_id
-      if ((scrapedData as any).log_id) {
-        await supabase
-          .from('product_import_logs')
-          .update({ 
-            product_id: product.id,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', (scrapedData as any).log_id);
-      }
+      // Log import completion
+      console.log('Product imported successfully:', product.id);
 
       toast({
         title: status === 'active' ? "Product published! 🎉" : "Product saved as draft",
