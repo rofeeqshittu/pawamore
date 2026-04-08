@@ -7,7 +7,7 @@ interface CartItem {
   id: string;
   product_id: string;
   quantity: number;
-  product: {
+  products?: {
     name: string;
     slug: string;
     price: number;
@@ -20,6 +20,7 @@ interface CartItem {
 interface CartContextType {
   items: CartItem[];
   loading: boolean;
+  authLoading: boolean;
   itemCount: number;
   total: number;
   addToCart: (productId: string) => Promise<void>;
@@ -30,7 +31,7 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType>({
-  items: [], loading: false, itemCount: 0, total: 0,
+  items: [], loading: false, authLoading: true, itemCount: 0, total: 0,
   addToCart: async () => {}, removeFromCart: async () => {},
   updateQuantity: async () => {}, clearCart: async () => {}, refreshCart: async () => {},
 });
@@ -38,7 +39,7 @@ const CartContext = createContext<CartContextType>({
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -87,12 +88,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
   const total = items.reduce((sum, i) => {
-    const price = (i as any).products?.discount_price || (i as any).products?.price || 0;
+    const product = i.products;
+    const price = product?.discount_price ?? product?.price ?? 0;
     return sum + Number(price) * i.quantity;
   }, 0);
 
   return (
-    <CartContext.Provider value={{ items, loading, itemCount, total, addToCart, removeFromCart, updateQuantity, clearCart, refreshCart: fetchCart }}>
+    <CartContext.Provider value={{ items, loading, authLoading, itemCount, total, addToCart, removeFromCart, updateQuantity, clearCart, refreshCart: fetchCart }}>
       {children}
     </CartContext.Provider>
   );

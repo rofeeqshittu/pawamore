@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { ShoppingCart, Share2, Copy, CheckCircle, ChevronLeft, Image as ImageIcon, Play, MessageCircle } from "lucide-react";
+import { ShoppingCart, Share2, Copy, CheckCircle, ChevronLeft, Image as ImageIcon, Play } from "lucide-react";
 import QuickBuyButton from "@/components/QuickBuyButton";
 import ProductReviews from "@/components/ProductReviews";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -181,13 +182,14 @@ const ProductDetail = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (loading) return <Layout><div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div></Layout>;
-  if (!product) return <Layout><div className="min-h-screen flex flex-col items-center justify-center gap-4"><p className="text-muted-foreground">Product not found.</p><Link to="/products"><Button variant="amber">← Back to Products</Button></Link></div></Layout>;
+  if (loading) return <ErrorBoundary><Layout><div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div></Layout></ErrorBoundary>;
+  if (!product) return <ErrorBoundary><Layout><div className="min-h-screen flex flex-col items-center justify-center gap-4"><p className="text-muted-foreground">Product not found.</p><Link to="/products"><Button variant="amber">&larr; Back to Products</Button></Link></div></Layout></ErrorBoundary>;
 
   const price = product.discount_price || product.price;
 
   return (
-    <Layout>
+    <ErrorBoundary>
+      <Layout>
       <div className="container py-6 sm:py-10 md:py-16 px-4 sm:px-6">
         <Link to="/products" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 sm:mb-6">
           <ChevronLeft className="w-4 h-4 mr-1" /> Back to Products
@@ -342,7 +344,8 @@ const ProductDetail = () => {
           />
         </div>
       </div>
-    </Layout>
+      </Layout>
+    </ErrorBoundary>
   );
 };
 

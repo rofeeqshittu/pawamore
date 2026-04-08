@@ -125,7 +125,7 @@ const Profile = () => {
           city: form.city || null,
           state: form.state || null,
           avatar_url: form.avatar_url || null,
-        });
+        }, { onConflict: 'user_id' });
 
       if (error) throw error;
 

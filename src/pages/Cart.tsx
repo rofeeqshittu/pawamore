@@ -2,20 +2,31 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { Minus, Plus, Trash2, ShoppingCart } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, Loader2 } from "lucide-react";
 
 const Cart = () => {
-  const { items, loading, total, updateQuantity, removeFromCart } = useCart();
-  const { user } = useAuth();
+  const { items, loading, authLoading, total, updateQuantity, removeFromCart } = useCart();
 
-  if (!user) {
+  // Show loading spinner while auth is initializing
+  if (authLoading) {
+    return (
+      <Layout>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground text-sm">Loading...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  // After auth is ready, if cart is empty and not loading, show empty or login prompt
+  if (!loading && items.length === 0) {
     return (
       <Layout>
         <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
           <ShoppingCart className="w-16 h-16 text-muted-foreground/30" />
-          <p className="text-muted-foreground">Please log in to view your cart.</p>
-          <Link to="/login"><Button variant="amber">Login →</Button></Link>
+          <p className="text-muted-foreground">Your cart is empty.</p>
+          <Link to="/products"><Button variant="amber">Browse Products →</Button></Link>
         </div>
       </Layout>
     );
@@ -38,9 +49,9 @@ const Cart = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => {
-                const p = (item as any).products;
-                const img = p?.product_images?.find((i: any) => i.is_primary)?.image_url || p?.product_images?.[0]?.image_url;
-                const unitPrice = p?.discount_price || p?.price || 0;
+                const p = item.products;
+                const img = p?.product_images?.find((i) => i.is_primary)?.image_url || p?.product_images?.[0]?.image_url;
+                const unitPrice = p?.discount_price ?? p?.price ?? 0;
                 return (
                   <div key={item.id} className="flex gap-4 bg-card border border-border rounded-xl p-4">
                     <div className="w-20 h-20 bg-secondary rounded-lg overflow-hidden flex-shrink-0">

@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     mountedRef.current = true;
     
-    // Auth state listener (for multi-tab sync)
+    // Auth state listener (for multi-tab sync and token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mountedRef.current) return;
@@ -73,6 +73,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSession(null);
           setIsAdmin(false);
           setLoading(false);
+          return;
+        }
+        
+        // Handle token refresh - update session silently
+        if (event === 'TOKEN_REFRESHED') {
+          setSession(session);
+          setUser(session?.user ?? null);
           return;
         }
         
@@ -99,9 +106,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     initializeAuth();
 
+    // Periodic session refresh to prevent token expiry issues
+    const refreshInterval = setInterval(async () => {
+      if (!mountedRef.current) return;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.expires_at) {
+          const expiresIn = session.expires_at * 1000 - Date.now();
+          // Refresh if expiring in less than 5 minutes
+          if (expiresIn < 5 * 60 * 1000) {
+            await supabase.auth.refreshSession();
+          }
+        }
+      } catch (error) {
+        console.error("Session refresh error:", error);
+      }
+    }, 60 * 1000); // Check every minute
+
     return () => {
       mountedRef.current = false;
       subscription.unsubscribe();
+      clearInterval(refreshInterval);
     };
   }, []);
 

@@ -182,8 +182,8 @@ const Orders = () => {
     if (!error) {
       setOrders(orders.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
       toast({ title: "Order cancelled", description: "Your order has been cancelled." });
-      // Send cancellation receipt
-      sendReceiptEmail(orderId);
+      // Send cancellation receipt - don't await to avoid blocking UI
+      sendReceiptEmail(orderId).catch(console.error);
     } else {
       toast({ title: "Failed to cancel", description: error.message, variant: "destructive" });
     }
