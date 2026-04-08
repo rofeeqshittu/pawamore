@@ -35,6 +35,7 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
   const effectivePrice = product.discount_price ?? product.price;
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const shareUrl = `${supabaseUrl}/functions/v1/og-image-proxy?slug=${encodeURIComponent(product.slug)}`;
+  const cleanProductUrl = `https://pawamore.lovable.app/products/${encodeURIComponent(product.slug)}`;
 
   return (
     <div className={`rounded-xl overflow-hidden border-2 bg-card transition-all hover:shadow-[var(--shadow-elevated)] flex flex-col ${isComparing ? "border-primary ring-2 ring-primary/20" : product.is_popular ? "border-accent" : "border-border"}`}>
@@ -128,6 +129,7 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
             />
             <a
               href={`https://wa.me/2347062716154?text=${encodeURIComponent(`Hi PawaMore! I'm interested in: ${product.name}\nPrice: ₦${Number(effectivePrice).toLocaleString()}\n${shareUrl}`)}`}
+
               target="_blank"
               rel="noopener noreferrer"
             >
