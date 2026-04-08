@@ -69,9 +69,7 @@ Deno.serve(async (req) => {
     });
     const verifyData = await verifyRes.json();
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = adminClient;
 
     if (verifyData.status === "success" && verifyData.data?.status === "successful") {
       // Validate that the transaction reference matches the order to prevent fraud
