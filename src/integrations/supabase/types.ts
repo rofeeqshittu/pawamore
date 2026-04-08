@@ -721,6 +721,47 @@ export type Database = {
         }
         Relationships: []
       }
+      scraper_runs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          extracted_data: Json | null
+          id: string
+          product_id: string | null
+          status: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          extracted_data?: Json | null
+          id?: string
+          product_id?: string | null
+          status?: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          extracted_data?: Json | null
+          id?: string
+          product_id?: string | null
+          status?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scraper_runs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string

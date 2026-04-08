@@ -401,6 +401,8 @@ recommendedPanels = Math.ceil((totalDailyConsumption / 1000) / 4)
 | `get-flutterwave-key` | GET | Fetch public key securely |
 | `send-order-receipt` | POST | Email order confirmation |
 | `send-newsletter` | POST | Newsletter subscription |
+| `scrape-product-from-url` | POST | AI product import (modal) |
+| `scrape-product` | POST | AI product import (Scraper tab) |
 
 ### **Example: Create Guest Order**
 
@@ -560,6 +562,38 @@ VITE_SUPABASE_ANON_KEY=your-production-anon-key
 VITE_FLUTTERWAVE_PUBLIC_KEY=your-live-flw-key
 VITE_WHATSAPP_NUMBER=2347062716154
 ```
+
+---
+
+
+## 🤖 AI Product Scraper
+
+See [`AI_PRODUCT_SCRAPER_PLAN.md`](./AI_PRODUCT_SCRAPER_PLAN.md) for the full architecture.
+
+Two scraper approaches are available:
+
+| Approach | Edge Function | Admin UI | Audit Table |
+|---|---|---|---|
+| **Quick Import** (modal) | `scrape-product-from-url` | "Import from URL" button in Products tab | `product_import_logs` |
+| **Background Scraper** (tab) | `scrape-product` | "Scraper" tab in Admin Dashboard | `scraper_runs` |
+
+### Running locally
+
+```sh
+supabase start && supabase db push
+supabase functions serve scrape-product --env-file .env.local
+```
+
+---
+
+## 🧪 Running Tests
+
+```sh
+npm run test          # run once
+npm run test:watch    # watch mode
+```
+
+Test files live in `src/test/`. Scraper utility tests: `src/test/scraper.test.ts`.
 
 ---
 
