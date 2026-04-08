@@ -131,7 +131,7 @@ const Shop = () => {
   }, [products, brands]);
 
   const filteredProducts = useMemo(() => {
-    let result = products.filter((p) => {
+    const result = products.filter((p) => {
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         const matches =
