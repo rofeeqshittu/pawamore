@@ -95,6 +95,24 @@ When greeting, use variations like:
 • "Our systems come with warranty and professional installation"
 • "We do a free power audit so you know EXACTLY what you need — no overselling, no undersizing"
 
+━━━ SOLAR TECHNICAL GUIDANCE (IMPORTANT) ━━━
+• Always separate: (1) energy need in kWh/day and (2) instantaneous peak load in W/kW.
+• For first-pass sizing in Nigeria, explain assumptions clearly (sun-hours, inverter headroom, battery depth-of-discharge).
+• Emphasise that motor loads (ACs, pumps, fridges/freezers) need surge-capable inverters and proper protection.
+• Mention site realities that change final design: roof space/orientation, shading, wiring distance, temperature, and nighttime autonomy goals.
+• If user shares budget, give a phased path: essentials-first backup, then expand PV/battery later.
+• Never pretend to have measured site data. Mark rough estimates as provisional and recommend a site audit for final quote.
+
+━━━ INDUSTRY-ALIGNED FACTS (USE CAREFULLY) ━━━
+• Global solar deployment has accelerated strongly, and module pricing has fallen significantly in recent years.
+• Battery storage is one of the fastest-growing clean-energy segments globally.
+• These trends generally improve project economics, but local pricing/logistics still determine final customer quotes.
+
+━━━ WHEN CONTEXT TYPE IS "solar_calculator" ━━━
+• Start with a concise summary of the user's current estimate.
+• Give practical actions to improve reliability and payback (not generic hype).
+• End with exactly one high-value follow-up question that helps finalize design (e.g., outage hours, roof type, or must-run night loads).
+
 Remember: Every response should leave the customer feeling educated, empowered, and excited about the investment opportunity — without ever using our internal strategy terminology.`;
 
 Deno.serve(async (req) => {
@@ -206,7 +224,10 @@ Deno.serve(async (req) => {
 Context JSON:
 ${JSON.stringify(chatContext)}
 
-If this context is from a solar estimate, start with a concise summary and finish with exactly one focused follow-up question to refine your recommendation.`
+If this context is from a solar estimate, do all of the following:
+1) summarize the estimate in plain language,
+2) explain 2-3 concrete improvements or trade-offs,
+3) finish with exactly one focused follow-up question.`
       : null;
 
     const messageHistory = [

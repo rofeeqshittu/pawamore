@@ -44,6 +44,16 @@ const AIInsights = ({ appliances, results }: AIInsightsProps) => {
     }
 
     const generated: Insight[] = [];
+    const totalDailyKwh = appliances.reduce(
+      (sum, appliance) => sum + (appliance.watts * appliance.hoursPerDay * appliance.quantity) / 1000,
+      0
+    );
+    const rankedByDailyUse = appliances
+      .map((appliance) => ({
+        name: appliance.name,
+        dailyKwh: (appliance.watts * appliance.hoursPerDay * appliance.quantity) / 1000,
+      }))
+      .sort((a, b) => b.dailyKwh - a.dailyKwh);
 
     const highWatt = appliances.filter((appliance) => appliance.watts * appliance.quantity >= 1000);
     if (highWatt.length > 0) {
@@ -56,6 +66,19 @@ const AIInsights = ({ appliances, results }: AIInsightsProps) => {
       });
     }
 
+    if (rankedByDailyUse.length > 0 && totalDailyKwh > 0) {
+      const topLoad = rankedByDailyUse[0];
+      const topShare = (topLoad.dailyKwh / totalDailyKwh) * 100;
+      if (topShare >= 40) {
+        generated.push({
+          type: "warning",
+          icon: <AlertCircle className="h-4 w-4" />,
+          title: "Single Appliance Dominates Your Load",
+          text: `${topLoad.name} contributes about ${Math.round(topShare)}% of your daily energy use. Optimizing just this one load can significantly reduce both battery and inverter cost.`,
+        });
+      }
+    }
+
     const alwaysOn = appliances.filter((appliance) => appliance.hoursPerDay >= 20);
     if (alwaysOn.length > 0) {
       generated.push({
@@ -63,6 +86,25 @@ const AIInsights = ({ appliances, results }: AIInsightsProps) => {
         icon: <Lightbulb className="h-4 w-4" />,
         title: "Always-On Devices",
         text: `${alwaysOn.map((appliance) => appliance.name).join(", ")} run nearly 24/7. These form your baseline load, so efficient models will have an outsized impact on battery life and total system size.`,
+      });
+    }
+
+    const motorLoads = appliances.filter((appliance) => {
+      const applianceName = appliance.name.toLowerCase();
+      return (
+        applianceName.includes("pump") ||
+        applianceName.includes("fridge") ||
+        applianceName.includes("freezer") ||
+        applianceName.includes("ac") ||
+        appliance.watts >= 700
+      );
+    });
+    if (motorLoads.length > 0) {
+      generated.push({
+        type: "recommendation",
+        icon: <CheckCircle className="h-4 w-4" />,
+        title: "Surge-Load Protection",
+        text: `Because you have motor/compressor loads (${motorLoads.map((appliance) => appliance.name).join(", ")}), choose a high-surge pure sine wave inverter and use dedicated protection for these circuits.`,
       });
     }
 
@@ -97,6 +139,22 @@ const AIInsights = ({ appliances, results }: AIInsightsProps) => {
       });
     }
 
+    if (results.paybackYears > 0 && results.paybackYears <= 4) {
+      generated.push({
+        type: "recommendation",
+        icon: <CheckCircle className="h-4 w-4" />,
+        title: "Strong Financial Case",
+        text: `Your payback is around ${results.paybackYears} years, which is typically a strong return profile for residential and SME solar projects in Nigeria.`,
+      });
+    } else if (results.paybackYears > 8) {
+      generated.push({
+        type: "tip",
+        icon: <Lightbulb className="h-4 w-4" />,
+        title: "Improve ROI",
+        text: "Your payback period is on the long side. Prioritize high-usage daytime loads first, then scale battery capacity in phases to improve early return.",
+      });
+    }
+
     if (results.annualCO2Saved > 0) {
       generated.push({
         type: "tip",
@@ -106,11 +164,21 @@ const AIInsights = ({ appliances, results }: AIInsightsProps) => {
       });
     }
 
+    if (results.panelsNeeded >= 6) {
+      const estimatedRoofAreaM2 = Math.round(results.panelsNeeded * 2.2 * 10) / 10;
+      generated.push({
+        type: "tip",
+        icon: <Lightbulb className="h-4 w-4" />,
+        title: "Roof Space Planning",
+        text: `A ${results.panelsNeeded}-panel layout may need roughly ${estimatedRoofAreaM2} m² of usable roof area (before setbacks/shading). A site survey is important before final sizing.`,
+      });
+    }
+
     generated.push({
       type: "cta",
       icon: <ShoppingCart className="h-4 w-4" />,
       title: "Next Step",
-      text: "This estimate is a strong planning baseline. PawaMore can turn it into an exact proposal with installation scope, product selection, and a proper quote for your home or business.",
+      text: "This estimate is a planning baseline, not a final engineering design. PawaMore can finalize your proposal with load audit, site shading checks, protection design, and a precise quote.",
     });
 
     setInsights(generated);
