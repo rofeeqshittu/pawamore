@@ -23,7 +23,7 @@ export default function ScraperManager() {
   const [loading, setLoading] = useState(true);
 
   const fetchRuns = useCallback(async () => {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("scraper_runs")
       .select("*")
       .order("created_at", { ascending: false })
@@ -31,7 +31,7 @@ export default function ScraperManager() {
 
     if (!error && data) {
       setRuns(
-        data.map((r) => ({
+        (data as any[]).map((r) => ({
           ...r,
           status: r.status as ScraperStatus,
           extracted_data: r.extracted_data as Record<string, unknown> | null,
