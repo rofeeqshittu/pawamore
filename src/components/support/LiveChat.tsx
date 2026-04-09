@@ -15,6 +15,11 @@ interface Message {
   timestamp: Date;
 }
 
+interface ChatStartDetail {
+  message: string;
+  context?: Record<string, unknown>;
+}
+
 const LiveChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -22,6 +27,7 @@ const LiveChat = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [pendingStart, setPendingStart] = useState<ChatStartDetail | null>(null);
   const [guestId] = useState(() => `guest_${Date.now()}_${Math.random().toString(36).slice(2)}`);
   
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -54,55 +60,91 @@ const LiveChat = () => {
     }
   }, [isOpen, messages.length]);
 
-  const sendMessage = useCallback(async () => {
-    if (!input.trim() || isLoading) return;
+  const sendMessage = useCallback(
+    async (overrideMessage?: string, context?: Record<string, unknown>) => {
+      const contentToSend = (overrideMessage ?? input).trim();
+      if (!contentToSend || isLoading) return;
 
-    const userMessage: Message = {
-      id: `user_${Date.now()}`,
-      role: "user",
-      content: input.trim(),
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke("ai-support-chat", {
-        body: {
-          message: userMessage.content,
-          conversation_id: conversationId,
-          guest_id: user ? null : guestId,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.conversation_id && !conversationId) {
-        setConversationId(data.conversation_id);
-      }
-
-      const assistantMessage: Message = {
-        id: `assistant_${Date.now()}`,
-        role: "assistant",
-        content: data.response,
+      const userMessage: Message = {
+        id: `user_${Date.now()}`,
+        role: "user",
+        content: contentToSend,
         timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error("Chat error:", error);
-      setMessages(prev => [...prev, {
-        id: `error_${Date.now()}`,
-        role: "assistant",
-        content: "I'm sorry, I'm having trouble connecting right now. Please try again or [contact our support team](/contact) directly.",
-        timestamp: new Date(),
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [input, isLoading, conversationId, user, guestId]);
+      setMessages((prev) => [...prev, userMessage]);
+      if (!overrideMessage) {
+        setInput("");
+      }
+      setIsLoading(true);
+
+      try {
+        const { data, error } = await supabase.functions.invoke("ai-support-chat", {
+          body: {
+            message: userMessage.content,
+            conversation_id: conversationId,
+            guest_id: user ? null : guestId,
+            context: context ?? null,
+          },
+        });
+
+        if (error) throw error;
+
+        if (data.conversation_id && !conversationId) {
+          setConversationId(data.conversation_id);
+        }
+
+        const assistantMessage: Message = {
+          id: `assistant_${Date.now()}`,
+          role: "assistant",
+          content: data.response,
+          timestamp: new Date(),
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+      } catch (error) {
+        console.error("Chat error:", error);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `error_${Date.now()}`,
+            role: "assistant",
+            content:
+              "I'm sorry, I'm having trouble connecting right now. Please try again or [contact our support team](/contact) directly.",
+            timestamp: new Date(),
+          },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [input, isLoading, conversationId, user, guestId]
+  );
+
+  useEffect(() => {
+    const handleStart = (event: Event) => {
+      const customEvent = event as CustomEvent<ChatStartDetail>;
+      const detail = customEvent.detail;
+
+      if (!detail?.message?.trim()) return;
+
+      setIsOpen(true);
+      setIsMinimized(false);
+      setPendingStart({
+        message: detail.message.trim(),
+        context: detail.context,
+      });
+    };
+
+    window.addEventListener("pawamore-chat:start", handleStart);
+    return () => window.removeEventListener("pawamore-chat:start", handleStart);
+  }, []);
+
+  useEffect(() => {
+    if (!pendingStart || isLoading || !isOpen || isMinimized) return;
+    void sendMessage(pendingStart.message, pendingStart.context);
+    setPendingStart(null);
+  }, [pendingStart, isLoading, isOpen, isMinimized, sendMessage]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

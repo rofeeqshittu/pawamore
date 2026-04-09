@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { message, conversation_id, guest_id } = await req.json();
+    const { message, conversation_id, guest_id, context } = await req.json();
 
     if (!message) {
       return new Response(
@@ -139,6 +139,10 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     let convId = conversation_id;
+    const chatContext =
+      context && typeof context === "object" && !Array.isArray(context)
+        ? (context as Record<string, unknown>)
+        : null;
 
     // Validate conversation ownership if conversation_id provided
     if (convId) {
@@ -149,6 +153,12 @@ Deno.serve(async (req) => {
         .single();
       if (conv) {
         if (conv.user_id && conv.user_id !== verifiedUserId) {
+          return new Response(
+            JSON.stringify({ error: "Unauthorized" }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        if (!conv.user_id && conv.guest_id !== guest_id) {
           return new Response(
             JSON.stringify({ error: "Unauthorized" }),
             { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -190,8 +200,18 @@ Deno.serve(async (req) => {
       .order("created_at", { ascending: true })
       .limit(20);
 
+    const contextPrompt = chatContext
+      ? `The user has shared extra context for this request. Use it to answer more precisely.
+
+Context JSON:
+${JSON.stringify(chatContext)}
+
+If this context is from a solar estimate, start with a concise summary and finish with exactly one focused follow-up question to refine your recommendation.`
+      : null;
+
     const messageHistory = [
       { role: "system", content: SYSTEM_PROMPT },
+      ...(contextPrompt ? [{ role: "system", content: contextPrompt }] : []),
       ...(messages || []).map((m: { role: string; content: string }) => ({
         role: m.role,
         content: m.content,
@@ -203,6 +223,7 @@ Deno.serve(async (req) => {
       conversation_id: convId,
       role: "user",
       content: message,
+      metadata: chatContext ? { context: chatContext } : null,
     });
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

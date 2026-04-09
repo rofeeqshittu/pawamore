@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUp, Calculator, Sun } from "lucide-react";
+import { ArrowUp, Calculator, MessageCircle, Sun } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import AIInsights from "@/components/solar/AIInsights";
@@ -63,6 +63,29 @@ const SolarCalculatorPage = () => {
   };
 
   const clearAll = () => setAppliances([]);
+
+  const askAIAboutEstimate = () => {
+    const applianceSummary = appliances.map((appliance) => ({
+      name: appliance.name,
+      watts: appliance.watts,
+      hoursPerDay: appliance.hoursPerDay,
+      quantity: appliance.quantity,
+    }));
+
+    window.dispatchEvent(
+      new CustomEvent("pawamore-chat:start", {
+        detail: {
+          message:
+            "Please review my solar calculator results, summarize the best setup for me, and ask me one question to refine your recommendation.",
+          context: {
+            type: "solar_calculator",
+            results,
+            appliances: applianceSummary,
+          },
+        },
+      })
+    );
+  };
 
   return (
     <Layout>
@@ -139,6 +162,14 @@ const SolarCalculatorPage = () => {
                 <>
                   <ResultsPanel results={results} />
                   <AIInsights appliances={appliances} results={results} />
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-xl border-solar-orange/30 bg-solar-peach/40 py-6 text-base font-bold tracking-wide text-solar-green hover:bg-solar-peach"
+                    onClick={askAIAboutEstimate}
+                  >
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    Ask AI to refine this estimate
+                  </Button>
                   <Button
                     className="w-full rounded-xl bg-solar-orange py-6 text-base font-bold uppercase tracking-wider text-white hover:bg-solar-orange/90"
                     onClick={() => window.open("/contact", "_self")}
