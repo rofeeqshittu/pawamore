@@ -17,12 +17,14 @@ import {
   ShieldCheck,
   Truck,
   Wrench,
+  ArrowRight,
 } from "lucide-react";
 import QuickBuyButton from "@/components/QuickBuyButton";
 import ProductReviews from "@/components/ProductReviews";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { toast } from "@/hooks/use-toast";
 import useSEO from "@/hooks/useSEO";
+import { getRelatedProducts, type RelatedProduct } from "@/lib/related-products";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -35,6 +37,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
   const { addToCart } = useCart();
 
   const images = product?.product_images?.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)) || [];
@@ -123,12 +126,29 @@ const ProductDetail = () => {
     };
   }, [product, primaryImage, displayPrice, formattedPrice, productUrl, reviewStats]);
 
+  const fetchRelated = async (currentProduct: any) => {
+    const { data, error } = await supabase
+      .from("products")
+      .select("id,name,slug,short_description,price,discount_price,ideal_for,powers,specs,stock_quantity,is_featured,is_popular,product_images(image_url,is_primary),product_categories(name,slug),brands(name,slug)")
+      .eq("status", "active")
+      .neq("id", currentProduct.id)
+      .limit(60);
+
+    if (error || !data) {
+      setRelatedProducts([]);
+      return;
+    }
+
+    const suggestions = getRelatedProducts(currentProduct, data as any[], 2);
+    setRelatedProducts(suggestions);
+  };
+
   const fetchProduct = async (retries = 2) => {
     if (!slug) return;
     try {
       const { data, error } = await supabase
         .from("products")
-        .select("*, product_images(id, image_url, is_primary, sort_order), product_videos(id, video_url, thumbnail_url, sort_order), product_categories(name, slug)")
+        .select("*, product_images(id, image_url, is_primary, sort_order), product_videos(id, video_url, thumbnail_url, sort_order), product_categories(name, slug), brands(name, slug)")
         .eq("slug", slug)
         .eq("status", "active")
         .maybeSingle();
@@ -136,7 +156,9 @@ const ProductDetail = () => {
       if (error) throw error;
       setProduct(data);
       setVideos(data?.product_videos?.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)) || []);
-      if (data) await fetchReviews(data.id);
+      if (data) {
+        await Promise.all([fetchReviews(data.id), fetchRelated(data)]);
+      }
     } catch (error: any) {
       console.error("Error fetching product:", error);
       // Retry on auth lock errors
@@ -383,6 +405,76 @@ const ProductDetail = () => {
             )}
           </div>
         </div>
+
+        {relatedProducts.length > 0 && (
+          <section className="mt-12 lg:mt-14">
+            <div className="mb-4 flex items-end justify-between gap-2">
+              <div>
+                <h2 className="text-lg font-extrabold sm:text-xl">You may also like</h2>
+                <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+                  Two smart matches picked from live shop inventory.
+                </p>
+              </div>
+              <Link to="/shop" className="text-xs font-semibold text-primary hover:underline sm:text-sm">
+                Browse more
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+              {relatedProducts.map((item) => {
+                const image =
+                  item.product_images?.find((img) => img.is_primary)?.image_url ||
+                  item.product_images?.[0]?.image_url;
+                const amount = item.discount_price ?? item.price;
+
+                return (
+                  <article key={item.id} className="rounded-xl border border-border bg-card p-3 sm:p-4">
+                    <div className="flex gap-3">
+                      <Link to={`/products/${item.slug}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-secondary sm:h-24 sm:w-24">
+                        {image ? (
+                          <img src={image} alt={item.name} className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="h-full w-full bg-secondary" />
+                        )}
+                      </Link>
+
+                      <div className="min-w-0 flex-1">
+                        <Link to={`/products/${item.slug}`} className="line-clamp-2 text-sm font-bold hover:text-primary sm:text-base">
+                          {item.name}
+                        </Link>
+                        <p className="mt-1 line-clamp-2 text-xs text-muted-foreground sm:text-sm">
+                          {item.suggestionReason}
+                        </p>
+                        <p className="mt-2 text-sm font-extrabold text-primary sm:text-base">
+                          ₦{Number(amount).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="min-h-[40px]"
+                        onClick={() => addToCart(item.id)}
+                        disabled={item.stock_quantity !== null && item.stock_quantity <= 0}
+                      >
+                        <ShoppingCart className="mr-1.5 h-4 w-4" />
+                        Add
+                      </Button>
+                      <Link to={`/products/${item.slug}`}>
+                        <Button size="sm" className="min-h-[40px] w-full">
+                          View
+                          <ArrowRight className="ml-1.5 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Reviews */}
         <div className="mt-12 lg:mt-16">
