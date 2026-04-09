@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Authenticated users can upload review images" ON storage.objects;
