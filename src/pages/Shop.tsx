@@ -3,7 +3,7 @@ import Layout from "@/components/Layout";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, X, GitCompare } from "lucide-react";
+import { Search, X, GitCompare, Headset, ShieldCheck, Truck } from "lucide-react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ProductSkeleton from "@/components/ProductSkeleton";
 import InventoryAlert from "@/components/InventoryAlert";
@@ -233,8 +233,46 @@ const Shop = () => {
                 <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   <X className="w-4 h-4" />
                 </button>
-              )}
-            </div>
+                )}
+              </div>
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <div className="rounded-md border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                    <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Curated genuine products
+                  </span>
+                </div>
+                <div className="rounded-md border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                    <Truck className="h-3.5 w-3.5 text-primary" /> Nationwide delivery support
+                  </span>
+                </div>
+                <div className="rounded-md border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                    <Headset className="h-3.5 w-3.5 text-primary" /> WhatsApp advisory before purchase
+                  </span>
+                </div>
+              </div>
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                <Button
+                  variant={filters.category === "all" ? "default" : "outline"}
+                  size="sm"
+                  className="h-8 whitespace-nowrap text-xs"
+                  onClick={() => setFilters((prev) => ({ ...prev, category: "all" }))}
+                >
+                  All Categories
+                </Button>
+                {categories.slice(0, 8).map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={filters.category === category.slug ? "default" : "outline"}
+                    size="sm"
+                    className="h-8 whitespace-nowrap text-xs"
+                    onClick={() => setFilters((prev) => ({ ...prev, category: category.slug }))}
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+              </div>
           </div>
         </section>
 

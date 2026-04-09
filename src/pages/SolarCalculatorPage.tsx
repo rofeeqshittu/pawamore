@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUp, Calculator, MessageCircle, Sun } from "lucide-react";
+import { ArrowUp, Calculator, Headset, MessageCircle, ShieldCheck, Sun, Truck } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import AIInsights from "@/components/solar/AIInsights";
 import AddApplianceForm from "@/components/solar/AddApplianceForm";
 import ApplianceCard from "@/components/solar/ApplianceCard";
@@ -149,6 +150,32 @@ const SolarCalculatorPage = () => {
           </div>
         </div>
 
+        <div className="container mt-4 px-4">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <div className="rounded-lg border border-border bg-card p-3">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-foreground">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                Accurate first-pass sizing
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">Built around load + usage, not guesswork.</p>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-3">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-foreground">
+                <Truck className="h-4 w-4 text-primary" />
+                Nationwide delivery
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">Shop links and recommendations are ready for direct action.</p>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-3">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-foreground">
+                <Headset className="h-4 w-4 text-primary" />
+                Human + AI advisory
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">Get instant guidance, then refine with our team.</p>
+            </div>
+          </div>
+        </div>
+
         <main className="container px-4 py-6 md:py-8">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="space-y-5">
@@ -211,6 +238,24 @@ const SolarCalculatorPage = () => {
                   >
                     Get Free Consultation
                   </Button>
+                  <div className="rounded-xl border border-border bg-card p-4">
+                    <p className="text-sm font-semibold">Not sure what to do next?</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Explore practical buying guidance or see full product options.
+                    </p>
+                    <div className="mt-3 grid grid-cols-1 gap-2 xs:grid-cols-2">
+                      <Link to="/faqs">
+                        <Button variant="outline" className="h-10 w-full text-xs font-semibold">
+                          Read FAQs
+                        </Button>
+                      </Link>
+                      <Link to="/shop">
+                        <Button className="h-10 w-full bg-primary text-xs font-semibold text-primary-foreground hover:bg-primary/90">
+                          Browse Shop
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
                 </>
               )}
             </div>

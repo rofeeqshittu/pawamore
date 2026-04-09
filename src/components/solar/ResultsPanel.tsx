@@ -1,4 +1,5 @@
 import { Battery, Clock, Fuel, Leaf, Sun, TreePine, TrendingDown, Zap } from "lucide-react";
+import { SUN_HOURS_NIGERIA } from "@/lib/solar-data";
 
 interface ResultsPanelProps {
   results: {
@@ -140,6 +141,16 @@ const ResultsPanel = ({ results }: ResultsPanelProps) => {
         <div className="flex items-center justify-between py-2">
           <span className="text-sm text-muted-foreground">Payback Period</span>
           <span className="text-sm font-bold text-primary">{results.paybackYears} years</span>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-secondary/40 p-4">
+        <h3 className="mb-2 text-sm font-bold">Assumptions Used in This Estimate</h3>
+        <div className="space-y-1 text-xs text-muted-foreground">
+          <p>• Average sun-hours: {SUN_HOURS_NIGERIA} h/day (Nigeria baseline).</p>
+          <p>• Battery planning includes reserve margin and safe depth-of-discharge assumptions.</p>
+          <p>• Inverter sizing includes extra headroom for startup/surge behavior.</p>
+          <p>• Final engineering quote still depends on site survey, shading, and installation conditions.</p>
         </div>
       </div>
     </div>

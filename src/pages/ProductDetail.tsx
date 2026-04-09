@@ -6,7 +6,18 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { ShoppingCart, Share2, Copy, CheckCircle, ChevronLeft, Image as ImageIcon, Play } from "lucide-react";
+import {
+  ShoppingCart,
+  Share2,
+  Copy,
+  CheckCircle,
+  ChevronLeft,
+  Image as ImageIcon,
+  Play,
+  ShieldCheck,
+  Truck,
+  Wrench,
+} from "lucide-react";
 import QuickBuyButton from "@/components/QuickBuyButton";
 import ProductReviews from "@/components/ProductReviews";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -185,6 +196,22 @@ const ProductDetail = () => {
   if (!product) return <ErrorBoundary><Layout><div className="min-h-screen flex flex-col items-center justify-center gap-4"><p className="text-muted-foreground">Product not found.</p><Link to="/products"><Button variant="amber">&larr; Back to Products</Button></Link></div></Layout></ErrorBoundary>;
 
   const price = product.discount_price || product.price;
+  const categoryName = ((product.product_categories as any)?.name || "").toLowerCase();
+  const valueHooks = [
+    product.ideal_for
+      ? `Best for: ${product.ideal_for}`
+      : categoryName.includes("inverter")
+        ? "Best for: homes and small businesses needing dependable backup and expansion flexibility."
+        : categoryName.includes("battery")
+          ? "Best for: users prioritizing longer runtime and cleaner backup than generator-only setups."
+          : categoryName.includes("panel")
+            ? "Best for: rooftop energy generation and lower daytime electricity cost."
+            : "Best for: practical everyday power backup and outage resilience.",
+    product.powers
+      ? `What it can power: ${product.powers}`
+      : "What it can power: depends on your final load profile — use our calculator for a first estimate.",
+    "Before you buy: confirm your must-run appliances, outage duration, and future expansion plan.",
+  ];
 
   return (
     <ErrorBoundary>
@@ -280,6 +307,14 @@ const ProductDetail = () => {
               {product.stock_quantity > 0 ? <span className="text-primary font-semibold">✓ In Stock ({product.stock_quantity} available)</span> : <span className="text-destructive font-semibold">Out of Stock</span>}
             </p>
 
+            <div className="mb-5 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {valueHooks.map((line) => (
+                <div key={line} className="rounded-lg border border-border bg-secondary/40 p-3">
+                  <p className="text-xs leading-relaxed text-foreground">{line}</p>
+                </div>
+              ))}
+            </div>
+
             {/* Primary Actions */}
             <div className="flex flex-col gap-2 sm:gap-3 mb-4">
               <Button variant="amber" size="lg" className="w-full min-h-[44px] sm:min-h-[48px]" onClick={() => addToCart(product.id)} disabled={product.stock_quantity <= 0}>
@@ -306,6 +341,24 @@ const ProductDetail = () => {
                 {copied ? <CheckCircle className="w-4 h-4 mr-1.5 text-primary" /> : <Copy className="w-4 h-4 mr-1.5" />}
                 {copied ? "Copied!" : "Copy Link"}
               </Button>
+            </div>
+
+            <div className="mb-6 rounded-xl border border-border bg-card p-4">
+              <h3 className="mb-2 text-sm font-bold">Why buy this from PawaMore?</h3>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <p className="flex items-start gap-2">
+                  <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                  Product-fit advisory before purchase so you avoid overspending or undersizing.
+                </p>
+                <p className="flex items-start gap-2">
+                  <Truck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                  Delivery and setup guidance available across Nigeria.
+                </p>
+                <p className="flex items-start gap-2">
+                  <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                  After-sales support for troubleshooting, optimization, and upgrades.
+                </p>
+              </div>
             </div>
 
             {product.description && product.description !== product.short_description && (
