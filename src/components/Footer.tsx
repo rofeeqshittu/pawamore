@@ -66,12 +66,14 @@ const Footer = () => {
               <h4 className="font-display font-bold text-accent mb-4 uppercase text-sm tracking-wider">Quick Links</h4>
               <div className="flex flex-col gap-2">
                 {[
-                { to: "/services", label: "Services" },
-                { to: "/products", label: "Products" },
-                { to: "/shop", label: "Shop" },
-                { to: "/solar-calculator", label: "Solar Calculator" },
-                { to: "/why-pawamore", label: "Why PawaMore" },
-                { to: "/about", label: "About Us" },
+                 { to: "/services", label: "Services" },
+                 { to: "/products", label: "Products" },
+                 { to: "/shop", label: "Shop" },
+                 { to: "/resources", label: "Resources Hub" },
+                 { to: "/resources/buyers-guide", label: "Buyer's Guide" },
+                 { to: "/solar-calculator", label: "Solar Calculator" },
+                 { to: "/why-pawamore", label: "Why PawaMore" },
+                 { to: "/about", label: "About Us" },
                 { to: "/faqs", label: "FAQs" }].
                 map((l) =>
                 <Link key={l.to} to={l.to} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">

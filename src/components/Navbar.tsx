@@ -24,6 +24,8 @@ const navLinks = [
 
 // Resources dropdown
 const resourcesLinks = [
+  { to: "/resources", label: "Resources Hub" },
+  { to: "/resources/buyers-guide", label: "Buyer's Guide" },
   { to: "/solar-calculator", label: "Solar Calculator", icon: Calculator },
   { to: "/blog", label: "Blog & Guides" },
   { to: "/faqs", label: "FAQs" },

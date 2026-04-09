@@ -25,6 +25,8 @@ const WhyPawamore = lazy(() => import("./pages/WhyPawamore"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const FAQs = lazy(() => import("./pages/FAQs"));
+const Resources = lazy(() => import("./pages/Resources"));
+const BuyersGuide = lazy(() => import("./pages/BuyersGuide"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -79,6 +81,9 @@ const App = () => (
                 <Route path="/why-pawamore" element={<WhyPawamore />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/resources/buyers-guide" element={<BuyersGuide />} />
+                <Route path="/resources/faqs" element={<FAQs />} />
                 <Route path="/faqs" element={<FAQs />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/solar-calculator" element={<SolarCalculatorPage />} />

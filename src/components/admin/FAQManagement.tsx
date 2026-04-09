@@ -20,13 +20,16 @@ interface FAQItem {
 }
 
 const categories = [
-  { value: "general", label: "General" },
-  { value: "orders", label: "Orders" },
-  { value: "payments", label: "Payments" },
-  { value: "shipping", label: "Shipping" },
-  { value: "returns", label: "Returns" },
-  { value: "services", label: "Services" },
-  { value: "products", label: "Products" },
+  { value: "getting_started", label: "Getting Started" },
+  { value: "system_sizing_reliability", label: "System Sizing & Reliability" },
+  { value: "delivery_support_trust", label: "Delivery, Support & Trust" },
+  { value: "general", label: "General (Legacy)" },
+  { value: "orders", label: "Orders (Legacy)" },
+  { value: "payments", label: "Payments (Legacy)" },
+  { value: "shipping", label: "Shipping (Legacy)" },
+  { value: "returns", label: "Returns (Legacy)" },
+  { value: "services", label: "Services (Legacy)" },
+  { value: "products", label: "Products (Legacy)" },
 ];
 
 const FAQManagement = () => {
@@ -39,7 +42,7 @@ const FAQManagement = () => {
   const [formData, setFormData] = useState({
     question: "",
     answer: "",
-    category: "general",
+    category: "getting_started",
     is_published: true,
   });
 
@@ -61,7 +64,12 @@ const FAQManagement = () => {
 
   const openCreateDialog = () => {
     setEditingFaq(null);
-    setFormData({ question: "", answer: "", category: "general", is_published: true });
+    setFormData({
+      question: "",
+      answer: "",
+      category: "getting_started",
+      is_published: true,
+    });
     setDialogOpen(true);
   };
 

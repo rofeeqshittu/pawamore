@@ -22,6 +22,9 @@ interface FAQItem {
 }
 
 const categoryLabels: Record<string, string> = {
+  getting_started: "Getting Started",
+  system_sizing_reliability: "System Sizing & Reliability",
+  delivery_support_trust: "Delivery, Support & Trust",
   general: "General",
   orders: "Orders",
   payments: "Payments",
