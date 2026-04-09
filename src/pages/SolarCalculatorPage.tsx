@@ -67,13 +67,13 @@ const SolarCalculatorPage = () => {
   return (
     <Layout>
       <div className="bg-background">
-        <header className="bg-primary text-primary-foreground">
+        <header className="bg-solar-green text-white">
           <div className="container px-4 py-10 text-center md:py-16">
             <div className="mb-4 flex items-center justify-center gap-2">
               <Sun className="h-8 w-8 text-accent" />
               <h1 className="text-3xl font-bold md:text-4xl">Solar Power Calculator</h1>
             </div>
-            <p className="mx-auto max-w-xl text-sm leading-relaxed text-primary-foreground/80 md:text-base">
+            <p className="mx-auto max-w-xl text-sm leading-relaxed text-white/80 md:text-base">
               Calculate your exact power needs and get a clearer picture of the battery,
               inverter, and panel setup that fits your home or business.
             </p>
@@ -81,11 +81,11 @@ const SolarCalculatorPage = () => {
         </header>
 
         <div className="container -mt-5 px-4">
-          <div className="flex items-center gap-3 rounded-2xl bg-secondary p-5 text-secondary-foreground md:p-6">
+          <div className="flex items-center gap-3 rounded-2xl bg-solar-orange p-5 text-white md:p-6">
             <Calculator className="h-6 w-6 shrink-0" />
             <div>
-              <h2 className="text-lg font-bold">Plan Your System</h2>
-              <p className="text-sm text-secondary-foreground/80">
+              <h2 className="text-lg font-bold">Solar Power Calculator</h2>
+              <p className="text-sm text-white/90">
                 Add your appliances below and get instant recommendations.
               </p>
             </div>
@@ -140,7 +140,7 @@ const SolarCalculatorPage = () => {
                   <ResultsPanel results={results} />
                   <AIInsights appliances={appliances} results={results} />
                   <Button
-                    className="w-full rounded-xl bg-secondary py-6 text-base font-bold uppercase tracking-wider text-secondary-foreground hover:bg-secondary/90"
+                    className="w-full rounded-xl bg-solar-orange py-6 text-base font-bold uppercase tracking-wider text-white hover:bg-solar-orange/90"
                     onClick={() => window.open("/contact", "_self")}
                   >
                     Get Free Consultation

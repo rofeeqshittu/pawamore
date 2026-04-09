@@ -27,7 +27,7 @@ const ResultsPanel = ({ results }: ResultsPanelProps) => {
     <div className="space-y-4">
       <div className="rounded-xl border border-border bg-card p-4">
         <h3 className="mb-3 flex items-center gap-2 text-base font-bold">
-          <Zap className="h-4 w-4 text-secondary" />
+          <Zap className="h-4 w-4 text-solar-orange" />
           Power Requirements
         </h3>
         <div className="space-y-3">
@@ -36,14 +36,14 @@ const ResultsPanel = ({ results }: ResultsPanelProps) => {
               <Clock className="h-3.5 w-3.5" />
               Daily Consumption
             </span>
-            <span className="text-sm font-bold text-secondary">{results.dailyConsumption} kWh</span>
+            <span className="text-sm font-bold text-solar-orange">{results.dailyConsumption} kWh</span>
           </div>
           <div className="flex items-center justify-between py-2">
             <span className="flex items-center gap-2 text-sm text-muted-foreground">
               <Zap className="h-3.5 w-3.5" />
               Peak Load
             </span>
-            <span className="text-sm font-bold text-secondary">{results.peakLoad}W</span>
+            <span className="text-sm font-bold text-solar-orange">{results.peakLoad}W</span>
           </div>
         </div>
       </div>
@@ -104,7 +104,7 @@ const ResultsPanel = ({ results }: ResultsPanelProps) => {
         </div>
       </div>
 
-      <div className="rounded-xl border-2 border-secondary/30 bg-solar-peach p-4">
+      <div className="rounded-xl border-2 border-solar-orange/30 bg-solar-peach p-4">
         <h3 className="mb-3 text-base font-bold">Estimated Cost</h3>
         <div className="space-y-2">
           {[
@@ -119,8 +119,8 @@ const ResultsPanel = ({ results }: ResultsPanelProps) => {
             </div>
           ))}
           <div className="flex items-center justify-between pt-2">
-            <span className="font-bold text-secondary">Total Estimate</span>
-            <span className="text-lg font-bold text-secondary">{formatNaira(results.totalCost)}</span>
+            <span className="font-bold text-solar-orange">Total Estimate</span>
+            <span className="text-lg font-bold text-solar-orange">{formatNaira(results.totalCost)}</span>
           </div>
         </div>
         <p className="mt-2 text-[10px] text-muted-foreground">
