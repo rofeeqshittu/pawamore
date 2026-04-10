@@ -4,6 +4,50 @@
       "handle": "filesystem"
     },
     {
+      "src": "/solar-calculator/?",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|whatsapp|facebookexternalhit|Facebot|Twitterbot|twitterbot|LinkedInBot|linkedinbot|TelegramBot|telegrambot|Slackbot|slackbot|Discordbot|discordbot|bot|crawl|spider).*"
+        }
+      ],
+      "dest": "/api/preview?path=/solar-calculator"
+    },
+    {
+      "src": "/resources/?",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|whatsapp|facebookexternalhit|Facebot|Twitterbot|twitterbot|LinkedInBot|linkedinbot|TelegramBot|telegrambot|Slackbot|slackbot|Discordbot|discordbot|bot|crawl|spider).*"
+        }
+      ],
+      "dest": "/api/preview?path=/resources"
+    },
+    {
+      "src": "/resources/buyers-guide/?",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|whatsapp|facebookexternalhit|Facebot|Twitterbot|twitterbot|LinkedInBot|linkedinbot|TelegramBot|telegrambot|Slackbot|slackbot|Discordbot|discordbot|bot|crawl|spider).*"
+        }
+      ],
+      "dest": "/api/preview?path=/resources/buyers-guide"
+    },
+    {
+      "src": "/faqs/?",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|whatsapp|facebookexternalhit|Facebot|Twitterbot|twitterbot|LinkedInBot|linkedinbot|TelegramBot|telegrambot|Slackbot|slackbot|Discordbot|discordbot|bot|crawl|spider).*"
+        }
+      ],
+      "dest": "/api/preview?path=/faqs"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
