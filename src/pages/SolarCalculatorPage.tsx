@@ -57,7 +57,7 @@ const SolarCalculatorPage = () => {
 
   const results = useMemo(() => calculateSolarNeeds(appliances), [appliances]);
   const recommendedProducts = useMemo(
-    () => (appliances.length > 0 ? recommendSolarProducts(shopProducts, appliances, results, 3) : []),
+    () => (appliances.length > 0 ? recommendSolarProducts(shopProducts, appliances, results, 2) : []),
     [shopProducts, appliances, results]
   );
 
@@ -101,7 +101,7 @@ const SolarCalculatorPage = () => {
       quantity: appliance.quantity,
     }));
 
-    const topProducts = recommendedProducts.slice(0, 3).map((product) => ({
+    const topProducts = recommendedProducts.slice(0, 2).map((product) => ({
       name: product.name,
       slug: product.slug,
       link: `/products/${product.slug}`,

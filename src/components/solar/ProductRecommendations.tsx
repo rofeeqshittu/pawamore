@@ -17,7 +17,7 @@ const ProductRecommendations = ({ recommendations }: ProductRecommendationsProps
     <div className="rounded-xl border border-border bg-card p-4">
       <h3 className="mb-3 flex items-center gap-2 text-base font-bold">
         <Sparkles className="h-4 w-4 text-solar-orange" />
-        Top Products for Your Setup
+        Top 2 Products for Your Setup
       </h3>
       <p className="mb-3 text-xs text-muted-foreground">
         Based on your load profile, here are strong matches from our current shop catalog.
