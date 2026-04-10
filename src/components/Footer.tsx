@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <footer className="bg-forest text-primary-foreground relative">
       {/* Mascot sitting on top of footer */}
-      <div className="absolute left-1/2 -translate-x-1/2 -top-12 sm:-top-16 md:-top-20 z-20 pointer-events-none select-none">
+      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none select-none">
         <img 
           src={mascotFooter} 
           alt="" 
