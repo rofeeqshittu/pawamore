@@ -52,6 +52,12 @@ const isChunkLoadError = (message: string) =>
 
 const ChunkLoadRecovery = () => {
   useEffect(() => {
+    // Prevent refresh loops: if we already auto-reloaded once, keep the guard
+    // for a short window, then clear it after the app has had time to stabilize.
+    const clearGuardTimer = window.setTimeout(() => {
+      sessionStorage.removeItem(CHUNK_RELOAD_KEY);
+    }, 30000);
+
     const reloadOnce = () => {
       if (sessionStorage.getItem(CHUNK_RELOAD_KEY) === "1") return;
       sessionStorage.setItem(CHUNK_RELOAD_KEY, "1");
@@ -76,9 +82,8 @@ const ChunkLoadRecovery = () => {
     window.addEventListener("error", onError);
     window.addEventListener("unhandledrejection", onUnhandledRejection);
 
-    sessionStorage.removeItem(CHUNK_RELOAD_KEY);
-
     return () => {
+      window.clearTimeout(clearGuardTimer);
       window.removeEventListener("error", onError);
       window.removeEventListener("unhandledrejection", onUnhandledRejection);
     };

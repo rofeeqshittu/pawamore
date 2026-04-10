@@ -10,6 +10,11 @@ const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const post = blogPosts.find((p) => p.slug === slug);
 
+  useSEO({
+    title: post ? `${post.title} — PawaMore Systems Blog` : "Blog Post — PawaMore Systems",
+    description: post?.intro ?? "Read practical energy and solar insights from PawaMore Systems.",
+  });
+
   if (!post) {
     return (
       <Layout>
@@ -20,11 +25,6 @@ const BlogPost = () => {
       </Layout>
     );
   }
-
-  useSEO({
-    title: `${post.title} — PawaMore Systems Blog`,
-    description: post.intro,
-  });
 
   return (
     <Layout>
