@@ -543,13 +543,10 @@ export type Database = {
           price: number
           promo_label: string | null
           short_description: string | null
-          source_metadata: Json | null
-          source_url: string | null
           slug: string
           specs: Json | null
           status: string | null
           stock_quantity: number | null
-          product_type: string | null
           updated_at: string
         }
         Insert: {
@@ -567,13 +564,10 @@ export type Database = {
           price: number
           promo_label?: string | null
           short_description?: string | null
-          source_metadata?: Json | null
-          source_url?: string | null
           slug: string
           specs?: Json | null
           status?: string | null
           stock_quantity?: number | null
-          product_type?: string | null
           updated_at?: string
         }
         Update: {
@@ -591,13 +585,10 @@ export type Database = {
           price?: number
           promo_label?: string | null
           short_description?: string | null
-          source_metadata?: Json | null
-          source_url?: string | null
           slug?: string
           specs?: Json | null
           status?: string | null
           stock_quantity?: number | null
-          product_type?: string | null
           updated_at?: string
         }
         Relationships: [
