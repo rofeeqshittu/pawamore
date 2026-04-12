@@ -646,7 +646,7 @@ const AdminDashboard = () => {
           <TabsContent value="products">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
-                <Checkbox checked={selectAllState} onCheckedChange={toggleSelectAll} aria-label={selectedCount === products.length && products.length > 0 ? "Deselect all products" : "Select all products"} />
+                <Checkbox checked={selectAllState} onCheckedChange={toggleSelectAll} aria-label={selectedCount === displayedProducts.length && displayedProducts.length > 0 ? "Deselect visible products" : "Select visible products"} />
                 <h2 className="text-lg sm:text-xl font-extrabold">All Products</h2>
                 <div className="sr-only" aria-live="polite">{selectedCount} products selected</div>
                 <div className="flex items-center gap-2 ml-2">
@@ -717,9 +717,18 @@ const AdminDashboard = () => {
                 <p className="text-muted-foreground mb-4">No products yet.</p>
                 <Link to="/admin/products/new"><Button variant="amber">Add First Product →</Button></Link>
               </div>
+            ) : displayedProducts.length === 0 ? (
+              <div className="text-center py-12">
+                <Package className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                <p className="text-muted-foreground mb-2">No products match the selected category.</p>
+                <div className="flex items-center justify-center gap-2">
+                  <Button size="sm" onClick={() => setProductCategoryFilter(null)}>Show all products</Button>
+                  <Link to="/admin/products/new"><Button variant="amber" size="sm">Add product</Button></Link>
+                </div>
+              </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {products.map((product) => (
+                {displayedProducts.map((product) => (
                   <div key={product.id} className={`bg-card rounded-xl border overflow-hidden hover:shadow-[var(--shadow-card)] transition-shadow ${product.stock_quantity < 5 && product.stock_quantity > 0 ? "border-destructive/50" : "border-border"}`}>
                     {product.stock_quantity < 5 && product.stock_quantity > 0 && (
                       <div className="bg-destructive/10 text-destructive text-center py-1 text-xs font-bold flex items-center justify-center gap-1">
