@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Link2, Loader2, Check, AlertCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { stripHtml } from "@/lib/htmlUtils";
 
 interface ProductImportModalProps {
   open: boolean;
@@ -107,8 +108,20 @@ const ProductImportModal = ({ open, onOpenChange, onSuccess }: ProductImportModa
 
       // Store scraped data with log_id
       const scrapedDataWithLog = { ...data.data, log_id: data.log_id };
-      setScrapedData(scrapedDataWithLog);
-      setEditedData(scrapedDataWithLog);
+      // Sanitize scraped fields to remove HTML tags and decode entities before preview/save
+      const sanitized = {
+        ...scrapedDataWithLog,
+        name: scrapedDataWithLog.name ? String(scrapedDataWithLog.name) : scrapedDataWithLog.name,
+        short_description: stripHtml(scrapedDataWithLog.short_description || ''),
+        description: stripHtml(scrapedDataWithLog.description || ''),
+        meta_description: stripHtml(scrapedDataWithLog.meta_description || ''),
+        seo_keywords: stripHtml(scrapedDataWithLog.seo_keywords || ''),
+        key_features: Array.isArray(scrapedDataWithLog.key_features) ? scrapedDataWithLog.key_features.map((k: any) => stripHtml(String(k))) : scrapedDataWithLog.key_features,
+        benefits: Array.isArray(scrapedDataWithLog.benefits) ? scrapedDataWithLog.benefits.map((b: any) => stripHtml(String(b))) : scrapedDataWithLog.benefits,
+      };
+
+      setScrapedData(sanitized as any);
+      setEditedData(sanitized as any);
       
       setTimeout(() => {
         setStep('preview');

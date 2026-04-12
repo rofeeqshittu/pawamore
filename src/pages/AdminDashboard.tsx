@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {
@@ -110,6 +111,8 @@ const AdminDashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [serverVerifiedAdmin, setServerVerifiedAdmin] = useState<boolean | null>(null);
   const [importModalOpen, setImportModalOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const selectedCount = selectedIds.length;
 
   const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number, label: string) =>
     Promise.race<T>([
@@ -239,9 +242,47 @@ const AdminDashboard = () => {
     if (!error) {
       setProducts(products.filter((p) => p.id !== id));
       setDeleteId(null);
+      setSelectedIds(selectedIds.filter(sid => sid !== id));
       toast({ title: "Product deleted" });
     } else {
       toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    }
+  };
+
+  // Selection helpers for bulk actions
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedCount === products.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(products.map(p => p.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    const { error } = await supabase.from("products").delete().in("id", selectedIds);
+    if (!error) {
+      setProducts(products.filter(p => !selectedIds.includes(p.id)));
+      setSelectedIds([]);
+      toast({ title: `Deleted ${selectedCount} products` });
+    } else {
+      toast({ title: "Bulk delete failed", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleBulkUpdateStatus = async (newStatus: string) => {
+    if (selectedIds.length === 0) return;
+    const { error } = await supabase.from("products").update({ status: newStatus }).in("id", selectedIds);
+    if (!error) {
+      setProducts(products.map(p => selectedIds.includes(p.id) ? { ...p, status: newStatus } : p));
+      setSelectedIds([]);
+      toast({ title: `Updated status for ${selectedCount} products` });
+    } else {
+      toast({ title: "Bulk update failed", description: error.message, variant: "destructive" });
     }
   };
 
@@ -405,7 +446,17 @@ const AdminDashboard = () => {
           {/* Products Tab */}
           <TabsContent value="products">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg sm:text-xl font-extrabold">All Products</h2>
+              <div className="flex items-center gap-4">
+                <Checkbox checked={selectedCount === products.length && products.length > 0} onCheckedChange={toggleSelectAll} />
+                <h2 className="text-lg sm:text-xl font-extrabold">All Products</h2>
+                {selectedCount > 0 && (
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="destructive" onClick={handleBulkDelete}>Delete ({selectedCount})</Button>
+                    <Button size="sm" onClick={() => handleBulkUpdateStatus('active')}>Publish</Button>
+                    <Button size="sm" onClick={() => handleBulkUpdateStatus('draft')}>Unpublish</Button>
+                  </div>
+                )}
+              </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setImportModalOpen(true)} className="gap-1">
                   <Link2 className="w-4 h-4" /> Import from URL
@@ -452,7 +503,10 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-display font-bold text-sm mb-1 truncate">{product.name}</h3>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Checkbox checked={selectedIds.includes(product.id)} onCheckedChange={() => toggleSelect(product.id)} />
+                        <h3 className="font-display font-bold text-sm truncate">{product.name}</h3>
+                      </div>
                       <div className="flex items-center justify-between mb-3">
                         <span className="font-display font-bold text-primary text-sm">₦{Number(product.discount_price || product.price).toLocaleString()}</span>
                         <span className={`text-xs ${product.stock_quantity < 5 && product.stock_quantity > 0 ? "text-destructive font-bold" : "text-muted-foreground"}`}>
