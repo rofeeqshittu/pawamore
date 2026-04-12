@@ -8,6 +8,9 @@ Migrations to apply (in order):
    - Adds deleted_at timestamptz to products for soft-delete auditability.
 2. supabase/migrations/20260412194000_set_deleted_at_trigger.sql
    - Creates a trigger function set_deleted_at() and attaches it to products to automatically set/clear deleted_at when status changes.
+3. supabase/migrations/20260412230000_add_unique_source_url_to_products.sql
+   - Adds a UNIQUE index on products.source_url to prevent duplicate imports. IMPORTANT: ensure duplicates are resolved before applying this migration.
+
 
 Also review/consider applying RLS policies in supabase/README_RLS.md to prevent accidental hard deletes.
 

@@ -232,6 +232,9 @@ export default function ScraperManager() {
                           <span className="text-xs text-muted-foreground">
                             {(run.extracted_data as any).success_count ?? 0} success •{" "}
                             {(run.extracted_data as any).failure_count ?? 0} failed
+                            {((run.extracted_data as any).skipped_count ?? 0) > 0 && (
+                              <><span className="mx-1">•</span>{(run.extracted_data as any).skipped_count} skipped</>
+                            )}
                           </span>
                         )}
                       </div>

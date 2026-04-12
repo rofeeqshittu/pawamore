@@ -562,7 +562,7 @@ async function importSingleProduct(
         console.log(`Skipping import for ${sourceUrl}: product already exists (${existing.id})`);
         return {
           url: sourceUrl,
-          status: "success",
+          status: "skipped",
           product_id: existing.id,
           product_name: (existing as any).name,
         };
@@ -806,7 +806,7 @@ Deno.serve(async (req) => {
 
     const results: Array<{
       url: string;
-      status: "success" | "error";
+      status: "success" | "error" | "skipped";
       product_id?: string;
       product_name?: string;
       error?: string;
@@ -819,6 +819,7 @@ Deno.serve(async (req) => {
 
     const successes = results.filter((r) => r.status === "success");
     const failures = results.filter((r) => r.status === "error");
+    const skipped = results.filter((r) => r.status === "skipped");
     const summary = {
       mode,
       requested_batch_size: batchSize,
@@ -826,6 +827,7 @@ Deno.serve(async (req) => {
       processed_count: results.length,
       success_count: successes.length,
       failure_count: failures.length,
+      skipped_count: skipped.length,
       results,
     };
 
