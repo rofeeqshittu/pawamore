@@ -129,7 +129,7 @@ const AdminDashboard = () => {
     const verifyAdmin = async () => {
       try {
         const { data, error } = await withTimeout(
-          supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }),
+          Promise.resolve(supabase.rpc("has_role", { _user_id: user.id, _role: "admin" })),
           REQUEST_TIMEOUT_MS,
           "Admin permission check"
         );
@@ -184,10 +184,10 @@ const AdminDashboard = () => {
 
   const fetchProducts = async () => {
     const { data, error } = await withTimeout(
-      supabase
+      Promise.resolve(supabase
         .from("products")
         .select("*, product_images(image_url, is_primary)")
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: false })),
       REQUEST_TIMEOUT_MS,
       "Load products"
     );
@@ -197,10 +197,10 @@ const AdminDashboard = () => {
 
   const fetchOrders = async () => {
     const { data, error } = await withTimeout(
-      supabase
+      Promise.resolve(supabase
         .from("orders")
         .select("*, order_items(id, product_name, quantity, unit_price)")
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: false })),
       REQUEST_TIMEOUT_MS,
       "Load orders"
     );
@@ -210,9 +210,9 @@ const AdminDashboard = () => {
 
   const fetchReviews = async () => {
     const { data, error } = await withTimeout(
-      supabase
+      Promise.resolve(supabase
         .from("product_reviews")
-        .select("*, products(name)")
+        .select("*, products(name)"))
         .order("created_at", { ascending: false }),
       REQUEST_TIMEOUT_MS,
       "Load reviews"
@@ -223,9 +223,9 @@ const AdminDashboard = () => {
 
   const fetchNewsletters = async () => {
     const { data, error } = await withTimeout(
-      supabase
+      Promise.resolve(supabase
         .from("newsletter_subscriptions")
-        .select("*")
+        .select("*"))
         .order("subscribed_at", { ascending: false }),
       REQUEST_TIMEOUT_MS,
       "Load newsletters"

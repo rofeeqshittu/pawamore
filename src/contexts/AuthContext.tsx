@@ -36,12 +36,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkAdmin = async (userId: string) => {
     try {
       const { data } = await withTimeout(
-        supabase
+        Promise.resolve(supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
         .eq("role", "admin")
-        .maybeSingle(),
+        .maybeSingle()),
         AUTH_REQUEST_TIMEOUT_MS,
         "Admin role check"
       );
