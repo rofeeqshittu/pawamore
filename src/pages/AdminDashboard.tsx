@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   Plus, Edit, Trash2, Image as ImageIcon, Package, LogOut, Eye,
@@ -110,6 +112,14 @@ const AdminDashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [serverVerifiedAdmin, setServerVerifiedAdmin] = useState<boolean | null>(null);
   const [importModalOpen, setImportModalOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const selectedCount = selectedIds.length;
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [deletedBuffer, setDeletedBuffer] = useState<Product[]>([]);
+  const [trashProducts, setTrashProducts] = useState<Product[]>([]);
+  const [purgeDialogOpen, setPurgeDialogOpen] = useState(false);
+  const [purgeTarget, setPurgeTarget] = useState<string | null>(null);
+  const undoTimeoutRef = useRef<number | null>(null);
 
   const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number, label: string) =>
     Promise.race<T>([
@@ -165,6 +175,7 @@ const AdminDashboard = () => {
       ["orders", fetchOrders],
       ["reviews", fetchReviews],
       ["newsletters", fetchNewsletters],
+      ["trash", fetchTrashProducts],
     ];
 
     const results = await Promise.allSettled(tasks.map(([, run]) => run()));
@@ -187,6 +198,7 @@ const AdminDashboard = () => {
       Promise.resolve(supabase
         .from("products")
         .select("*, product_images(image_url, is_primary)")
+        .neq("status", "deleted")
         .order("created_at", { ascending: false })),
       REQUEST_TIMEOUT_MS,
       "Load products"
@@ -234,14 +246,112 @@ const AdminDashboard = () => {
     setNewsletters((data as any) || []);
   };
 
+  const fetchTrashProducts = async () => {
+    const { data, error } = await withTimeout(
+      Promise.resolve(supabase
+        .from("products")
+        .select("*, product_images(image_url, is_primary)")
+        .eq("status", "deleted")
+        .order("created_at", { ascending: false })),
+      REQUEST_TIMEOUT_MS,
+      "Load trash"
+    );
+    if (error) throw error;
+    setTrashProducts((data as any) || []);
+  };
+
   const handleDeleteProduct = async (id: string) => {
-    const { error } = await supabase.from("products").delete().eq("id", id);
-    if (!error) {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+    try {
+      const { error } = await supabase.from("products").update({ status: "deleted", deleted_at: new Date().toISOString() }).eq("id", id);
+      if (error) throw error;
+
+      // Move to deleted buffer so undo can restore status
+      setDeletedBuffer(prev => [...prev, product]);
       setProducts(products.filter((p) => p.id !== id));
       setDeleteId(null);
-      toast({ title: "Product deleted" });
+      setSelectedIds(selectedIds.filter(sid => sid !== id));
+
+      // start undo timer for single delete
+      if (undoTimeoutRef.current) window.clearTimeout(undoTimeoutRef.current);
+      undoTimeoutRef.current = window.setTimeout(() => setDeletedBuffer([]), 15000);
+
+      toast({ title: "Product marked deleted (undo available)" });
+    } catch (err: any) {
+      toast({ title: "Delete failed", description: err.message || String(err), variant: "destructive" });
+    }
+  };
+
+  // Selection helpers for bulk actions
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedCount === products.length) {
+      setSelectedIds([]);
     } else {
-      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+      setSelectedIds(products.map(p => p.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    // Open confirmation dialog
+    setBulkDeleteOpen(true);
+  };
+
+  const confirmBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    const toDelete = products.filter(p => selectedIds.includes(p.id));
+    try {
+      const { error } = await supabase.from("products").update({ status: "deleted", deleted_at: new Date().toISOString() }).in("id", selectedIds);
+      if (!error) {
+        setProducts(products.filter(p => !selectedIds.includes(p.id)));
+        setSelectedIds([]);
+        setDeletedBuffer(toDelete);
+        setBulkDeleteOpen(false);
+        // allow undo for 15s
+        if (undoTimeoutRef.current) window.clearTimeout(undoTimeoutRef.current);
+        undoTimeoutRef.current = window.setTimeout(() => setDeletedBuffer([]), 15000);
+        toast({ title: `Marked ${toDelete.length} products deleted (undo available)` });
+      } else {
+        toast({ title: "Bulk delete failed", description: error.message, variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Bulk delete failed", description: err.message || String(err), variant: "destructive" });
+    }
+  };
+
+  const undoBulkDelete = async () => {
+    if (deletedBuffer.length === 0) return;
+    try {
+      // Restore status for each buffered product
+      for (const p of deletedBuffer) {
+        const originalStatus = p.status || "draft";
+        const { error } = await supabase.from("products").update({ status: originalStatus, deleted_at: null }).eq("id", p.id);
+        if (error) console.error("Failed to restore product status for", p.id, error);
+      }
+      // Put them back in UI list
+      setProducts(prev => [...deletedBuffer, ...prev]);
+      setDeletedBuffer([]);
+      if (undoTimeoutRef.current) { window.clearTimeout(undoTimeoutRef.current); undoTimeoutRef.current = null; }
+      toast({ title: "Restored deleted products" });
+    } catch (err: any) {
+      toast({ title: "Undo failed", description: err.message || String(err), variant: "destructive" });
+    }
+  };
+
+  const handleBulkUpdateStatus = async (newStatus: string) => {
+    if (selectedIds.length === 0) return;
+    const { error } = await supabase.from("products").update({ status: newStatus, deleted_at: newStatus === 'deleted' ? new Date().toISOString() : null }).in("id", selectedIds);
+    if (!error) {
+      setProducts(products.map(p => selectedIds.includes(p.id) ? { ...p, status: newStatus } : p));
+      setSelectedIds([]);
+      toast({ title: `Updated status for ${selectedCount} products` });
+    } else {
+      toast({ title: "Bulk update failed", description: error.message, variant: "destructive" });
     }
   };
 
@@ -274,6 +384,36 @@ const AdminDashboard = () => {
       <LoadingSpinner text="Loading admin panel..." size="lg" />
     </div>
   );
+
+  // Restore a single trashed product
+  const restoreProduct = async (id: string) => {
+    const p = trashProducts.find(t => t.id === id);
+    if (!p) return;
+    try {
+      const { error } = await supabase.from("products").update({ status: p.status || 'draft', deleted_at: null }).eq("id", id);
+      if (error) throw error;
+      setTrashProducts(prev => prev.filter(t => t.id !== id));
+      setProducts(prev => [p, ...prev]);
+      toast({ title: 'Product restored' });
+    } catch (err: any) {
+      toast({ title: 'Restore failed', description: err.message || String(err), variant: 'destructive' });
+    }
+  };
+
+  const purgeProduct = async (id: string) => {
+    try {
+      const { error: imgErr } = await supabase.from('product_images').delete().eq('product_id', id);
+      if (imgErr) console.error('Failed deleting images', imgErr);
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
+      setTrashProducts(prev => prev.filter(p => p.id !== id));
+      setPurgeDialogOpen(false);
+      setPurgeTarget(null);
+      toast({ title: 'Permanently deleted' });
+    } catch (err: any) {
+      toast({ title: 'Purge failed', description: err.message || String(err), variant: 'destructive' });
+    }
+  };
   if (!isAdmin) return null;
 
   const primaryImage = (p: Product) => p.product_images?.find((i) => i.is_primary)?.image_url || p.product_images?.[0]?.image_url;
@@ -285,6 +425,9 @@ const AdminDashboard = () => {
   const activeNewsletters = newsletters.filter(n => n.is_active).length;
 
   const filteredOrders = statusFilter === "all" ? orders : orders.filter(o => o.status === statusFilter);
+
+  // select-all state: true | false | "indeterminate"
+  const selectAllState: boolean | "indeterminate" = products.length === 0 ? false : (selectedCount === 0 ? false : (selectedCount === products.length ? true : "indeterminate"));
 
   return (
     <div className="min-h-screen bg-background">
@@ -342,6 +485,9 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="scraper" className="text-xs sm:text-sm whitespace-nowrap">
               <Bot className="w-3.5 h-3.5 mr-1" />Scraper
+            </TabsTrigger>
+            <TabsTrigger value="trash" className="text-xs sm:text-sm whitespace-nowrap">
+              <Trash2 className="w-3.5 h-3.5 mr-1" />Trash
             </TabsTrigger>
           </TabsList>
 
@@ -405,7 +551,18 @@ const AdminDashboard = () => {
           {/* Products Tab */}
           <TabsContent value="products">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg sm:text-xl font-extrabold">All Products</h2>
+              <div className="flex items-center gap-4">
+                <Checkbox checked={selectAllState} onCheckedChange={toggleSelectAll} aria-label={selectedCount === products.length && products.length > 0 ? "Deselect all products" : "Select all products"} />
+                <h2 className="text-lg sm:text-xl font-extrabold">All Products</h2>
+                <div className="sr-only" aria-live="polite">{selectedCount} products selected</div>
+                {selectedCount > 0 && (
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="destructive" onClick={handleBulkDelete}>Delete ({selectedCount})</Button>
+                    <Button size="sm" onClick={() => handleBulkUpdateStatus('active')}>Publish</Button>
+                    <Button size="sm" onClick={() => handleBulkUpdateStatus('draft')}>Unpublish</Button>
+                  </div>
+                )}
+              </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setImportModalOpen(true)} className="gap-1">
                   <Link2 className="w-4 h-4" /> Import from URL
@@ -415,6 +572,17 @@ const AdminDashboard = () => {
                 </Link>
               </div>
             </div>
+
+            {/* Undo banner for bulk deletes */}
+            {deletedBuffer.length > 0 && (
+              <div className="mb-4 p-3 bg-muted rounded flex items-center justify-between" role="status" aria-live="polite">
+                <div className="text-sm">Deleted {deletedBuffer.length} product{deletedBuffer.length !== 1 ? 's' : ''}.</div>
+                <div className="flex gap-2" role="group" aria-label="Undo deleted products">
+                  <Button size="sm" onClick={undoBulkDelete}>Undo</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setDeletedBuffer([])}>Dismiss</Button>
+                </div>
+              </div>
+            )}
 
             {loadingData ? (
               <div className="flex items-center justify-center py-16">
@@ -452,7 +620,10 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-display font-bold text-sm mb-1 truncate">{product.name}</h3>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Checkbox checked={selectedIds.includes(product.id)} onCheckedChange={(val) => { if (val) setSelectedIds(prev => prev.includes(product.id) ? prev : [...prev, product.id]); else setSelectedIds(prev => prev.filter(id => id !== product.id)); }} aria-label={`Select product ${product.name}`} />
+                        <h3 className="font-display font-bold text-sm truncate">{product.name}</h3>
+                      </div>
                       <div className="flex items-center justify-between mb-3">
                         <span className="font-display font-bold text-primary text-sm">₦{Number(product.discount_price || product.price).toLocaleString()}</span>
                         <span className={`text-xs ${product.stock_quantity < 5 && product.stock_quantity > 0 ? "text-destructive font-bold" : "text-muted-foreground"}`}>
@@ -477,6 +648,42 @@ const AdminDashboard = () => {
                         </div>
                       </div>
                     )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Trash Tab */}
+          <TabsContent value="trash">
+            <h2 className="text-lg sm:text-xl font-extrabold mb-6">Trash (Deleted Products)</h2>
+            {trashProducts.length === 0 ? (
+              <div className="text-center py-16">
+                <Package className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                <p className="text-muted-foreground">No deleted products.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {trashProducts.map((product) => (
+                  <div key={product.id} className="bg-card rounded-xl border overflow-hidden border-border">
+                    <div className="aspect-video bg-secondary relative overflow-hidden">
+                      {primaryImage(product) ? (
+                        <img src={primaryImage(product)} alt={product.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-10 h-10 text-muted-foreground/30" /></div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-display font-bold text-sm truncate mb-2">{product.name}</h3>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="font-display font-bold text-primary text-sm">₦{Number(product.discount_price || product.price).toLocaleString()}</span>
+                        <span className="text-xs text-muted-foreground">Deleted</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={() => restoreProduct(product.id)}>Restore</Button>
+                        <Button size="sm" variant="destructive" onClick={() => { setPurgeTarget(product.id); setPurgeDialogOpen(true); }}>Permanently Delete</Button>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -706,6 +913,38 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Bulk delete confirmation dialog */}
+      <Dialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm delete</DialogTitle>
+            <DialogDescription>
+              This will mark {selectedCount} product{selectedCount !== 1 ? 's' : ''} as deleted (soft-delete). They will be hidden from the catalog and you will have 15 seconds to undo this action from the banner. To permanently remove items, use the Trash tab.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="ghost" onClick={() => setBulkDeleteOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmBulkDelete}>Delete</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Purge confirmation dialog */}
+      <Dialog open={purgeDialogOpen} onOpenChange={setPurgeDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Permanently delete product</DialogTitle>
+            <DialogDescription>
+              This will permanently delete the product and its images. This action cannot be undone. Are you sure?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="ghost" onClick={() => { setPurgeDialogOpen(false); setPurgeTarget(null); }}>Cancel</Button>
+            <Button variant="destructive" onClick={() => purgeProduct(purgeTarget || '')}>Permanently Delete</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Product Import Modal */}
       <ProductImportModal

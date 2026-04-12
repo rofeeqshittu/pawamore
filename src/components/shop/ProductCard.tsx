@@ -6,6 +6,7 @@ import WishlistButton from "@/components/WishlistButton";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import OptimizedImage from "@/components/OptimizedImage";
 import { buildOgProductUrl } from "@/lib/ogProxy";
+import { stripHtml } from "@/lib/htmlUtils";
 
 interface Product {
   id: string;
@@ -84,7 +85,7 @@ const ProductCard = ({ product, onAddToCart, isComparing, onToggleCompare, compa
         )}
         <h3 className="font-display font-bold text-xs sm:text-base mt-1 mb-1 line-clamp-2 leading-tight">{product.name}</h3>
         <p className="text-muted-foreground text-[11px] sm:text-sm leading-relaxed mb-2 sm:mb-3 line-clamp-2 flex-1">
-          {product.short_description || ""}
+          {stripHtml(product.short_description || "")}
         </p>
 
         <div className="mb-2 sm:mb-3">

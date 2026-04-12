@@ -26,6 +26,7 @@ import { toast } from "@/hooks/use-toast";
 import useSEO from "@/hooks/useSEO";
 import { getRelatedProducts, type RelatedProduct } from "@/lib/related-products";
 import { buildOgProductUrl } from "@/lib/ogProxy";
+import { stripHtml } from "@/lib/htmlUtils";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -56,7 +57,7 @@ const ProductDetail = () => {
   
   // Create rich description for social sharing
   const socialDescription = product
-    ? `${product.short_description || product.name} | ${formattedPrice} | Available at PawaMore Systems. ${product.stock_quantity > 0 ? "✅ In Stock" : "⏳ Pre-order"}. Delivery options available nationwide.`
+    ? `${stripHtml(product.short_description || product.name || '')} | ${formattedPrice} | Available at PawaMore Systems. ${product.stock_quantity > 0 ? "✅ In Stock" : "⏳ Pre-order"}. Delivery options available nationwide.`
     : "Quality solar and battery solutions at PawaMore Systems Nigeria";
   
   // Product availability for schema
@@ -81,7 +82,7 @@ const ProductDetail = () => {
       "@type": "Product",
       "name": product.name,
       "image": primaryImage || "",
-      "description": product.short_description || product.description || "",
+      "description": stripHtml(product.short_description || product.description || ""),
       "brand": {
         "@type": "Brand",
         "name": product.brand || "PawaMore"
@@ -173,17 +174,35 @@ const ProductDetail = () => {
 
   const fetchReviews = async (productId: string) => {
     try {
-      const { data: reviewsData } = await supabase
+      // Fetch approved reviews, and also include the current user's review (even if not approved)
+      let query = supabase
         .from("product_reviews")
         .select(`id, user_id, rating, title, content, is_approved, created_at`)
         .eq("product_id", productId)
-        .eq("is_approved", true)
         .order("created_at", { ascending: false });
 
-      setReviews(reviewsData || []);
-      if (reviewsData && reviewsData.length > 0) {
-        const average = reviewsData.reduce((sum, r) => sum + r.rating, 0) / reviewsData.length;
-        setReviewStats({ average, total: reviewsData.length });
+      if (user?.id) {
+        // include approved reviews or the logged-in user's review
+        query = query.or(`is_approved.eq.true,user_id.eq.${user.id}`);
+      } else {
+        query = query.eq("is_approved", true);
+      }
+
+      const { data: reviewsData, error } = await query;
+      if (error) throw error;
+
+      const deduped = (reviewsData || []).reduce((acc: any[], r: any) => {
+        if (!acc.some(x => x.id === r.id)) acc.push(r);
+        return acc;
+      }, []);
+
+      setReviews(deduped);
+
+      // Compute stats only from approved reviews
+      const approved = deduped.filter(r => r.is_approved);
+      if (approved.length > 0) {
+        const average = approved.reduce((sum: number, r: any) => sum + r.rating, 0) / approved.length;
+        setReviewStats({ average, total: approved.length });
       } else {
         setReviewStats({ average: 0, total: 0 });
       }
@@ -198,7 +217,7 @@ const ProductDetail = () => {
 
   const handleShare = async () => {
     if (navigator.share) {
-      await navigator.share({ title: product?.name, text: product?.short_description || "", url: shareUrl });
+      await navigator.share({ title: product?.name, text: stripHtml(product?.short_description || ""), url: shareUrl });
     } else {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
@@ -312,7 +331,7 @@ const ProductDetail = () => {
               )}
             </div>
 
-            <p className="text-muted-foreground leading-relaxed mb-4 text-sm sm:text-base">{product.short_description || product.description}</p>
+            <p className="text-muted-foreground leading-relaxed mb-4 text-sm sm:text-base">{stripHtml(product.short_description || product.description || "")}</p>
 
             {product.powers && (
               <div className="bg-secondary rounded-lg p-3 mb-4">
@@ -386,7 +405,7 @@ const ProductDetail = () => {
             {product.description && product.description !== product.short_description && (
               <div className="border-t border-border pt-6">
                 <h3 className="font-display font-bold text-lg mb-2">Description</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">{product.description}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">{stripHtml(product.description || "")}</p>
               </div>
             )}
 

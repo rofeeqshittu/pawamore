@@ -116,12 +116,33 @@ const ProductReviews = ({ productId, productName, reviews, averageRating, totalR
     if (!user) return [];
     const urls: string[] = [];
     for (const file of selectedImages) {
-      const ext = file.name.split('.').pop();
-      const path = `${user.id}/${reviewId}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from('review-images').upload(path, file);
-      if (!error) {
-        const { data: { publicUrl } } = supabase.storage.from('review-images').getPublicUrl(path);
-        urls.push(publicUrl);
+      try {
+        const ext = file.name.split('.').pop();
+        const path = `${user.id}/${reviewId}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { data, error } = await supabase.storage.from('review-images').upload(path, file as any);
+        if (error) {
+          console.error('Upload error:', error);
+          toast({ title: 'Image upload failed', description: error.message, variant: 'destructive' });
+          continue;
+        }
+
+        // getPublicUrl can be synchronous in some client versions; handle defensively
+        try {
+          const publicResp = supabase.storage.from('review-images').getPublicUrl(path);
+          const publicData: any = publicResp?.data || publicResp;
+          const publicUrl = publicData?.publicUrl || publicData?.public_url || (publicData?.publicURL ?? publicData?.public_url);
+          if (publicUrl) {
+            urls.push(publicUrl);
+          } else {
+            console.warn('No public URL returned for', path, publicResp);
+          }
+        } catch (err) {
+          console.error('Failed to get public url:', err);
+          toast({ title: 'Failed to get image URL', description: (err as Error).message || '', variant: 'destructive' });
+        }
+      } catch (err) {
+        console.error('Unexpected upload error:', err);
+        toast({ title: 'Unexpected error uploading image', description: (err as Error).message || '', variant: 'destructive' });
       }
     }
     return urls;
