@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   Plus, Edit, Trash2, Image as ImageIcon, Package, LogOut, Eye,
@@ -113,6 +114,9 @@ const AdminDashboard = () => {
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectedCount = selectedIds.length;
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [deletedBuffer, setDeletedBuffer] = useState<Product[]>([]);
+  const undoTimeoutRef = useRef<number | null>(null);
 
   const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number, label: string) =>
     Promise.race<T>([
@@ -264,13 +268,50 @@ const AdminDashboard = () => {
 
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
-    const { error } = await supabase.from("products").delete().in("id", selectedIds);
-    if (!error) {
-      setProducts(products.filter(p => !selectedIds.includes(p.id)));
-      setSelectedIds([]);
-      toast({ title: `Deleted ${selectedCount} products` });
-    } else {
-      toast({ title: "Bulk delete failed", description: error.message, variant: "destructive" });
+    // Open confirmation dialog
+    setBulkDeleteOpen(true);
+  };
+
+  const confirmBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    const toDelete = products.filter(p => selectedIds.includes(p.id));
+    try {
+      const { error } = await supabase.from("products").delete().in("id", selectedIds);
+      if (!error) {
+        setProducts(products.filter(p => !selectedIds.includes(p.id)));
+        setSelectedIds([]);
+        setDeletedBuffer(toDelete);
+        setBulkDeleteOpen(false);
+        // allow undo for 15s
+        if (undoTimeoutRef.current) window.clearTimeout(undoTimeoutRef.current);
+        undoTimeoutRef.current = window.setTimeout(() => setDeletedBuffer([]), 15000);
+        toast({ title: `Deleted ${toDelete.length} products` });
+      } else {
+        toast({ title: "Bulk delete failed", description: error.message, variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Bulk delete failed", description: err.message || String(err), variant: "destructive" });
+    }
+  };
+
+  const undoBulkDelete = async () => {
+    if (deletedBuffer.length === 0) return;
+    try {
+      // Re-insert products (preserve ids so related images keep correct product_id)
+      const { error } = await supabase.from("products").insert(deletedBuffer);
+      if (error) throw error;
+      // Re-insert images if any
+      const images = deletedBuffer.flatMap(p => (p.product_images || []).map((img: any) => ({ ...img, product_id: p.id })));
+      if (images.length > 0) {
+        const { error: imgErr } = await supabase.from("product_images").insert(images);
+        if (imgErr) console.error("Failed to reinsert images:", imgErr);
+      }
+      setProducts(prev => [...deletedBuffer, ...prev]);
+      setDeletedBuffer([]);
+      if (undoTimeoutRef.current) { window.clearTimeout(undoTimeoutRef.current); undoTimeoutRef.current = null; }
+      toast({ title: "Restored deleted products" });
+    } catch (err: any) {
+      toast({ title: "Undo failed", description: err.message || String(err), variant: "destructive" });
     }
   };
 
@@ -466,6 +507,17 @@ const AdminDashboard = () => {
                 </Link>
               </div>
             </div>
+
+            {/* Undo banner for bulk deletes */}
+            {deletedBuffer.length > 0 && (
+              <div className="mb-4 p-3 bg-muted rounded flex items-center justify-between">
+                <div className="text-sm">Deleted {deletedBuffer.length} product{deletedBuffer.length !== 1 ? 's' : ''}.</div>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={undoBulkDelete}>Undo</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setDeletedBuffer([])}>Dismiss</Button>
+                </div>
+              </div>
+            )}
 
             {loadingData ? (
               <div className="flex items-center justify-center py-16">
@@ -760,6 +812,22 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Bulk delete confirmation dialog */}
+      <Dialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm delete</DialogTitle>
+            <DialogDescription>
+              You are about to permanently delete {selectedCount} product{selectedCount !== 1 ? 's' : ''}. This action will remove them from the catalog. You will have 15 seconds to undo this action from the banner.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="ghost" onClick={() => setBulkDeleteOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmBulkDelete}>Delete</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Product Import Modal */}
       <ProductImportModal
