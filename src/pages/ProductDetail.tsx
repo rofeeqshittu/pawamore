@@ -26,6 +26,7 @@ import { toast } from "@/hooks/use-toast";
 import useSEO from "@/hooks/useSEO";
 import { getRelatedProducts, type RelatedProduct } from "@/lib/related-products";
 import { buildOgProductUrl } from "@/lib/ogProxy";
+import { stripHtml } from "@/lib/htmlUtils";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -56,7 +57,7 @@ const ProductDetail = () => {
   
   // Create rich description for social sharing
   const socialDescription = product
-    ? `${product.short_description || product.name} | ${formattedPrice} | Available at PawaMore Systems. ${product.stock_quantity > 0 ? "✅ In Stock" : "⏳ Pre-order"}. Delivery options available nationwide.`
+    ? `${stripHtml(product.short_description || product.name || '')} | ${formattedPrice} | Available at PawaMore Systems. ${product.stock_quantity > 0 ? "✅ In Stock" : "⏳ Pre-order"}. Delivery options available nationwide.`
     : "Quality solar and battery solutions at PawaMore Systems Nigeria";
   
   // Product availability for schema
@@ -81,7 +82,7 @@ const ProductDetail = () => {
       "@type": "Product",
       "name": product.name,
       "image": primaryImage || "",
-      "description": product.short_description || product.description || "",
+      "description": stripHtml(product.short_description || product.description || ""),
       "brand": {
         "@type": "Brand",
         "name": product.brand || "PawaMore"
@@ -198,7 +199,7 @@ const ProductDetail = () => {
 
   const handleShare = async () => {
     if (navigator.share) {
-      await navigator.share({ title: product?.name, text: product?.short_description || "", url: shareUrl });
+      await navigator.share({ title: product?.name, text: stripHtml(product?.short_description || ""), url: shareUrl });
     } else {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
@@ -312,7 +313,7 @@ const ProductDetail = () => {
               )}
             </div>
 
-            <p className="text-muted-foreground leading-relaxed mb-4 text-sm sm:text-base">{product.short_description || product.description}</p>
+            <p className="text-muted-foreground leading-relaxed mb-4 text-sm sm:text-base">{stripHtml(product.short_description || product.description || "")}</p>
 
             {product.powers && (
               <div className="bg-secondary rounded-lg p-3 mb-4">
@@ -386,7 +387,7 @@ const ProductDetail = () => {
             {product.description && product.description !== product.short_description && (
               <div className="border-t border-border pt-6">
                 <h3 className="font-display font-bold text-lg mb-2">Description</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">{product.description}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">{stripHtml(product.description || "")}</p>
               </div>
             )}
 

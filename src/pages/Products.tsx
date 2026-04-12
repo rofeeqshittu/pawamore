@@ -11,6 +11,7 @@ import ProductSkeleton from "@/components/ProductSkeleton";
 import OptimizedImage from "@/components/OptimizedImage";
 import { supabase } from "@/integrations/supabase/client";
 import useSEO from "@/hooks/useSEO";
+import { stripHtml } from "@/lib/htmlUtils";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import batteryImg from "@/assets/battery-system.jpg";
@@ -329,7 +330,7 @@ const Products = () => {
                         )}
                         <h3 className="font-display font-bold text-base sm:text-lg mt-1 mb-1 sm:mb-2">{product.name}</h3>
                         <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-3 line-clamp-2">
-                          {product.short_description || product.description || ""}
+                          {stripHtml(product.short_description || product.description || "")}
                         </p>
                         <div className="flex items-end justify-between mb-3 sm:mb-4 flex-wrap gap-1">
                           <div>

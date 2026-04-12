@@ -11,6 +11,7 @@ import { useCart } from "@/contexts/CartContext";
 import QuickBuyButton from "@/components/QuickBuyButton";
 import { toast } from "@/hooks/use-toast";
 import useSEO from "@/hooks/useSEO";
+import { stripHtml } from "@/lib/htmlUtils";
 
 interface WishlistItem {
   id: string;
@@ -235,7 +236,7 @@ const Wishlist = () => {
                     </h3>
                     {product.short_description && (
                       <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                        {product.short_description}
+                        {stripHtml(product.short_description || "") }
                       </p>
                     )}
                     

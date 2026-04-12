@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import OptimizedImage from "@/components/OptimizedImage";
+import { stripHtml } from "@/lib/htmlUtils";
 import { Link } from "react-router-dom";
 
 interface Product {
@@ -137,7 +138,7 @@ const ProductComparison = ({ products, onRemove, onClear, open, onOpenChange }: 
                   <td className="p-2 font-display font-semibold text-xs sticky left-0 bg-background">Description</td>
                   {products.map((p) => (
                     <td key={p.id} className="p-2 text-center text-[11px] text-muted-foreground line-clamp-3">
-                      {p.short_description || "—"}
+                      {stripHtml(p.short_description || "—")}
                     </td>
                   ))}
                 </tr>
