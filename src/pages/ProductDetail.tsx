@@ -234,7 +234,7 @@ const ProductDetail = () => {
   };
 
   if (loading) return <ErrorBoundary><Layout><div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div></Layout></ErrorBoundary>;
-  if (!product) return <ErrorBoundary><Layout><div className="min-h-screen flex flex-col items-center justify-center gap-4"><p className="text-muted-foreground">Product not found.</p><Link to="/products"><Button variant="amber">&larr; Back to Products</Button></Link></div></Layout></ErrorBoundary>;
+  if (!product) return <ErrorBoundary><Layout><div className="min-h-screen flex flex-col items-center justify-center gap-4"><p className="text-muted-foreground">Product not found.</p><Link to="/shop"><Button variant="amber">&larr; Back to Shop</Button></Link></div></Layout></ErrorBoundary>;
 
   const price = product.discount_price || product.price;
   const categoryName = ((product.product_categories as any)?.name || "").toLowerCase();
@@ -258,8 +258,8 @@ const ProductDetail = () => {
     <ErrorBoundary>
       <Layout>
       <div className="container py-6 sm:py-10 md:py-16 px-4 sm:px-6">
-        <Link to="/products" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 sm:mb-6">
-          <ChevronLeft className="w-4 h-4 mr-1" /> Back to Products
+        <Link to="/shop" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 sm:mb-6">
+          <ChevronLeft className="w-4 h-4 mr-1" /> Back to Shop
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
