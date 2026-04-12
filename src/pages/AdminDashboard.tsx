@@ -327,7 +327,7 @@ const AdminDashboard = () => {
     if (selectedIds.length === 0) return;
     const toDelete = products.filter(p => selectedIds.includes(p.id));
     try {
-      const { error } = await supabase.from("products").update({ status: "deleted", deleted_at: new Date().toISOString() }).in("id", selectedIds);
+      const { error } = await supabase.rpc('bulk_update_products', { p_ids: selectedIds, p_new_status: 'deleted' });
       if (!error) {
         setProducts(products.filter(p => !selectedIds.includes(p.id)));
         setSelectedIds([]);
@@ -366,37 +366,40 @@ const AdminDashboard = () => {
 
   const handleBulkUpdateStatus = async (newStatus: string) => {
     if (selectedIds.length === 0) return;
-    const { error } = await supabase.from("products").update({ status: newStatus, deleted_at: newStatus === 'deleted' ? new Date().toISOString() : null }).in("id", selectedIds);
-    if (!error) {
+    try {
+      const { error } = await supabase.rpc('bulk_update_products', { p_ids: selectedIds, p_new_status: newStatus });
+      if (error) throw error;
       setProducts(products.map(p => selectedIds.includes(p.id) ? { ...p, status: newStatus } : p));
       setSelectedIds([]);
       toast({ title: `Updated status for ${selectedCount} products` });
-    } else {
-      toast({ title: "Bulk update failed", description: error.message, variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: "Bulk update failed", description: err.message || String(err), variant: "destructive" });
     }
   };
 
   const handleBulkSetFeatured = async (isFeatured: boolean) => {
     if (selectedIds.length === 0) return;
-    const { error } = await supabase.from('products').update({ is_featured: isFeatured }).in('id', selectedIds);
-    if (!error) {
+    try {
+      const { error } = await supabase.rpc('bulk_update_products', { p_ids: selectedIds, p_featured: isFeatured });
+      if (error) throw error;
       setProducts(products.map(p => selectedIds.includes(p.id) ? { ...p, is_featured: isFeatured } : p));
       setSelectedIds([]);
       toast({ title: `Updated featured for ${selectedCount} products` });
-    } else {
-      toast({ title: 'Bulk featured update failed', description: error.message, variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: 'Bulk featured update failed', description: err.message || String(err), variant: 'destructive' });
     }
   };
 
   const handleBulkSetPopular = async (isPopular: boolean) => {
     if (selectedIds.length === 0) return;
-    const { error } = await supabase.from('products').update({ is_popular: isPopular }).in('id', selectedIds);
-    if (!error) {
+    try {
+      const { error } = await supabase.rpc('bulk_update_products', { p_ids: selectedIds, p_popular: isPopular });
+      if (error) throw error;
       setProducts(products.map(p => selectedIds.includes(p.id) ? { ...p, is_popular: isPopular } : p));
       setSelectedIds([]);
       toast({ title: `Updated popular for ${selectedCount} products` });
-    } else {
-      toast({ title: 'Bulk popular update failed', description: error.message, variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: 'Bulk popular update failed', description: err.message || String(err), variant: 'destructive' });
     }
   };
 
@@ -415,16 +418,15 @@ const AdminDashboard = () => {
   const handleBulkAdjustPrice = async (percent: number) => {
     if (selectedIds.length === 0) return;
     try {
+      const { error } = await supabase.rpc('bulk_update_products', { p_ids: selectedIds, p_price_percent: Math.round(percent) });
+      if (error) throw error;
+      // Update client-side representation conservatively
       const updated = products.map(p => {
         if (!selectedIds.includes(p.id)) return p;
-        const newPrice = Math.max(0, Math.round(((p.discount_price || p.price) * (1 + percent / 100))));
+        const base = p.discount_price || p.price;
+        const newPrice = Math.max(0, Math.round(base * (1 + percent / 100)));
         return { ...p, price: newPrice, discount_price: p.discount_price ? newPrice : null };
       });
-      // update server side by looping (simpler) — could be done in a single RPC for efficiency
-      for (const p of updated.filter(u => selectedIds.includes(u.id))) {
-        const { error } = await supabase.from('products').update({ price: p.price, discount_price: p.discount_price }).eq('id', p.id);
-        if (error) console.error('Price update failed for', p.id, error);
-      }
       setProducts(updated);
       setSelectedIds([]);
       toast({ title: `Adjusted prices for ${selectedCount} products by ${percent}%` });
