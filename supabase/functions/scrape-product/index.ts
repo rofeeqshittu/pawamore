@@ -550,6 +550,29 @@ async function importSingleProduct(
   error?: string;
 }> {
   try {
+    // If a product with this source_url already exists, skip re-import to avoid duplicates and
+    // unnecessary AI/image uploads. Treat skipping as a successful import for run summaries.
+    try {
+      const { data: existing } = await supabase
+        .from("products")
+        .select("id, name")
+        .eq("source_url", sourceUrl)
+        .maybeSingle();
+      if (existing?.id) {
+        console.log(`Skipping import for ${sourceUrl}: product already exists (${existing.id})`);
+        return {
+          url: sourceUrl,
+          status: "success",
+          product_id: existing.id,
+          product_name: (existing as any).name,
+        };
+      }
+    } catch (dbCheckErr) {
+      // If the existence check fails for any reason, log and proceed with import rather than
+      // failing the entire run.
+      console.warn(`Failed to check existing product for ${sourceUrl}:`, (dbCheckErr as Error).message);
+    }
+
     const html = await fetchText(sourceUrl, 25000);
     console.log(`Fetched ${sourceUrl}: ${html.length} chars`);
     
