@@ -351,15 +351,15 @@ async function resolveOrCreateBrandId(
   if (!brandName) return null;
   const slug = slugify(brandName);
 
-  const { data: existing } = await supabase
-    .from("brands")
+  const { data: existing } = await (supabase
+    .from("brands") as any)
     .select("id")
     .eq("slug", slug)
     .maybeSingle();
   if (existing?.id) return existing.id;
 
-  const { data: inserted } = await supabase
-    .from("brands")
+  const { data: inserted } = await (supabase
+    .from("brands") as any)
     .insert({ name: brandName, slug })
     .select("id")
     .single();
@@ -373,15 +373,15 @@ async function resolveOrCreateCategoryId(
   if (!categoryName) return null;
   const slug = slugify(categoryName);
 
-  const { data: existing } = await supabase
-    .from("product_categories")
+  const { data: existing } = await (supabase
+    .from("product_categories") as any)
     .select("id")
     .eq("slug", slug)
     .maybeSingle();
   if (existing?.id) return existing.id;
 
-  const { data: inserted } = await supabase
-    .from("product_categories")
+  const { data: inserted } = await (supabase
+    .from("product_categories") as any)
     .insert({ name: categoryName, slug })
     .select("id")
     .single();
@@ -395,8 +395,8 @@ async function ensureUniqueSlug(
 ): Promise<string> {
   let finalSlug = candidate || `product-${crypto.randomUUID().slice(0, 8)}`;
   for (let i = 0; i < 5; i++) {
-    const { data: existing } = await supabase
-      .from("products")
+    const { data: existing } = await (supabase
+      .from("products") as any)
       .select("id, source_url")
       .eq("slug", finalSlug)
       .maybeSingle();
@@ -592,8 +592,8 @@ async function importSingleProduct(
       },
     };
 
-    const { data: productRow, error: productError } = await supabase
-      .from("products")
+    const { data: productRow, error: productError } = await (supabase
+      .from("products") as any)
       .upsert(productPayload, { onConflict: "source_url" })
       .select("id")
       .single();
@@ -627,7 +627,7 @@ async function importSingleProduct(
         is_primary: idx === 0,
       }));
 
-      await supabase.from("product_images").insert(imageRows);
+      await (supabase.from("product_images") as any).insert(imageRows);
       console.log(`Inserted ${imageRows.length} images for product ${productId}`);
     }
 
