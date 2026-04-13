@@ -459,8 +459,8 @@ Deno.serve(async (req) => {
     }
 
     // Create import log
-    const { data: logEntry, error: logError } = await supabase
-      .from('product_import_logs')
+    const { data: logEntry, error: logError } = await (supabase
+      .from('product_import_logs') as any)
       .insert({ source_url: url, imported_by: userId, status: 'pending' })
       .select()
       .single();
@@ -474,7 +474,7 @@ Deno.serve(async (req) => {
     const productData = await scrapeProductPage(url);
 
     if (importLogId) {
-      await supabase.from('product_import_logs')
+      await (supabase.from('product_import_logs') as any)
         .update({ original_data: productData as unknown as Record<string, unknown> })
         .eq('id', importLogId);
     }
@@ -514,7 +514,7 @@ Deno.serve(async (req) => {
     };
 
     if (importLogId) {
-      await supabase.from('product_import_logs')
+      await (supabase.from('product_import_logs') as any)
         .update({
           status: 'success',
           processed_data: processedData as unknown as Record<string, unknown>,
@@ -535,7 +535,7 @@ Deno.serve(async (req) => {
 
     if (importLogId && supabase) {
       try {
-        await supabase.from('product_import_logs')
+        await (supabase.from('product_import_logs') as any)
           .update({ status: 'failed', error_message: errorMessage, updated_at: new Date().toISOString() })
           .eq('id', importLogId);
       } catch (logUpdateError) {

@@ -39,6 +39,7 @@ interface Product {
   stock_quantity: number;
   short_description: string | null;
   created_at: string;
+  category_id: string | null;
   product_images: { image_url: string; is_primary: boolean }[];
 }
 
