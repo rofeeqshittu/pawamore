@@ -582,6 +582,7 @@ export type Database = {
           brand_id: string | null
           category_id: string | null
           created_at: string
+          deleted_at: string | null
           description: string | null
           discount_price: number | null
           id: string
@@ -606,6 +607,7 @@ export type Database = {
           brand_id?: string | null
           category_id?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           discount_price?: number | null
           id?: string
@@ -630,6 +632,7 @@ export type Database = {
           brand_id?: string | null
           category_id?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           discount_price?: number | null
           id?: string
