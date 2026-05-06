@@ -175,9 +175,45 @@ serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
 
     const supabase = createClient(supabaseUrl, serviceKey);
+
+    // Authenticate caller: must be the order owner OR an admin.
+    // Guest-order receipts must be triggered server-side (service role) only.
+    const authHeader = req.headers.get("Authorization") || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.replace("Bearer ", "") : "";
+    const isServiceRole = token && token === serviceKey;
+
+    let callerUserId: string | null = null;
+    let isAdmin = false;
+    if (!isServiceRole) {
+      if (!token) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const userClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: `Bearer ${token}` } },
+      });
+      const { data: { user } } = await userClient.auth.getUser();
+      if (!user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      callerUserId = user.id;
+      const { data: roleRow } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      isAdmin = !!roleRow;
+    }
 
     // Fetch order
     const { data: order, error: orderErr } = await supabase
@@ -192,6 +228,15 @@ serve(async (req: Request) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Authorization: only owner, admin, or service role may trigger.
+    if (!isServiceRole && !isAdmin && order.user_id !== callerUserId) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
 
     // Fetch order items
     const { data: items } = await supabase
@@ -244,11 +289,9 @@ serve(async (req: Request) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        email: recipientEmail,
+      JSON.stringify({
+        success: true,
         subject,
-        html_preview: html.slice(0, 200) + "...",
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
