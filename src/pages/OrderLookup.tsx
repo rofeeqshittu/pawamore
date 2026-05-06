@@ -48,11 +48,12 @@ const OrderLookup = () => {
 
       setOrder(orderData[0]);
 
-      // Get order items
+      // Get order items via secure guest lookup
       const { data: itemsData, error: itemsError } = await supabase
-        .from("order_items")
-        .select("*")
-        .eq("order_id", form.orderId);
+        .rpc("get_guest_order_items", {
+          p_guest_email: form.email,
+          p_order_id: form.orderId,
+        });
 
       if (itemsError) throw itemsError;
       setOrderItems(itemsData || []);
