@@ -891,6 +891,18 @@ export type Database = {
           total_amount: number
         }[]
       }
+      get_guest_order_items: {
+        Args: { p_guest_email: string; p_order_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string
+          product_name: string
+          quantity: number
+          unit_price: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
