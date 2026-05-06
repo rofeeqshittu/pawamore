@@ -289,11 +289,9 @@ serve(async (req: Request) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        email: recipientEmail,
+      JSON.stringify({
+        success: true,
         subject,
-        html_preview: html.slice(0, 200) + "...",
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
