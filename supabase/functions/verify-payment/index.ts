@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     const { data: { user: authUser } } = await userClient.auth.getUser();
 
     // Allow authenticated users or guest orders verified by ownership below
-    const { transaction_id, order_id } = await req.json();
+    const { transaction_id, order_id, guest_email } = await req.json();
 
     if (!transaction_id || !order_id) {
       return new Response(JSON.stringify({ error: "Missing transaction_id or order_id" }), {
@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Verify order ownership: authenticated user must own the order, or it's a guest order
+    // Verify order ownership: authenticated user must own the order, or guest must supply matching email
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
     const { data: order } = await adminClient.from("orders").select("user_id, guest_email").eq("id", order_id).single();
@@ -48,11 +48,22 @@ Deno.serve(async (req) => {
       });
     }
     // If order has a user_id, the caller must be that user
-    if (order.user_id && (!authUser || authUser.id !== order.user_id)) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (order.user_id) {
+      if (!authUser || authUser.id !== order.user_id) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } else {
+      // Guest order: caller must supply the matching guest_email
+      if (!guest_email || !order.guest_email ||
+          String(guest_email).trim().toLowerCase() !== String(order.guest_email).trim().toLowerCase()) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     const secretKey = Deno.env.get("FLUTTERWAVE_SECRET_KEY");
