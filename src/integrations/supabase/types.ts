@@ -180,6 +180,24 @@ export type Database = {
         }
         Relationships: []
       }
+      db_keepalive: {
+        Row: {
+          id: number
+          last_ping: string
+          ping_count: number
+        }
+        Insert: {
+          id?: number
+          last_ping?: string
+          ping_count?: number
+        }
+        Update: {
+          id?: number
+          last_ping?: string
+          ping_count?: number
+        }
+        Relationships: []
+      }
       faq_items: {
         Row: {
           answer: string
@@ -876,6 +894,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      db_keepalive_ping: { Args: never; Returns: undefined }
       get_guest_order: {
         Args: { p_guest_email: string; p_order_id: string }
         Returns: {
